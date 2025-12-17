@@ -49,6 +49,7 @@ pre {
 }
 
 @theme inline {
+  --color-banana: #FFEA00;
   --animate-grid: grid 15s linear infinite;
   @keyframes grid {
     0% {

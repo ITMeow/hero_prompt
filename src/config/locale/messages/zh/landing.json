@@ -2,10 +2,10 @@
   "header": {
     "id": "header",
     "brand": {
-      "title": "ShipAny Two",
+      "title": "Nano Banana Pro",
       "logo": {
         "src": "/logo.png",
-        "alt": "ShipAny Two",
+        "alt": "Nano Banana Pro",
         "width": 100,
         "height": 100
       },
@@ -14,12 +14,12 @@
     "nav": {
       "items": [
         {
-          "title": "功能亮点",
+          "title": "功能",
           "url": "/#features",
           "icon": "Sparkles"
         },
         {
-          "title": "案例展示",
+          "title": "展示",
           "url": "/showcases",
           "icon": "Box"
         },
@@ -29,54 +29,42 @@
           "icon": "DollarSign"
         },
         {
-          "title": "AI",
+          "title": "AI 模型",
           "icon": "RiRobot2Line",
           "children": [
             {
-              "title": "AI 图片生成器",
-              "description": "使用 AI 生成图片",
-              "url": "/ai-image-generator",
+              "title": "Nano Banana 2",
+              "description": "我们的旗舰通用模型",
+              "url": "/models/nano-banana-2",
               "icon": "RiImage2Line"
             },
             {
-              "title": "AI 音乐生成器",
-              "description": "使用 AI 生成美妙的音乐",
-              "url": "/ai-music-generator",
-              "icon": "RiMusic2Line"
-            },
-            {
-              "title": "AI 视频生成器",
-              "description": "使用 AI 生成视频",
-              "url": "/ai-video-generator",
-              "icon": "RiVideoLine"
-            },
-            {
-              "title": "AI 聊天机器人",
-              "description": "与 AI 聊天机器人对话",
-              "url": "/chat",
-              "icon": "RiMessage2Line"
+              "title": "Gemini 3 Pro Image",
+              "description": "先进的真实感和依从性",
+              "url": "/models/gemini-3-pro",
+              "icon": "RiRobot2Line"
             }
           ]
         },
         {
-          "title": "内容",
+          "title": "资源",
           "icon": "FileText",
           "children": [
             {
               "title": "博客",
-              "description": "阅读博客文章",
+              "description": "最新新闻和教程",
               "url": "/blog",
               "icon": "Newspaper"
             },
             {
-              "title": "更新日志",
-              "description": "阅读更新日志",
-              "url": "/updates",
-              "icon": "Clock"
+              "title": "画廊",
+              "description": "探索社区创作",
+              "url": "/gallery",
+              "icon": "RiGalleryLine"
             },
             {
               "title": "文档",
-              "description": "阅读文档",
+              "description": "API 和用户指南",
               "url": "/docs",
               "icon": "BookOpenText"
             }
@@ -96,9 +84,9 @@
           "icon": "CreditCard"
         },
         {
-          "title": "活动",
-          "url": "/activity",
-          "icon": "Activity"
+          "title": "我的创作",
+          "url": "/my-creations",
+          "icon": "RiImageLine"
         }
       ]
     },
@@ -108,42 +96,42 @@
   },
   "hero": {
     "id": "hero",
-    "title": "一小时快速上线你的 AI 创业项目",
-    "highlight_text": "一小时",
-    "description": "ShipAny 是用于构建 AI SaaS 创业项目的 NextJS 项目模板。<br/>集成常用功能，快速上线你的产品。",
+    "title": "用 Nano Banana Pro 释放你的创造力",
+    "highlight_text": "Nano Banana Pro",
+    "description": "体验 AI 图像生成的下一次进化。由先进的 Nano Banana 2 和 Gemini 3 Pro 图像模型驱动，瞬间将您的想象变为现实。",
     "announcement": {
-      "badge": "全新",
-      "title": "🎉 ShipAny 模板二已发布",
-      "url": "/pricing"
+      "badge": "最新",
+      "title": "🎉 Nano Banana 2 模型已发布",
+      "url": "/blog/nano-banana-2-release"
     },
-    "tip": "🎁 前 1000 名用户特价优惠",
+    "tip": "🎁以此注册新用户送 50 积分",
     "buttons": [
       {
-        "title": "立即开始",
-        "icon": "Zap",
-        "url": "/pricing",
+        "title": "开始生成",
+        "icon": "Sparkles",
+        "url": "/create",
         "target": "_self",
         "variant": "default"
       },
       {
-        "title": "阅读文档",
-        "icon": "BookOpenText",
-        "url": "/docs",
-        "target": "_blank",
+        "title": "浏览画廊",
+        "icon": "RiGalleryLine",
+        "url": "/gallery",
+        "target": "_self",
         "variant": "outline"
       }
     ],
     "show_avatars": true,
-    "avatars_tip": "999+ 用户在使用 ShipAny 上站",
+    "avatars_tip": "10k+ 创作者正在使用 Nano Banana Pro",
     "show_award": false,
     "image": {
-      "src": "/imgs/features/admin.png",
+      "src": "/imgs/features/landing-page.png",
       "alt": "hero",
       "width": 1200,
       "height": 800
     },
     "image_invert": {
-      "src": "/imgs/features/admin-dark.png",
+      "src": "/imgs/features/landing-page.png",
       "alt": "hero",
       "width": 1200,
       "height": 800
@@ -154,41 +142,41 @@
     }
   },
   "logos": {
-    "title": "ShipAny 使用以下技术栈构建",
+    "title": "由世界级 AI 技术驱动",
     "items": [
       {
-        "title": "Next.js",
+        "title": "Nano Banana",
         "image": {
           "src": "/imgs/logos/nextjs.svg",
-          "alt": "Next.js"
+          "alt": "Nano Banana"
         }
       },
       {
-        "title": "React",
+        "title": "Gemini 3 Pro",
         "image": {
           "src": "/imgs/logos/react.svg",
-          "alt": "React"
+          "alt": "Gemini 3 Pro"
         }
       },
       {
-        "title": "TailwindCSS",
+        "title": "TensorFlow",
         "image": {
           "src": "/imgs/logos/tailwindcss.svg",
-          "alt": "TailwindCSS"
+          "alt": "TensorFlow"
         }
       },
       {
-        "title": "Shadcn/UI",
+        "title": "PyTorch",
         "image": {
           "src": "/imgs/logos/shadcn.svg",
-          "alt": "Shadcn/UI"
+          "alt": "PyTorch"
         }
       },
       {
-        "title": "Vercel",
+        "title": "NVIDIA",
         "image": {
           "src": "/imgs/logos/vercel.svg",
-          "alt": "Vercel"
+          "alt": "NVIDIA"
         }
       }
     ]
@@ -196,45 +184,45 @@
   "introduce": {
     "block": "features-list",
     "id": "introduce",
-    "title": "ShipAny 是什么？",
-    "label": "产品简介",
-    "description": "ShipAny 是专为 AI SaaS 创业项目打造的 NextJS 脚手架，包括丰富模板、组件及文档。",
+    "title": "什么是 Nano Banana Pro？",
+    "label": "产品介绍",
+    "description": "Nano Banana Pro 是一款最先进的 AI 图像生成器，利用 Nano Banana 2 的力量提供超逼真和艺术化的视觉效果。",
     "image": {
       "src": "/imgs/features/landing-page.png",
       "alt": "introduce"
     },
     "items": [
       {
-        "title": "开箱即用的模板",
-        "description": "从数十款生产级 AI SaaS 模板中选择，快速开启你的项目。",
-        "icon": "RiNextjsFill",
+        "title": "Nano Banana 2 引擎",
+        "description": "我们专有的模型，专为出色的提示词依从性和创造力而设计。",
+        "icon": "RiCpuLine",
         "image": {
           "src": "/imgs/features/1.png",
           "alt": "introduce"
         }
       },
       {
-        "title": "基础设施搭建",
-        "description": "内置最佳实践，即刻拥有可扩展的基础设施。",
-        "icon": "RiDatabase2Line",
+        "title": "Gemini 3 Pro 集成",
+        "description": "无缝集成 Gemini 3 Pro，实现无与伦比的照片真实感。",
+        "icon": "RiRobot2Line",
         "image": {
           "src": "/imgs/features/2.png",
           "alt": "introduce"
         }
       },
       {
-        "title": "极速部署",
-        "description": "AI SaaS 产品快速上线，助力小时级交付。",
-        "icon": "RiCloudyFill",
+        "title": "即时生成",
+        "description": "利用我们优化的基础设施，在几秒钟内生成高质量的 4K 图像。",
+        "icon": "RiFlashlightFill",
         "image": {
           "src": "/imgs/features/3.png",
           "alt": "introduce"
         }
       },
       {
-        "title": "AI 集成",
-        "description": "通过内置的 AI SDK，轻松为你的项目集成 AI 能力。",
-        "icon": "RiRobot2Line",
+        "title": "高级控制",
+        "description": "精确控制风格、宽高比和构图，微调您的作品。",
+        "icon": "RiSettings4Line",
         "image": {
           "src": "/imgs/features/4.png",
           "alt": "introduce"
@@ -246,32 +234,32 @@
   "benefits": {
     "block": "features-accordion",
     "id": "benefits",
-    "title": "为何选择 ShipAny",
+    "title": "为什么选择 Nano Banana Pro",
     "label": "产品优势",
-    "description": "你获得一切 AI 创业所需——从开箱即用的模板到专业技术支持。",
+    "description": "为专业人士和爱好者设计的功能，释放 AI 艺术的全部潜力。",
     "items": [
       {
-        "title": "全栈解决方案",
-        "description": "基于 Next.js，集成认证、支付、AI，一站式开箱即用。",
-        "icon": "RiNextjsFill",
+        "title": "卓越的图像质量",
+        "description": "Nano Banana Pro 提供业界领先的图像保真度，非常适合印刷和数字媒体。",
+        "icon": "RiHdLine",
         "image": {
           "src": "/imgs/features/user-billing.png",
           "alt": "benefits"
         }
       },
       {
-        "title": "丰富模板库",
-        "description": "多样的 AI SaaS 模板，点击即用，涵盖聊天、图像生成等多场景。",
-        "icon": "RiClapperboardAiLine",
+        "title": "无限风格",
+        "description": "从动漫和油画到照片写实和 3D 渲染，探索无尽的艺术风格。",
+        "icon": "RiPaletteLine",
         "image": {
           "src": "/imgs/features/admin-settings.png",
           "alt": "benefits"
         }
       },
       {
-        "title": "专属技术指导",
-        "description": "享受专属技术支持与开发者社区，为你的成功保驾护航。",
-        "icon": "RiCodeFill",
+        "title": "商业版权",
+        "description": "您拥有自己创作的图片。无需版税即可将其用于商业项目。",
+        "icon": "RiCopyrightLine",
         "image": {
           "src": "/imgs/features/landing-page.png",
           "alt": "benefits"
@@ -282,8 +270,8 @@
   "usage": {
     "block": "features-step",
     "id": "usage",
-    "title": "三步使用 ShipAny 极速上线",
-    "description": "只需三步，快速开启你的 AI SaaS 创业之路：",
+    "title": "简单三步即可创作",
+    "description": "轻松将您的想法转化为视觉杰作：",
     "image": {
       "src": "/imgs/features/1.png",
       "alt": "usage"
@@ -292,32 +280,32 @@
     "text_align": "center",
     "items": [
       {
-        "title": "获取 ShipAny",
-        "description": "一次性购买 ShipAny，查收邮件获取代码与文档。",
+        "title": "输入提示词",
+        "description": "详细描述您想看到的内容。描述越好，结果越好。",
         "image": {
           "src": "/imgs/features/5.png",
           "alt": "usage"
         }
       },
       {
-        "title": "启动你的项目",
-        "description": "阅读说明文档，克隆 ShipAny 代码，开始开发你的 AI SaaS 项目。",
+        "title": "自定义设置",
+        "description": "选择您喜欢的模型（Nano Banana 2 或 Gemini 3 Pro）、风格和宽高比。",
         "image": {
           "src": "/imgs/features/6.png",
           "alt": "usage"
         }
       },
       {
-        "title": "个性化定制",
-        "description": "根据需求修改模板内容和数据，配置专属 AI 能力。",
+        "title": "生成并下载",
+        "description": "点击生成，几秒钟内即可看到您的图像。下载高清版本。",
         "image": {
           "src": "/imgs/features/7.png",
           "alt": "usage"
         }
       },
       {
-        "title": "部署上线",
-        "description": "简单几步将你的项目推向生产环境，立刻为客户提供服务。",
+        "title": "优化与放大",
+        "description": "使用我们的内置工具放大、变体或编辑您生成的图像。",
         "image": {
           "src": "/imgs/features/8.png",
           "alt": "usage"
@@ -328,182 +316,188 @@
   },
   "features": {
     "id": "features",
-    "title": "ShipAny 核心功能",
-    "description": "一切你需要的工具，助力 AI SaaS 项目高效上线。",
+    "title": "核心功能",
+    "description": "专业 AI 图像生成所需的一切。",
     "items": [
       {
-        "title": "Next.js 项目模板",
-        "description": "生产就绪、支持 SEO 与多语言的 Next.js 脚手架。",
-        "icon": "RiNextjsFill"
+        "title": "文生图",
+        "description": "利用我们先进的自然语言理解能力，将您的文字转化为令人惊叹的视觉效果。",
+        "icon": "RiText",
+        "url": "/features/text-to-image"
       },
       {
-        "title": "身份认证与支付",
-        "description": "集成谷歌 OAuth、一键登录，以及 Stripe 支付。",
-        "icon": "RiKey2Fill"
+        "title": "图生图",
+        "description": "使用现有图像作为参考，生成新的变体和风格。",
+        "icon": "RiImageLine",
+        "url": "/features/image-to-image"
       },
       {
-        "title": "数据基础设施",
-        "description": "内置 Supabase，稳定可靠的数据存储。",
-        "icon": "RiDatabase2Line"
+        "title": "智能重绘",
+        "description": "通过遮罩和描述更改，编辑图像的特定部分。",
+        "icon": "RiBrushLine",
+        "url": "/features/inpainting"
       },
       {
-        "title": "一键部署",
-        "description": "自动化部署到 Vercel 或 Cloudflare，极速上线。",
-        "icon": "RiCloudy2Fill"
+        "title": "高清放大",
+        "description": "在不损失质量的情况下将您的图像放大到 4K 及以上。",
+        "icon": "RiZoomInLine",
+        "url": "/features/upscaling"
       },
       {
-        "title": "商业分析",
-        "description": "集成 Google Analytics、Search Console，助力业务增长。",
-        "icon": "RiBarChart2Line"
+        "title": "风格混合",
+        "description": "混合多种风格，创造独特和个性化的美学。",
+        "icon": "RiDropLine",
+        "url": "/features/style-mixing"
       },
       {
-        "title": "AI 原生基础设施",
-        "description": "预置 AI 集成、积分系统和 API 售卖能力。",
-        "icon": "RiRobot2Line"
+        "title": "提示词增强",
+        "description": "让我们的 AI 优化您的提示词，以获得最佳结果。",
+        "icon": "RiMagicLine",
+        "url": "/features/prompt-enhancer"
       }
     ]
   },
   "stats": {
     "id": "stats",
-    "title": "用户喜爱 ShipAny",
-    "description": "因其易用且上线飞快。",
+    "title": "深受全球创作者信赖",
+    "description": "加入增长最快的 AI 艺术家社区。",
     "items": [
       {
-        "title": "999+",
-        "description": "位用户"
+        "title": "100万+",
+        "description": "生成图片"
       },
       {
-        "title": "200+",
-        "description": "组件块"
+        "title": "1万+",
+        "description": "活跃用户"
       },
       {
-        "title": "50+",
-        "description": "专业模板"
+        "title": "4.9/5",
+        "description": "用户评分"
       }
     ],
     "className": "bg-muted"
   },
   "testimonials": {
     "id": "testimonials",
-    "title": "用户对 ShipAny 的评价",
-    "description": "听听开发者与创始人用 ShipAny 快速上线 AI 创业项目的故事。",
+    "title": "用户评价",
+    "description": "看看 Nano Banana Pro 如何改变创意工作流。",
     "items": [
       {
-        "name": "David Chen",
-        "role": "AIWallpaper.shop 创始人",
-        "quote": "ShipAny 为我们节省了数月开发时间。2 天上线 AI 壁纸业务，一周内就收到了第一笔付费订单！",
+        "name": "Sarah Jenkins",
+        "role": "数字艺术家",
+        "quote": "Nano Banana Pro 理解复杂提示词的能力无与伦比。它已成为我概念艺术工作流中不可或缺的一部分。",
         "image": {
           "src": "/imgs/avatars/1.png",
-          "alt": "david"
+          "alt": "Sarah"
         }
       },
       {
-        "name": "Rachel Kim",
-        "role": "HeyBeauty.ai CTO",
-        "quote": "内置 AI 基础设施颠覆了开发体验，无需担心架构，只需专注核心功能，极快落地。",
+        "name": "Mike Chen",
+        "role": "市场总监",
+        "quote": "我们使用 Nano Banana 2 制作所有的社交媒体素材。速度和质量都令人难以置信，为我们节省了数千美元的设计成本。",
         "image": {
           "src": "/imgs/avatars/2.png",
-          "alt": "rachel"
+          "alt": "Mike"
         }
       },
       {
-        "name": "Marcus Thompson",
-        "role": "独立开发者",
-        "quote": "作为独立开发者，ShipAny 满足了全部需求——认证、支付、AI 集成、美观界面，一个周末上线 SaaS！",
+        "name": "Emily Rodriguez",
+        "role": "自由插画师",
+        "quote": "风格迁移功能改变了游戏规则。我可以在几分钟内尝试不同的美学风格。强烈推荐！",
         "image": {
           "src": "/imgs/avatars/3.png",
-          "alt": "marcus"
+          "alt": "Emily"
         }
       },
       {
-        "name": "Sofia Garcia",
-        "role": "Melodisco CEO",
-        "quote": "模板高度可定制且生产级。我们几小时内搭建出了 AI 音乐平台，上市周期大大缩短！",
+        "name": "David Kim",
+        "role": "游戏开发者",
+        "quote": "为我的独立游戏生成素材从未如此简单。Gemini 3 Pro 的集成增加了我以前无法实现的真实感水平。",
         "image": {
           "src": "/imgs/avatars/4.png",
-          "alt": "sofia"
+          "alt": "David"
         }
       },
       {
-        "name": "James Wilson",
-        "role": "GPTs.works 技术负责人",
-        "quote": "ShipAny 基础设施极其稳定。我们从 0 到 1 万用户，无需关心后端维护，是最棒的 AI 创业投资。",
+        "name": "Lisa Wang",
+        "role": "内容创作者",
+        "quote": "我喜欢社区画廊！看到其他人用 Nano Banana Pro 创作的东西真是太鼓舞人心了。界面也非常用户友好。",
         "image": {
           "src": "/imgs/avatars/5.png",
-          "alt": "james"
+          "alt": "Lisa"
         }
       },
       {
-        "name": "Anna Zhang",
-        "role": "创业者",
-        "quote": "从想法到上线，仅用 3 天！ShipAny 模板和部署工具让我们极快验证 AI 商业创意。",
+        "name": "Tom Wilson",
+        "role": "平面设计师",
+        "quote": "终于有一个 AI 生成器能给我足够的控制力来制作专业级的作品。放大功能太棒了。",
         "image": {
           "src": "/imgs/avatars/6.png",
-          "alt": "anna"
+          "alt": "Tom"
         }
       }
     ]
   },
   "faq": {
     "id": "faq",
-    "title": "关于 ShipAny 的常见问题",
-    "description": "还有其他问题？欢迎加入 Discord 或发邮件联系我们。",
-    "tip": "没有找到想要的答案？请联系 <a href='https://discord.gg/HQNnrzjZQS' target='_blank' class='text-primary font-medium hover:underline'>我们的客服团队</a>",
+    "title": "常见问题",
+    "description": "有问题？我们有答案。",
+    "tip": "没找到您想要的？请联系 <a href='/contact' class='text-primary font-medium hover:underline'>支持团队</a>",
     "items": [
       {
-        "question": "ShipAny 是什么？怎么帮到我？",
-        "answer": "ShipAny 是专为 AI SaaS 创业设计的 NextJS 全套脚手架，内含开箱即用的模板、基础设施搭建和部署工具，让你数小时内上线 AI 产品。"
+        "question": "什么是 Nano Banana Pro？",
+        "answer": "Nano Banana Pro 是一个先进的 AI 平台，允许您使用 Nano Banana 2 和 Gemini 3 Pro 等最先进的模型，根据文本描述生成高质量的图像。"
       },
       {
-        "question": "使用 ShipAny 需要很高的技术水平吗？",
-        "answer": "有基础编程知识即可上手。ShipAny 面向开发者友好，详细文档和模板让初学者也能轻松起步，不需深厚 AI 或云计算背景。"
+        "question": "我可以将图片用于商业用途吗？",
+        "answer": "可以！所有使用我们付费计划生成的图片都具有完全的商业版权，您可以将其用于您的项目、产品和营销。"
       },
       {
-        "question": "ShipAny 支持哪些类型的 AI SaaS 项目？",
-        "answer": "ShipAny 支持内容生成、数据分析、AI 聊天机器人、图片/内容生成器等多种主流 AI 应用场景。"
+        "question": "积分系统如何运作？",
+        "answer": "每次生成都会消耗一定数量的积分，具体取决于所使用的模型和设置。您的订阅包含每月的积分额度，如果需要，您可以购买充值。"
       },
       {
-        "question": "用 ShipAny 一般多久能上线？",
-        "answer": "借助 ShipAny，可在数小时内拿到产品原型并上线生产环境，预配置的一键部署大幅缩短开发周期。"
+        "question": "Nano Banana 2 有什么不同？",
+        "answer": "Nano Banana 2 针对创意灵活性和提示词依从性进行了优化，与标准模型相比，可以产生更具风格化和艺术感的结果。"
       },
       {
-        "question": "ShipAny 的基础设施包括哪些内容？",
-        "answer": "包含认证、数据库、API 集成、支付、云端部署等全栈解决方案，全部遵循业界最佳实践预配置。"
+        "question": "有免费试用吗？",
+        "answer": "有的，我们提供带有每日积分的免费层级，因此您可以在订阅之前试用 Nano Banana Pro 并亲自体验魔法。"
       },
       {
-        "question": "模板是否支持定制自己的品牌？",
-        "answer": "当然支持！所有模板均可自定义设计、功能和品牌，既保持基础架构稳定，又能满足个性扩展需求。"
+        "question": "我可以上传自己的图片吗？",
+        "answer": "当然。您可以使用我们的图生图功能，使用您自己的照片作为参考，让 AI 生成新的变体。"
       }
     ]
   },
   "cta": {
     "id": "cta",
-    "title": "发布你的第一个 AI SaaS 项目",
-    "description": "从这里出发，用 ShipAny 极速交付。",
+    "title": "今天就开始创作",
+    "description": "加入成千上万的创作者，用 Nano Banana Pro 释放您的想象力。",
     "buttons": [
       {
-        "title": "获取 ShipAny",
-        "url": "https://shipany.ai",
-        "target": "_blank",
+        "title": "免费开始",
+        "url": "/create",
+        "target": "_self",
         "icon": "Zap"
       },
       {
-        "title": "阅读文档",
-        "url": "/docs",
-        "target": "_blank",
+        "title": "查看价格",
+        "url": "/pricing",
+        "target": "_self",
         "variant": "outline",
-        "icon": "BookOpenText"
+        "icon": "DollarSign"
       }
     ],
     "className": "bg-muted"
   },
   "subscribe": {
     "id": "subscribe",
-    "title": "订阅我们的邮件通知",
-    "description": "获取 ShipAny 最新资讯与产品动态。",
+    "title": "保持更新",
+    "description": "订阅我们的通讯，获取最新的模型更新和技巧。",
     "submit": {
       "input": {
-        "placeholder": "输入邮箱"
+        "placeholder": "输入您的邮箱"
       },
       "button": {
         "title": "订阅"
@@ -515,11 +509,11 @@
   "footer": {
     "id": "footer",
     "brand": {
-      "title": "ShipAny Two",
-      "description": "ShipAny 是专为 AI SaaS 创业项目打造的 NextJS 模板。丰富模板与组件，极速交付你的产品。",
+      "title": "Nano Banana Pro",
+      "description": "Nano Banana Pro 是面向创作者、设计师和梦想家的终极 AI 图像生成平台。",
       "logo": {
         "src": "/logo.png",
-        "alt": "ShipAny Two",
+        "alt": "Nano Banana Pro",
         "width": 100,
         "height": 100
       },
@@ -528,21 +522,21 @@
     "nav": {
       "items": [
         {
-          "title": "关于我们",
+          "title": "产品",
           "children": [
             {
-              "title": "功能亮点",
+              "title": "功能",
               "url": "/#features",
-              "target": "_self"
-            },
-            {
-              "title": "案例展示",
-              "url": "/showcases",
               "target": "_self"
             },
             {
               "title": "价格",
               "url": "/pricing",
+              "target": "_self"
+            },
+            {
+              "title": "展示",
+              "url": "/showcases",
               "target": "_self"
             }
           ]
@@ -561,29 +555,29 @@
               "target": "_self"
             },
             {
-              "title": "对话",
-              "url": "/chat",
-              "target": "_blank"
+              "title": "社区",
+              "url": "/community",
+              "target": "_self"
             }
           ]
         },
         {
-          "title": "合作伙伴",
+          "title": "公司",
           "children": [
             {
-              "title": "ShipAny",
-              "url": "https://shipany.ai",
-              "target": "_blank"
+              "title": "关于我们",
+              "url": "/about",
+              "target": "_self"
             },
             {
-              "title": "ThinkAny",
-              "url": "https://thinkany.ai",
-              "target": "_blank"
+              "title": "条款",
+              "url": "/terms-of-service",
+              "target": "_self"
             },
             {
-              "title": "MCP.so",
-              "url": "https://mcp.so",
-              "target": "_blank"
+              "title": "隐私",
+              "url": "/privacy-policy",
+              "target": "_self"
             }
           ]
         }
@@ -594,25 +588,25 @@
         {
           "title": "X",
           "icon": "RiTwitterXFill",
-          "url": "https://x.com/your-app-name",
+          "url": "https://x.com/nanobanana",
           "target": "_blank"
         },
         {
           "title": "Github",
           "icon": "Github",
-          "url": "https://github.com/your-app-name",
+          "url": "https://github.com/nanobanana",
           "target": "_blank"
         },
         {
           "title": "Discord",
           "icon": "RiDiscordFill",
-          "url": "https://discord.gg/your-app-name",
+          "url": "https://discord.gg/nanobanana",
           "target": "_blank"
         },
         {
-          "title": "邮箱",
+          "title": "Email",
           "icon": "Mail",
-          "url": "mailto:support@your-domain.com",
+          "url": "mailto:support@nanobanana.pro",
           "target": "_self"
         }
       ]

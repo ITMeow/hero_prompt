@@ -1,0 +1,5 @@
+{
+  "name": "Social Highlights",
+  "description": "A masonry-style social media aggregator cloning the visual style of modern feed apps. Features AI-powered link extraction and IndexedDB storage.",
+  "requestFramePermissions": []
+}

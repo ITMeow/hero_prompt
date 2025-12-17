@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "title": "ShipAny 模板二",
-    "description": "ShipAny 是用于构建 AI SaaS 创业项目的 NextJS 脚手架。提供丰富模板和组件，助您快速上线产品。",
-    "keywords": "shipany, shipany-boilerplate, shipany-template-two-demo"
+    "title": "Nano Banana Pro",
+    "description": "Nano Banana Pro 是一款基于 Nano Banana Pro 模型的高级 AI 图像生成器。轻松创建令人惊叹的视觉效果。",
+    "keywords": "nano banana pro, nano banana, nano banana 2, gemini 3 pro image"
   },
   "sign": {
     "sign_in_title": "登录",

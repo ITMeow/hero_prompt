@@ -2,10 +2,10 @@
   "header": {
     "id": "header",
     "brand": {
-      "title": "ShipAny Two",
+      "title": "Nano Banana Pro",
       "logo": {
         "src": "/logo.png",
-        "alt": "ShipAny Two",
+        "alt": "Nano Banana Pro",
         "width": 100,
         "height": 100
       },
@@ -29,54 +29,42 @@
           "icon": "DollarSign"
         },
         {
-          "title": "AI",
+          "title": "AI Models",
           "icon": "RiRobot2Line",
           "children": [
             {
-              "title": "AI Image Generator",
-              "description": "Use AI to generate images",
-              "url": "/ai-image-generator",
+              "title": "Nano Banana 2",
+              "description": "Our flagship model for general purpose",
+              "url": "/models/nano-banana-2",
               "icon": "RiImage2Line"
             },
             {
-              "title": "AI Music Generator",
-              "description": "Use AI to generate music",
-              "url": "/ai-music-generator",
-              "icon": "RiMusic2Line"
-            },
-            {
-              "title": "AI Video Generator",
-              "description": "Use AI to generate videos",
-              "url": "/ai-video-generator",
-              "icon": "RiVideoLine"
-            },
-            {
-              "title": "AI Chatbot",
-              "description": "Chat with AI chatbot",
-              "url": "/chat",
-              "icon": "RiMessage2Line"
+              "title": "Gemini 3 Pro Image",
+              "description": "Advanced photorealism and adherence",
+              "url": "/models/gemini-3-pro",
+              "icon": "RiRobot2Line"
             }
           ]
         },
         {
-          "title": "Content",
+          "title": "Resources",
           "icon": "FileText",
           "children": [
             {
               "title": "Blog",
-              "description": "Read Blog Posts",
+              "description": "Latest news and tutorials",
               "url": "/blog",
               "icon": "Newspaper"
             },
             {
-              "title": "Updates",
-              "description": "Read Update Logs",
-              "url": "/updates",
-              "icon": "Clock"
+              "title": "Gallery",
+              "description": "Explore community creations",
+              "url": "/gallery",
+              "icon": "RiGalleryLine"
             },
             {
               "title": "Docs",
-              "description": "Read Documentation",
+              "description": "API and User Guides",
               "url": "/docs",
               "icon": "BookOpenText"
             }
@@ -96,9 +84,9 @@
           "icon": "CreditCard"
         },
         {
-          "title": "Activity",
-          "url": "/activity",
-          "icon": "Activity"
+          "title": "My Creations",
+          "url": "/my-creations",
+          "icon": "RiImageLine"
         }
       ]
     },
@@ -108,42 +96,42 @@
   },
   "hero": {
     "id": "hero",
-    "title": "Ship AI Startups in hours, not days",
-    "highlight_text": "in hours",
-    "description": "ShipAny is a NextJS boilerplate for building AI SaaS startups.<br/>Ship Fast with a variety of templates and components.",
+    "title": "Unleash Your Creativity with Nano Banana Pro",
+    "highlight_text": "Nano Banana Pro",
+    "description": "Experience the next evolution in AI image generation. Powered by the advanced Nano Banana 2 and Gemini 3 Pro Image models, turn your imagination into reality in seconds.",
     "announcement": {
       "badge": "New",
-      "title": "🎉 ShipAny Template Two",
-      "url": "/pricing"
+      "title": "🎉 Nano Banana 2 Model Released",
+      "url": "/blog/nano-banana-2-release"
     },
-    "tip": "🎁 Special offer for the first 1000 users",
+    "tip": "🎁 50 Free Credits for New Users",
     "buttons": [
       {
-        "title": "Get Started",
-        "icon": "Zap",
-        "url": "/pricing",
+        "title": "Start Generating",
+        "icon": "Sparkles",
+        "url": "/create",
         "target": "_self",
         "variant": "default"
       },
       {
-        "title": "Read Document",
-        "icon": "BookOpenText",
-        "url": "/docs",
-        "target": "_blank",
+        "title": "View Gallery",
+        "icon": "RiGalleryLine",
+        "url": "/gallery",
+        "target": "_self",
         "variant": "outline"
       }
     ],
     "show_avatars": true,
-    "avatars_tip": "999+ users are using ShipAny",
+    "avatars_tip": "10k+ creators are using Nano Banana Pro",
     "show_award": false,
     "image": {
-      "src": "/imgs/features/admin.png",
+      "src": "/imgs/features/landing-page.png",
       "alt": "hero",
       "width": 1200,
       "height": 800
     },
     "image_invert": {
-      "src": "/imgs/features/admin-dark.png",
+      "src": "/imgs/features/landing-page.png",
       "alt": "hero",
       "width": 1200,
       "height": 800
@@ -154,41 +142,41 @@
     }
   },
   "logos": {
-    "title": "ShipAny is built on the shoulders of giants",
+    "title": "Powered by world-class AI technology",
     "items": [
       {
-        "title": "Next.js",
+        "title": "Nano Banana",
         "image": {
           "src": "/imgs/logos/nextjs.svg",
-          "alt": "Next.js"
+          "alt": "Nano Banana"
         }
       },
       {
-        "title": "React",
+        "title": "Gemini 3 Pro",
         "image": {
           "src": "/imgs/logos/react.svg",
-          "alt": "React"
+          "alt": "Gemini 3 Pro"
         }
       },
       {
-        "title": "TailwindCSS",
+        "title": "TensorFlow",
         "image": {
           "src": "/imgs/logos/tailwindcss.svg",
-          "alt": "TailwindCSS"
+          "alt": "TensorFlow"
         }
       },
       {
-        "title": "Shadcn/UI",
+        "title": "PyTorch",
         "image": {
           "src": "/imgs/logos/shadcn.svg",
-          "alt": "Shadcn/UI"
+          "alt": "PyTorch"
         }
       },
       {
-        "title": "Vercel",
+        "title": "NVIDIA",
         "image": {
           "src": "/imgs/logos/vercel.svg",
-          "alt": "Vercel"
+          "alt": "NVIDIA"
         }
       }
     ]
@@ -196,45 +184,45 @@
   "introduce": {
     "block": "features-list",
     "id": "introduce",
-    "title": "What is ShipAny",
-    "label": "Introduce",
-    "description": "ShipAny is a NextJS boilerplate for building AI SaaS startups, including templates, components, and documentation.",
+    "title": "What is Nano Banana Pro?",
+    "label": "Introduction",
+    "description": "Nano Banana Pro is a state-of-the-art AI image generator that leverages the power of Nano Banana 2 to deliver hyper-realistic and artistic visuals.",
     "image": {
       "src": "/imgs/features/landing-page.png",
       "alt": "introduce"
     },
     "items": [
       {
-        "title": "Ready-to-use Templates",
-        "description": "Choose from dozens of production-ready AI SaaS templates to quickly start your project.",
-        "icon": "RiNextjsFill",
+        "title": "Nano Banana 2 Engine",
+        "description": "Our proprietary model designed for exceptional prompt adherence and creativity.",
+        "icon": "RiCpuLine",
         "image": {
           "src": "/imgs/features/1.png",
           "alt": "introduce"
         }
       },
       {
-        "title": "Infrastructure Setup",
-        "description": "Get instant access to scalable infrastructure with best practices built-in.",
-        "icon": "RiDatabase2Line",
+        "title": "Gemini 3 Pro Integration",
+        "description": "Seamlessly integrated with Gemini 3 Pro for unmatched photorealism.",
+        "icon": "RiRobot2Line",
         "image": {
           "src": "/imgs/features/2.png",
           "alt": "introduce"
         }
       },
       {
-        "title": "Quick Deployment",
-        "description": "Deploy your AI SaaS application to production in hours, not days.",
-        "icon": "RiCloudyFill",
+        "title": "Instant Generation",
+        "description": "Generate high-quality 4K images in seconds with our optimized infrastructure.",
+        "icon": "RiFlashlightFill",
         "image": {
           "src": "/imgs/features/3.png",
           "alt": "introduce"
         }
       },
       {
-        "title": "AI Integration",
-        "description": "Integrate AI into your project with ease using our built-in AI SDK.",
-        "icon": "RiRobot2Line",
+        "title": "Advanced Control",
+        "description": "Fine-tune your creations with precision control over style, aspect ratio, and composition.",
+        "icon": "RiSettings4Line",
         "image": {
           "src": "/imgs/features/4.png",
           "alt": "introduce"
@@ -246,32 +234,32 @@
   "benefits": {
     "block": "features-accordion",
     "id": "benefits",
-    "title": "Why Choose ShipAny",
+    "title": "Why Choose Nano Banana Pro",
     "label": "Benefits",
-    "description": "Get everything you need to launch your AI startup - from ready-to-use templates to technical support.",
+    "description": "Unlock the full potential of AI art with features designed for professionals and enthusiasts alike.",
     "items": [
       {
-        "title": "Complete Framework",
-        "description": "Built on Next.js with authentication, payments, and AI integration - everything works out of the box.",
-        "icon": "RiNextjsFill",
+        "title": "Superior Image Quality",
+        "description": "Nano Banana Pro delivers industry-leading image fidelity, perfect for print and digital media.",
+        "icon": "RiHdLine",
         "image": {
           "src": "/imgs/features/user-billing.png",
           "alt": "benefits"
         }
       },
       {
-        "title": "Rich Templates Library",
-        "description": "Choose from various AI SaaS templates to kickstart your project - chatbots, image generation, and more.",
-        "icon": "RiClapperboardAiLine",
+        "title": "Unlimited Styles",
+        "description": "From anime and oil painting to photorealism and 3D render, explore endless artistic styles.",
+        "icon": "RiPaletteLine",
         "image": {
           "src": "/imgs/features/admin-settings.png",
           "alt": "benefits"
         }
       },
       {
-        "title": "Technical Guidance",
-        "description": "Get dedicated support and join our developer community to ensure your successful launch.",
-        "icon": "RiCodeFill",
+        "title": "Commercial Rights",
+        "description": "You own the images you create. Use them for commercial projects without royalties.",
+        "icon": "RiCopyrightLine",
         "image": {
           "src": "/imgs/features/landing-page.png",
           "alt": "benefits"
@@ -282,8 +270,8 @@
   "usage": {
     "block": "features-step",
     "id": "usage",
-    "title": "How to Launch with ShipAny",
-    "description": "Get your AI SaaS startup running in three simple steps:",
+    "title": "Create in 3 Simple Steps",
+    "description": "Turn your ideas into visual masterpieces with ease:",
     "image": {
       "src": "/imgs/features/1.png",
       "alt": "usage"
@@ -292,32 +280,32 @@
     "text_align": "center",
     "items": [
       {
-        "title": "Get ShipAny",
-        "description": "Buy ShipAny with a one-time payment. Check your email for the code and documentation.",
+        "title": "Enter Your Prompt",
+        "description": "Describe what you want to see in detail. The better the description, the better the result.",
         "image": {
           "src": "/imgs/features/5.png",
           "alt": "usage"
         }
       },
       {
-        "title": "Start Your Project",
-        "description": "Read the documentation and clone the code of ShipAny. Start building your AI SaaS startup.",
+        "title": "Customize Settings",
+        "description": "Choose your preferred model (Nano Banana 2 or Gemini 3 Pro), style, and aspect ratio.",
         "image": {
           "src": "/imgs/features/6.png",
           "alt": "usage"
         }
       },
       {
-        "title": "Customize Your Project",
-        "description": "Modify the template with your data and contents. Specific AI functionality needs.",
+        "title": "Generate & Download",
+        "description": "Hit generate and watch your image appear in seconds. Download in high resolution.",
         "image": {
           "src": "/imgs/features/7.png",
           "alt": "usage"
         }
       },
       {
-        "title": "Deploy to Production",
-        "description": "Deploy your project to production with a few steps and start serving customers immediately.",
+        "title": "Refine & Upscale",
+        "description": "Use our built-in tools to upscale, vary, or edit your generated images.",
         "image": {
           "src": "/imgs/features/8.png",
           "alt": "usage"
@@ -328,179 +316,185 @@
   },
   "features": {
     "id": "features",
-    "title": "Key Features of ShipAny",
-    "description": "Everything you need to launch your AI SaaS startup quickly and efficiently.",
+    "title": "Key Features",
+    "description": "Everything you need for professional AI image generation.",
     "items": [
       {
-        "title": "Next.js Boilerplate",
-        "description": "Production-ready Next.js templates with SEO-friendly structure and i18n support.",
-        "icon": "RiNextjsFill"
+        "title": "Text to Image",
+        "description": "Convert your words into stunning visuals with our advanced natural language understanding.",
+        "icon": "RiText",
+        "url": "/features/text-to-image"
       },
       {
-        "title": "Authentication & Payments",
-        "description": "Integrated Google OAuth, one-tap login, and Stripe payment processing.",
-        "icon": "RiKey2Fill"
+        "title": "Image to Image",
+        "description": "Use an existing image as a reference to generate new variations and styles.",
+        "icon": "RiImageLine",
+        "url": "/features/image-to-image"
       },
       {
-        "title": "Data Infrastructure",
-        "description": "Built-in Supabase integration for reliable and scalable data storage.",
-        "icon": "RiDatabase2Line"
+        "title": "Inpainting",
+        "description": "Edit specific parts of your image by masking and describing changes.",
+        "icon": "RiBrushLine",
+        "url": "/features/inpainting"
       },
       {
-        "title": "One-Click Deployment",
-        "description": "Seamless deployment to Vercel or Cloudflare with automated setup.",
-        "icon": "RiCloudy2Fill"
+        "title": "High-Res Upscaling",
+        "description": "Upscale your images to 4K and beyond without losing quality.",
+        "icon": "RiZoomInLine",
+        "url": "/features/upscaling"
       },
       {
-        "title": "Business Analytics",
-        "description": "Integrated Google Analytics and Search Console for tracking growth.",
-        "icon": "RiBarChart2Line"
+        "title": "Style Mixing",
+        "description": "Blend multiple styles to create unique and personalized aesthetics.",
+        "icon": "RiDropLine",
+        "url": "/features/style-mixing"
       },
       {
-        "title": "AI-Ready Infrastructure",
-        "description": "Pre-configured AI integration with built-in credits system and API sales.",
-        "icon": "RiRobot2Line"
+        "title": "Prompt Enhancer",
+        "description": "Let our AI optimize your prompts for the best possible results.",
+        "icon": "RiMagicLine",
+        "url": "/features/prompt-enhancer"
       }
     ]
   },
   "stats": {
     "id": "stats",
-    "title": "People Love ShipAny",
-    "description": "for it's easy to use and fast to ship.",
+    "title": "Trusted by Creators Worldwide",
+    "description": "Join the fastest growing community of AI artists.",
     "items": [
       {
-        "title": "999+",
-        "description": "Customers"
+        "title": "1M+",
+        "description": "Images Created"
       },
       {
-        "title": "200+",
-        "description": "Blocks"
+        "title": "10k+",
+        "description": "Active Users"
       },
       {
-        "title": "50+",
-        "description": "Templates"
+        "title": "4.9/5",
+        "description": "User Rating"
       }
     ],
     "className": "bg-muted"
   },
   "testimonials": {
     "id": "testimonials",
-    "title": "What Users Say About ShipAny",
-    "description": "Hear from developers and founders who launched their AI startups with ShipAny.",
+    "title": "What Our Users Say",
+    "description": "See how Nano Banana Pro is transforming creative workflows.",
     "items": [
       {
-        "name": "David Chen",
-        "role": "Founder of AIWallpaper.shop",
-        "quote": "ShipAny saved us months of development time. We launched our AI wallpaper business in just 2 days and got our first paying customer within a week!",
+        "name": "Sarah Jenkins",
+        "role": "Digital Artist",
+        "quote": "Nano Banana Pro's ability to understand complex prompts is unmatched. It's become an essential part of my concept art workflow.",
         "image": {
           "src": "/imgs/avatars/1.png",
-          "alt": "david"
+          "alt": "Sarah"
         }
       },
       {
-        "name": "Rachel Kim",
-        "role": "CTO at HeyBeauty.ai",
-        "quote": "The pre-built AI infrastructure is a game-changer. We didn't have to worry about architecture - just focused on our AI beauty tech and went live fast.",
+        "name": "Mike Chen",
+        "role": "Marketing Director",
+        "quote": "We use Nano Banana 2 for all our social media assets. The speed and quality are incredible, saving us thousands in design costs.",
         "image": {
           "src": "/imgs/avatars/2.png",
-          "alt": "rachel"
+          "alt": "Mike"
         }
       },
       {
-        "name": "Marcus Thompson",
-        "role": "Solo Developer",
-        "quote": "As a solo developer, ShipAny gave me everything I needed - auth, payments, AI integration, and beautiful UI. Launched my SaaS in a weekend!",
+        "name": "Emily Rodriguez",
+        "role": "Freelance Illustrator",
+        "quote": "The style transfer feature is a game-changer. I can experiment with different aesthetics in minutes. Highly recommended!",
         "image": {
           "src": "/imgs/avatars/3.png",
-          "alt": "marcus"
+          "alt": "Emily"
         }
       },
       {
-        "name": "Sofia Garcia",
-        "role": "CEO of Melodisco",
-        "quote": "The templates are production-ready and highly customizable. We built our AI music platform in hours instead of months. Incredible time-to-market!",
+        "name": "David Kim",
+        "role": "Game Developer",
+        "quote": "Generating assets for my indie game has never been easier. The Gemini 3 Pro integration adds a level of realism I couldn't achieve before.",
         "image": {
           "src": "/imgs/avatars/4.png",
-          "alt": "sofia"
+          "alt": "David"
         }
       },
       {
-        "name": "James Wilson",
-        "role": "Tech Lead at GPTs.works",
-        "quote": "ShipAny's infrastructure is rock-solid. We scaled from 0 to 10k users without touching the backend. Best investment for our AI startup.",
+        "name": "Lisa Wang",
+        "role": "Content Creator",
+        "quote": "I love the community gallery! It's so inspiring to see what others are creating with Nano Banana Pro. The interface is super user-friendly too.",
         "image": {
           "src": "/imgs/avatars/5.png",
-          "alt": "james"
+          "alt": "Lisa"
         }
       },
       {
-        "name": "Anna Zhang",
-        "role": "Startup Founder",
-        "quote": "From idea to launch in 3 days! ShipAny's templates and deployment tools made it possible to test our AI business concept incredibly fast.",
+        "name": "Tom Wilson",
+        "role": "Graphic Designer",
+        "quote": "Finally, an AI generator that gives me enough control to produce professional-grade work. The upscaling feature is fantastic.",
         "image": {
           "src": "/imgs/avatars/6.png",
-          "alt": "anna"
+          "alt": "Tom"
         }
       }
     ]
   },
   "faq": {
     "id": "faq",
-    "title": "Frequently Asked Questions About ShipAny",
-    "description": "Have another question? Contact us on Discord or by email.",
-    "tip": "Can't find what you're looking for? Contact our <a href='https://discord.gg/HQNnrzjZQS' target='_blank' class='text-primary font-medium hover:underline'>customer support team</a>",
+    "title": "Frequently Asked Questions",
+    "description": "Got questions? We've got answers.",
+    "tip": "Can't find what you're looking for? Contact our <a href='/contact' class='text-primary font-medium hover:underline'>support team</a>",
     "items": [
       {
-        "question": "What exactly is ShipAny and how does it work?",
-        "answer": "ShipAny is a comprehensive NextJS boilerplate designed specifically for building AI SaaS startups. It provides ready-to-use templates, infrastructure setup, and deployment tools that help you launch your AI business in hours instead of days."
+        "question": "What is Nano Banana Pro?",
+        "answer": "Nano Banana Pro is an advanced AI platform that allows you to generate high-quality images from text descriptions using state-of-the-art models like Nano Banana 2 and Gemini 3 Pro."
       },
       {
-        "question": "Do I need advanced technical skills to use ShipAny?",
-        "answer": "While basic programming knowledge is helpful, ShipAny is designed to be developer-friendly. Our templates and documentation make it easy to get started, even if you're not an expert in AI or cloud infrastructure."
+        "question": "Can I use the images for commercial purposes?",
+        "answer": "Yes! All images generated with our paid plans come with full commercial rights, so you can use them for your projects, products, and marketing."
       },
       {
-        "question": "What types of AI SaaS can I build with ShipAny?",
-        "answer": "ShipAny supports a wide range of AI applications, from content generation to data analysis tools. Our templates cover popular use cases like AI chatbots, content generators, image processing apps, and more."
+        "question": "How does the credit system work?",
+        "answer": "Each generation costs a certain number of credits depending on the model and settings used. You get a monthly allowance with your subscription, and you can buy top-ups if needed."
       },
       {
-        "question": "How long does it typically take to launch with ShipAny?",
-        "answer": "With ShipAny, you can have a working prototype in hours and a production-ready application in hours. Our one-click deployment and pre-configured infrastructure significantly reduce the traditional months-long development cycle."
+        "question": "What makes Nano Banana 2 different?",
+        "answer": "Nano Banana 2 is optimized for creative flexibility and prompt adherence, allowing for more stylized and artistic results compared to standard models."
       },
       {
-        "question": "What's included in the ShipAny infrastructure?",
-        "answer": "ShipAny provides a complete infrastructure stack including authentication, database setup, API integration, payment processing, and scalable cloud deployment. Everything is pre-configured following industry best practices."
+        "question": "Is there a free trial?",
+        "answer": "Yes, we offer a free tier with daily credits so you can try out Nano Banana Pro and see the magic for yourself before subscribing."
       },
       {
-        "question": "Can I customize the templates to match my brand?",
-        "answer": "Absolutely! All ShipAny templates are fully customizable. You can modify the design, features, and functionality to match your brand identity and specific business requirements while maintaining the robust underlying infrastructure."
+        "question": "Can I upload my own images?",
+        "answer": "Absolutely. You can use our Image-to-Image feature to use your own photos as a reference for the AI to generate new variations."
       }
     ]
   },
   "cta": {
     "id": "cta",
-    "title": "Ship your first AI SaaS Startup",
-    "description": "Start from here, ship with ShipAny.",
+    "title": "Start Creating Today",
+    "description": "Join thousands of creators and unleash your imagination with Nano Banana Pro.",
     "buttons": [
       {
-        "title": "Get ShipAny",
-        "url": "https://shipany.ai",
-        "target": "_blank",
+        "title": "Get Started for Free",
+        "url": "/create",
+        "target": "_self",
         "icon": "Zap"
       },
       {
-        "title": "Read Document",
-        "url": "/docs",
-        "target": "_blank",
+        "title": "View Pricing",
+        "url": "/pricing",
+        "target": "_self",
         "variant": "outline",
-        "icon": "BookOpenText"
+        "icon": "DollarSign"
       }
     ],
     "className": "bg-muted"
   },
   "subscribe": {
     "id": "subscribe",
-    "title": "Subscribe to our newsletter",
-    "description": "Get the latest news and updates from ShipAny.",
+    "title": "Stay Updated",
+    "description": "Subscribe to our newsletter for the latest model updates and tips.",
     "submit": {
       "input": {
         "placeholder": "Enter your email"
@@ -515,20 +509,20 @@
   "footer": {
     "id": "footer",
     "brand": {
-      "title": "ShipAny Two",
-      "description": "ShipAny is a NextJS boilerplate for building AI SaaS startups. Ship Fast with a variety of templates and components.",
+      "title": "Nano Banana Pro",
+      "description": "Nano Banana Pro is the ultimate AI image generation platform for creators, designers, and visionaries.",
       "logo": {
         "src": "/logo.png",
-        "alt": "ShipAny Two",
-        "width": 1024,
-        "height": 1024
+        "alt": "Nano Banana Pro",
+        "width": 100,
+        "height": 100
       },
       "url": "/"
     },
     "nav": {
       "items": [
         {
-          "title": "About",
+          "title": "Product",
           "children": [
             {
               "title": "Features",
@@ -536,13 +530,13 @@
               "target": "_self"
             },
             {
-              "title": "Showcases",
-              "url": "/showcases",
+              "title": "Pricing",
+              "url": "/pricing",
               "target": "_self"
             },
             {
-              "title": "Pricing",
-              "url": "/pricing",
+              "title": "Showcase",
+              "url": "/showcases",
               "target": "_self"
             }
           ]
@@ -551,7 +545,7 @@
           "title": "Resources",
           "children": [
             {
-              "title": "Documents",
+              "title": "Docs",
               "url": "/docs",
               "target": "_self"
             },
@@ -561,29 +555,29 @@
               "target": "_self"
             },
             {
-              "title": "Chat",
-              "url": "/chat",
+              "title": "Community",
+              "url": "/community",
               "target": "_self"
             }
           ]
         },
         {
-          "title": "Friends",
+          "title": "Company",
           "children": [
             {
-              "title": "ShipAny",
-              "url": "https://shipany.ai",
-              "target": "_blank"
+              "title": "About Us",
+              "url": "/about",
+              "target": "_self"
             },
             {
-              "title": "ThinkAny",
-              "url": "https://thinkany.ai",
-              "target": "_blank"
+              "title": "Terms",
+              "url": "/terms-of-service",
+              "target": "_self"
             },
             {
-              "title": "MCP.so",
-              "url": "https://mcp.so",
-              "target": "_blank"
+              "title": "Privacy",
+              "url": "/privacy-policy",
+              "target": "_self"
             }
           ]
         }
@@ -594,25 +588,25 @@
         {
           "title": "X",
           "icon": "RiTwitterXFill",
-          "url": "https://x.com/your-app-name",
+          "url": "https://x.com/nanobanana",
           "target": "_blank"
         },
         {
           "title": "Github",
           "icon": "Github",
-          "url": "https://github.com/your-app-name",
+          "url": "https://github.com/nanobanana",
           "target": "_blank"
         },
         {
           "title": "Discord",
           "icon": "RiDiscordFill",
-          "url": "https://discord.gg/your-app-name",
+          "url": "https://discord.gg/nanobanana",
           "target": "_blank"
         },
         {
           "title": "Email",
           "icon": "Mail",
-          "url": "mailto:support@your-domain.com",
+          "url": "mailto:support@nanobanana.pro",
           "target": "_self"
         }
       ]
