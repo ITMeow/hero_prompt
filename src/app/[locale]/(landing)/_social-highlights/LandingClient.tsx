@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { BananaHeader } from './components/BananaHeader';
+import Link from 'next/link';
 import { PostCard } from './components/PostCard';
-import { AdminPanel } from './components/AdminPanel';
-import { PostDetail } from './components/PostDetail';
 import { getAllPosts, savePost } from './lib/db';
-import { SocialPost, AppView } from './lib/types';
+import { SocialPost } from './lib/types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Seed data for initial look
@@ -91,9 +89,7 @@ const SEED_POSTS: SocialPost[] = [
 ];
 
 export default function LandingClient() {
-  const [view, setView] = useState<AppView>(AppView.HOME);
   const [posts, setPosts] = useState<SocialPost[]>([]);
-  const [selectedPost, setSelectedPost] = useState<SocialPost | null>(null);
 
   useEffect(() => {
     loadPosts();
@@ -115,58 +111,25 @@ export default function LandingClient() {
     }
   };
 
-  const handlePostSaved = () => {
-    loadPosts();
-    setView(AppView.HOME);
-  };
-
-  const openPostDetail = (post: SocialPost) => {
-    setSelectedPost(post);
-    setView(AppView.DETAIL);
-    window.scrollTo(0, 0);
-  };
-
-  const closePostDetail = () => {
-    setSelectedPost(null);
-    setView(AppView.HOME);
-  };
-
   return (
     <div className="min-h-screen bg-[#F0F2F5]">
-      {view === AppView.HOME && (
-        <>
-          <BananaHeader onAdminClick={() => setView(AppView.ADMIN)} />
-          
-          <main className="px-4 md:px-8 max-w-7xl mx-auto pb-12">
-            {/* Masonry Layout using CSS Columns */}
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-              {posts.map((post) => (
-                <PostCard 
-                  key={post.id} 
-                  post={post} 
-                  onClick={() => openPostDetail(post)}
-                />
-              ))}
-            </div>
-          </main>
-        </>
-      )}
-      
-      {view === AppView.ADMIN && (
-        <AdminPanel 
-          onBack={() => setView(AppView.HOME)} 
-          onPostSaved={handlePostSaved}
-        />
-      )}
-
-      {view === AppView.DETAIL && selectedPost && (
-        <PostDetail 
-          post={selectedPost} 
-          relatedPosts={posts.filter(p => p.id !== selectedPost.id).slice(0, 3)}
-          onBack={closePostDetail}
-          onPostClick={openPostDetail}
-        />
-      )}
+      <main className="px-4 md:px-8 max-w-7xl mx-auto pb-12 pt-28">
+        {/* Masonry Layout using CSS Columns */}
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+          {posts.map((post) => (
+            <Link 
+              key={post.id} 
+              href={`/posts/${post.id}`}
+              className="break-inside-avoid block mb-6 group"
+            >
+              <div className="bg-white rounded-[24px] overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100/50">
+                <PostCard post={post} />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </main>
     </div>
   );
 }
+

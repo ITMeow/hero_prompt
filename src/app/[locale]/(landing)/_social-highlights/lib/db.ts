@@ -59,6 +59,18 @@ export const getAllPosts = async (): Promise<SocialPost[]> => {
   });
 };
 
+export const getPostById = async (id: string): Promise<SocialPost | undefined> => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.get(id);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject('Error fetching post');
+  });
+};
+
 export const deletePost = async (id: string): Promise<void> => {
   const db = await initDB();
   return new Promise((resolve, reject) => {

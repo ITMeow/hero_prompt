@@ -2,10 +2,10 @@
   "header": {
     "id": "header",
     "brand": {
-      "title": "Nano Banana Pro",
+      "title": "Banana Prompts",
       "logo": {
         "src": "/logo.png",
-        "alt": "Nano Banana Pro",
+        "alt": "Banana Prompts",
         "width": 100,
         "height": 100
       },
@@ -14,61 +14,14 @@
     "nav": {
       "items": [
         {
-          "title": "Features",
-          "url": "/#features",
-          "icon": "Sparkles"
+          "title": "Studio",
+          "url": "/studio",
+          "icon": "PlusSquare"
         },
         {
-          "title": "Showcases",
-          "url": "/showcases",
-          "icon": "Box"
-        },
-        {
-          "title": "Pricing",
-          "url": "/pricing",
-          "icon": "DollarSign"
-        },
-        {
-          "title": "AI Models",
-          "icon": "RiRobot2Line",
-          "children": [
-            {
-              "title": "Nano Banana 2",
-              "description": "Our flagship model for general purpose",
-              "url": "/models/nano-banana-2",
-              "icon": "RiImage2Line"
-            },
-            {
-              "title": "Gemini 3 Pro Image",
-              "description": "Advanced photorealism and adherence",
-              "url": "/models/gemini-3-pro",
-              "icon": "RiRobot2Line"
-            }
-          ]
-        },
-        {
-          "title": "Resources",
-          "icon": "FileText",
-          "children": [
-            {
-              "title": "Blog",
-              "description": "Latest news and tutorials",
-              "url": "/blog",
-              "icon": "Newspaper"
-            },
-            {
-              "title": "Gallery",
-              "description": "Explore community creations",
-              "url": "/gallery",
-              "icon": "RiGalleryLine"
-            },
-            {
-              "title": "Docs",
-              "description": "API and User Guides",
-              "url": "/docs",
-              "icon": "BookOpenText"
-            }
-          ]
+          "title": "Gallery",
+          "url": "/",
+          "icon": "Image"
         }
       ]
     },
