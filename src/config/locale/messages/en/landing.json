@@ -2,10 +2,10 @@
   "header": {
     "id": "header",
     "brand": {
-      "title": "Banana Prompts",
+      "title": "HeroPrompt",
       "logo": {
         "src": "/logo.png",
-        "alt": "Banana Prompts",
+        "alt": "HeroPrompt",
         "width": 100,
         "height": 100
       },
@@ -49,8 +49,8 @@
   },
   "hero": {
     "id": "hero",
-    "title": "Unleash Your Creativity with Nano Banana Pro",
-    "highlight_text": "Nano Banana Pro",
+    "title": "Unleash Your Creativity with Cyber Hero Prompt",
+    "highlight_text": "Cyber Hero Prompt",
     "description": "Experience the next evolution in AI image generation. Powered by the advanced Nano Banana 2 and Gemini 3 Pro Image models, turn your imagination into reality in seconds.",
     "announcement": {
       "badge": "New",
@@ -75,7 +75,7 @@
       }
     ],
     "show_avatars": true,
-    "avatars_tip": "10k+ creators are using Nano Banana Pro",
+    "avatars_tip": "10k+ creators are using Cyber Hero Prompt",
     "show_award": false,
     "image": {
       "src": "/imgs/features/landing-page.png",
@@ -98,10 +98,10 @@
     "title": "Powered by world-class AI technology",
     "items": [
       {
-        "title": "Nano Banana",
+        "title": "Cyber Hero Prompt",
         "image": {
           "src": "/imgs/logos/nextjs.svg",
-          "alt": "Nano Banana"
+          "alt": "Cyber Hero Prompt"
         }
       },
       {
@@ -137,9 +137,9 @@
   "introduce": {
     "block": "features-list",
     "id": "introduce",
-    "title": "What is Nano Banana Pro?",
+    "title": "What is Cyber Hero Prompt?",
     "label": "Introduction",
-    "description": "Nano Banana Pro is a state-of-the-art AI image generator that leverages the power of Nano Banana 2 to deliver hyper-realistic and artistic visuals.",
+    "description": "Cyber Hero Prompt is a state-of-the-art AI image generator that leverages the power of Nano Banana 2 to deliver hyper-realistic and artistic visuals.",
     "image": {
       "src": "/imgs/features/landing-page.png",
       "alt": "introduce"
@@ -187,13 +187,13 @@
   "benefits": {
     "block": "features-accordion",
     "id": "benefits",
-    "title": "Why Choose Nano Banana Pro",
+    "title": "Why Choose Cyber Hero Prompt",
     "label": "Benefits",
     "description": "Unlock the full potential of AI art with features designed for professionals and enthusiasts alike.",
     "items": [
       {
         "title": "Superior Image Quality",
-        "description": "Nano Banana Pro delivers industry-leading image fidelity, perfect for print and digital media.",
+        "description": "Cyber Hero Prompt delivers industry-leading image fidelity, perfect for print and digital media.",
         "icon": "RiHdLine",
         "image": {
           "src": "/imgs/features/user-billing.png",
@@ -333,12 +333,12 @@
   "testimonials": {
     "id": "testimonials",
     "title": "What Our Users Say",
-    "description": "See how Nano Banana Pro is transforming creative workflows.",
+    "description": "See how Cyber Hero Prompt is transforming creative workflows.",
     "items": [
       {
         "name": "Sarah Jenkins",
         "role": "Digital Artist",
-        "quote": "Nano Banana Pro's ability to understand complex prompts is unmatched. It's become an essential part of my concept art workflow.",
+        "quote": "Cyber Hero Prompt's ability to understand complex prompts is unmatched. It's become an essential part of my concept art workflow.",
         "image": {
           "src": "/imgs/avatars/1.png",
           "alt": "Sarah"
@@ -374,7 +374,7 @@
       {
         "name": "Lisa Wang",
         "role": "Content Creator",
-        "quote": "I love the community gallery! It's so inspiring to see what others are creating with Nano Banana Pro. The interface is super user-friendly too.",
+        "quote": "I love the community gallery! It's so inspiring to see what others are creating with Cyber Hero Prompt. The interface is super user-friendly too.",
         "image": {
           "src": "/imgs/avatars/5.png",
           "alt": "Lisa"
@@ -398,8 +398,8 @@
     "tip": "Can't find what you're looking for? Contact our <a href='/contact' class='text-primary font-medium hover:underline'>support team</a>",
     "items": [
       {
-        "question": "What is Nano Banana Pro?",
-        "answer": "Nano Banana Pro is an advanced AI platform that allows you to generate high-quality images from text descriptions using state-of-the-art models like Nano Banana 2 and Gemini 3 Pro."
+        "question": "What is Cyber Hero Prompt?",
+        "answer": "Cyber Hero Prompt is an advanced AI platform that allows you to generate high-quality images from text descriptions using state-of-the-art models like Nano Banana 2 and Gemini 3 Pro."
       },
       {
         "question": "Can I use the images for commercial purposes?",
@@ -415,7 +415,7 @@
       },
       {
         "question": "Is there a free trial?",
-        "answer": "Yes, we offer a free tier with daily credits so you can try out Nano Banana Pro and see the magic for yourself before subscribing."
+        "answer": "Yes, we offer a free tier with daily credits so you can try out Cyber Hero Prompt and see the magic for yourself before subscribing."
       },
       {
         "question": "Can I upload my own images?",
@@ -426,7 +426,7 @@
   "cta": {
     "id": "cta",
     "title": "Start Creating Today",
-    "description": "Join thousands of creators and unleash your imagination with Nano Banana Pro.",
+    "description": "Join thousands of creators and unleash your imagination with Cyber Hero Prompt.",
     "buttons": [
       {
         "title": "Get Started for Free",
@@ -460,13 +460,14 @@
     "className": "bg-muted"
   },
   "footer": {
+    "hidden": true,
     "id": "footer",
     "brand": {
-      "title": "Nano Banana Pro",
-      "description": "Nano Banana Pro is the ultimate AI image generation platform for creators, designers, and visionaries.",
+      "title": "Cyber Hero Prompt",
+      "description": "Cyber Hero Prompt is the ultimate AI image generation platform for creators, designers, and visionaries.",
       "logo": {
         "src": "/logo.png",
-        "alt": "Nano Banana Pro",
+        "alt": "Cyber Hero Prompt",
         "width": 100,
         "height": 100
       },

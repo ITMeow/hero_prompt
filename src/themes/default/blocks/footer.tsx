@@ -11,6 +11,28 @@ import { NavItem } from '@/shared/types/blocks/common';
 import { Footer as FooterType } from '@/shared/types/blocks/landing';
 
 export function Footer({ footer }: { footer: FooterType }) {
+  if (footer.hidden) {
+    return (
+      <footer
+        id={footer.id}
+        className={`py-8 sm:py-8 ${footer.className || ''} overflow-x-hidden`}
+      >
+        <div className="container space-y-8 overflow-x-hidden">
+          <div className="flex min-w-0 flex-wrap justify-between gap-8">
+            {footer.copyright ? (
+              <p
+                className="text-muted-foreground text-sm text-balance break-words"
+                dangerouslySetInnerHTML={{ __html: footer.copyright }}
+              />
+            ) : footer.brand ? (
+              <Copyright brand={footer.brand} />
+            ) : null}
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer
       id={footer.id}

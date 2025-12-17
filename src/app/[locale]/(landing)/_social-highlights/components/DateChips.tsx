@@ -13,7 +13,7 @@ const dates = [
 
 export const DateChips: React.FC = () => {
   return (
-    <div className="flex space-x-3 overflow-x-auto no-scrollbar py-2">
+    <div className="flex space-x-3 overflow-x-auto scrollbar-hide py-2 font-[family-name:var(--font-manrope)]">
       {dates.map((date, idx) => (
         <button
           key={idx}

@@ -51,6 +51,7 @@ export interface Header {
 // footer props for footer component
 export interface Footer {
   id?: string;
+  hidden?: boolean;
   brand?: Brand;
   nav?: Nav;
   copyright?: string;

@@ -18,9 +18,9 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
   };
 
   return (
-    <div className="min-h-screen bg-white pt-24">
+    <div className="min-h-screen bg-white pt-20 font-[family-name:var(--font-manrope)]">
       {/* Top Nav */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pb-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 pb-4">
         <button 
           onClick={onBack} 
           className="flex items-center text-gray-500 hover:text-gray-900 transition-colors font-medium text-sm"

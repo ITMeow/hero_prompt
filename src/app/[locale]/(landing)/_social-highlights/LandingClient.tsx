@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { PostCard } from './components/PostCard';
+import { Header } from './components/Header';
+import { AdminPanel } from './components/AdminPanel';
 import { getAllPosts, savePost } from './lib/db';
 import { SocialPost } from './lib/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -88,7 +90,14 @@ const SEED_POSTS: SocialPost[] = [
   }
 ];
 
+enum AppView {
+  HOME = 'HOME',
+  ADMIN = 'ADMIN',
+  DETAIL = 'DETAIL'
+}
+
 export default function LandingClient() {
+  const [view, setView] = useState<AppView>(AppView.HOME);
   const [posts, setPosts] = useState<SocialPost[]>([]);
 
   useEffect(() => {
@@ -111,24 +120,40 @@ export default function LandingClient() {
     }
   };
 
+  const handlePostSaved = () => {
+    loadPosts();
+    setView(AppView.HOME);
+  };
+
   return (
-    <div className="min-h-screen bg-[#F0F2F5]">
-      <main className="px-4 md:px-8 max-w-7xl mx-auto pb-12 pt-28">
-        {/* Masonry Layout using CSS Columns */}
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {posts.map((post) => (
-            <Link 
-              key={post.id} 
-              href={`/posts/${post.id}`}
-              className="break-inside-avoid block mb-6 group"
-            >
-              <div className="bg-white rounded-[24px] overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100/50">
-                <PostCard post={post} />
-              </div>
-            </Link>
-          ))}
-        </div>
-      </main>
+    <div className="min-h-screen bg-[#F0F2F5] font-[family-name:var(--font-manrope)] pt-20">
+      {view === AppView.HOME && (
+        <>
+          <Header onAdminClick={() => setView(AppView.ADMIN)} />
+          
+          <main className="px-4 md:px-8 max-w-7xl mx-auto pb-12">
+            {/* Masonry Layout using CSS Columns */}
+            <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+              {posts.map((post) => (
+                <Link 
+                  key={post.id} 
+                  href={`/posts/${post.id}`}
+                  className="break-inside-avoid block group"
+                >
+                  <PostCard post={post} />
+                </Link>
+              ))}
+            </div>
+          </main>
+        </>
+      )}
+
+      {view === AppView.ADMIN && (
+        <AdminPanel 
+          onBack={() => setView(AppView.HOME)} 
+          onPostSaved={handlePostSaved}
+        />
+      )}
     </div>
   );
 }

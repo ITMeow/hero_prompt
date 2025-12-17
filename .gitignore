@@ -63,3 +63,4 @@ src/config/db/migrations
 .source
 
 .chats
+.gemini-clipboard
