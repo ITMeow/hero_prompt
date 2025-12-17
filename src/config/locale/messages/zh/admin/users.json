@@ -1,0 +1,55 @@
+{
+  "fields": {
+    "id": "ID",
+    "name": "名称",
+    "avatar": "头像",
+    "email": "邮箱",
+    "email_verified": "邮箱已验证",
+    "remaining_credits": "剩余积分",
+    "created_at": "创建时间",
+    "actions": "操作",
+    "roles": "角色"
+  },
+  "list": {
+    "title": "用户",
+    "crumbs": {
+      "admin": "管理后台",
+      "users": "用户"
+    },
+    "buttons": {
+      "add": "添加用户",
+      "edit": "编辑用户",
+      "view": "查看用户",
+      "delete": "删除用户",
+      "edit_roles": "编辑角色"
+    },
+    "search": {
+      "email": {
+        "title": "邮箱",
+        "placeholder": "邮箱"
+      }
+    }
+  },
+  "edit": {
+    "title": "编辑用户",
+    "crumbs": {
+      "admin": "管理后台",
+      "users": "用户",
+      "edit": "编辑用户"
+    },
+    "buttons": {
+      "submit": "更新"
+    }
+  },
+  "edit_roles": {
+    "title": "编辑角色",
+    "crumbs": {
+      "admin": "管理后台",
+      "users": "用户",
+      "edit_roles": "编辑角色"
+    },
+    "buttons": {
+      "submit": "更新"
+    }
+  }
+}

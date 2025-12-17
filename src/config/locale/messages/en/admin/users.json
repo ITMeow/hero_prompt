@@ -1,0 +1,55 @@
+{
+  "fields": {
+    "id": "ID",
+    "name": "Name",
+    "avatar": "Avatar",
+    "email": "Email",
+    "email_verified": "Email Verified",
+    "remaining_credits": "Remaining Credits",
+    "created_at": "Created At",
+    "actions": "Actions",
+    "roles": "Roles"
+  },
+  "list": {
+    "title": "Users",
+    "crumbs": {
+      "admin": "Admin",
+      "users": "Users"
+    },
+    "buttons": {
+      "add": "Add User",
+      "edit": "Edit User",
+      "view": "View User",
+      "delete": "Delete User",
+      "edit_roles": "Edit Roles"
+    },
+    "search": {
+      "email": {
+        "title": "Email",
+        "placeholder": "Email"
+      }
+    }
+  },
+  "edit": {
+    "title": "Edit User",
+    "crumbs": {
+      "admin": "Admin",
+      "users": "Users",
+      "edit": "Edit"
+    },
+    "buttons": {
+      "submit": "Update"
+    }
+  },
+  "edit_roles": {
+    "title": "Edit Roles",
+    "crumbs": {
+      "admin": "Admin",
+      "users": "Users",
+      "edit_roles": "Edit Roles"
+    },
+    "buttons": {
+      "submit": "Update"
+    }
+  }
+}

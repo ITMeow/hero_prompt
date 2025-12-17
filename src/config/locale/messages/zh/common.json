@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "title": "ShipAny 模板二",
+    "description": "ShipAny 是用于构建 AI SaaS 创业项目的 NextJS 脚手架。提供丰富模板和组件，助您快速上线产品。",
+    "keywords": "shipany, shipany-boilerplate, shipany-template-two-demo"
+  },
+  "sign": {
+    "sign_in_title": "登录",
+    "sign_in_description": "登录到您的账户",
+    "sign_up_title": "注册",
+    "sign_up_description": "创建一个新账户",
+    "email_title": "邮箱",
+    "email_placeholder": "请输入您的邮箱",
+    "password_title": "密码",
+    "password_placeholder": "请输入您的密码",
+    "forgot_password": "忘记密码？",
+    "or": "或",
+    "continue": "继续",
+    "no_account": "还没有账户？",
+    "already_have_account": "已经有一个账户？",
+    "email_sign_in": "使用邮箱登录",
+    "google_sign_in_title": "使用 Google 登录",
+    "github_sign_in_title": "使用 GitHub 登录",
+    "close_title": "关闭",
+    "cancel_title": "取消",
+    "sign_out_title": "登出",
+    "billing_title": "账单",
+    "name_title": "姓名",
+    "name_placeholder": "请输入您的姓名",
+    "admin_title": "管理后台",
+    "credits_title": "积分: {credits}"
+  },
+  "payment": {
+    "choose_payment_method": "选择支付方式",
+    "choose_payment_method_description": "",
+    "cancel_title": "取消"
+  },
+  "locale_detector": {
+    "title": "检测到浏览器语言是: {locale}，是否切换？",
+    "switch_to": "切换到{locale}"
+  }
+}
