@@ -43,13 +43,20 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
             style={{ display: 'block' }}
           />
           
-          {/* Glass Overlay on Hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {/* Gradient Overlay for Title Readability */}
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
+
+          {/* Title Overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+            <h3 className="text-white font-bold text-base leading-snug text-center line-clamp-2 drop-shadow-md">
+              {post.title}
+            </h3>
+          </div>
           
-          {/* "Try this" Button Overlay */}
-          <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-out">
-            <div className="bg-white/90 backdrop-blur-md text-gray-900 py-2.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg border border-white/50">
-              <Sparkles size={16} className="text-primary" />
+          {/* "Try this" Button Overlay - Moved to Top Right */}
+          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transform translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300 ease-out z-20">
+            <div className="bg-white/90 backdrop-blur-md text-gray-900 py-2 px-3 rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 shadow-lg border border-white/50">
+              <Sparkles size={14} className="text-primary" />
               <span>{t('try_this')}</span>
             </div>
           </div>
@@ -57,17 +64,14 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
       </div>
 
       {/* Content */}
-      <div className="p-5 flex flex-col flex-grow">
-        <h3 className="font-bold text-lg leading-tight text-gray-900 mb-2 line-clamp-2">
-          {post.title}
-        </h3>
-        
-        <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4 flex-grow">
-          {post.description}
+      <div className="p-4 flex flex-col gap-3">
+        {/* Prompt Text (Replacing Description) */}
+        <p className="text-gray-600 text-sm leading-relaxed line-clamp-4 min-h-[1.5rem]">
+          {post.prompt || post.description /* Fallback to description if prompt is missing */}
         </p>
 
         {/* Footer Stats */}
-        <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+        <div className="flex items-center justify-between pt-3 border-t border-gray-50 mt-auto">
           <div className="flex gap-2">
             <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100">
               <Heart size={12} className="text-gray-400" />
