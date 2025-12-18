@@ -207,7 +207,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
       {/* Image Zoom Dialog */}
       <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
         <DialogContent 
-            className="w-screen h-screen max-w-none max-h-none p-0 border-none shadow-none bg-transparent"
+            className="!w-screen !h-screen !max-w-none !max-h-none !m-0 !p-0 border-none shadow-none bg-transparent"
             showCloseButton={true}
         >
             <DialogTitle className="sr-only">Zoomed Image</DialogTitle>
