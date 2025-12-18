@@ -1,5 +1,6 @@
 import React from 'react';
-import { ArrowLeft, Copy, Share2, Bookmark, RectangleHorizontal, RectangleVertical, Monitor } from 'lucide-react';
+import { ArrowLeft, Copy, Heart, MessageCircle, ExternalLink } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { SocialPost } from '../lib/types';
 import { PostCard } from './PostCard';
 
@@ -14,7 +15,27 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
   const handleCopyPrompt = () => {
     const text = post.prompt || post.description;
     navigator.clipboard.writeText(text);
-    // Could add toast here
+    
+    const duration = 3 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    const randomInRange = (min: number, max: number) => {
+      return Math.random() * (max - min) + min;
+    }
+
+    const interval: any = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      // since particles fall down, start a bit higher than random
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+    }, 250);
   };
 
   return (
@@ -34,16 +55,30 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
           
           {/* Left Column - Image */}
           <div className="flex flex-col gap-6">
-            <div className="bg-black rounded-[32px] p-3 shadow-2xl">
-               <div className="relative rounded-[24px] overflow-hidden bg-gray-900 w-full">
+            <div className="rounded-[24px] p-1 border border-gray-200 shadow-lg bg-white">
+               <div className="relative rounded-[20px] overflow-hidden bg-gray-50 w-full flex justify-center items-center">
                  <img 
                    src={post.imageUrl} 
                    alt={post.title} 
-                   className="w-full h-auto object-cover block"
+                   className="w-auto h-auto max-w-full max-h-[80vh] object-contain"
                  />
-                 {/* Decorative card border effect from screenshot */}
-                 <div className="absolute inset-0 border-[6px] border-[#D4AF37]/20 rounded-[24px] pointer-events-none"></div>
                </div>
+            </div>
+            
+            {/* Reference Images */}
+            <div className="mt-4">
+              <p className="text-muted-foreground mb-2 text-sm">Reference Images:</p>
+              <div className="flex flex-wrap gap-2">
+                <button className="border-border hover:ring-primary relative h-16 w-16 overflow-hidden rounded-xl border transition-all hover:ring-2">
+                  <img 
+                    alt="Reference 1" 
+                    loading="lazy" 
+                    decoding="async" 
+                    className="object-cover absolute inset-0 h-full w-full text-transparent"
+                    src={post.referenceImageUrl || "https://cdn.bananaprompts.fun/prompts/GAS_dyoU4ZXa40EPCssHp.webp"} 
+                  />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -53,26 +88,53 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
               {post.title}
             </h1>
 
-            <div className="flex items-center gap-2 mb-6">
-              <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-semibold">
-                Text-to-Image
-              </span>
+            {/* Author & Stats Row */}
+            <div className="flex flex-wrap items-center gap-6 mb-8 text-sm text-gray-600">
+               {/* Author */}
+               <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center text-slate-900 font-bold text-[10px] shadow-sm">
+                    {post.author ? post.author[1]?.toUpperCase() : 'U'}
+                  </div>
+                  {/* Source Link */}
+                  <a 
+                    href={post.sourceUrl} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="inline-flex items-center gap-2"
+                  >
+                      <span data-slot="badge" className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive overflow-hidden text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground hover:bg-secondary cursor-pointer transition-colors">
+                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className="mr-1 h-3 w-3" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M17.6874 3.0625L12.6907 8.77425L8.37045 3.0625H2.11328L9.58961 12.8387L2.50378 20.9375H5.53795L11.0068 14.6886L15.7863 20.9375H21.8885L14.095 10.6342L20.7198 3.0625H17.6874ZM16.6232 19.1225L5.65436 4.78217H7.45745L18.3034 19.1225H16.6232Z"></path>
+                        </svg>
+                        {post.author || 'Source'}
+                      </span>
+                  </a>
+               </div>
+               
+               <div className="w-px h-4 bg-gray-300 mx-2 hidden sm:block"></div>
+
+               {/* Likes */}
+               <div className="flex items-center gap-1.5" title="Likes">
+                  <Heart size={18} className="text-gray-400" />
+                  <span className="font-medium">{post.stats.likes}</span>
+               </div>
+
+               {/* Comments */}
+               <div className="flex items-center gap-1.5" title="Comments">
+                  <MessageCircle size={18} className="text-gray-400" />
+                  <span className="font-medium">{post.stats.comments || '0'}</span>
+               </div>
             </div>
 
             {/* Action Buttons */}
             <div className="flex items-center gap-3 mb-8">
               <button 
                 onClick={handleCopyPrompt}
-                className="bg-[#FFEA00] hover:bg-[#ffe100] text-slate-900 px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-colors"
+                data-slot="button" 
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 flex-1 gap-2"
               >
-                <Copy size={18} />
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-copy h-4 w-4" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
                 Copy Prompt
-              </button>
-              <button className="p-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 transition-colors">
-                 <Share2 size={18} />
-              </button>
-               <button className="p-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 transition-colors">
-                 <Bookmark size={18} />
               </button>
             </div>
 
@@ -84,47 +146,6 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
               <div className="prose prose-sm text-slate-700 max-w-none font-medium leading-relaxed whitespace-pre-line">
                 {post.prompt ? post.prompt : post.description}
                 {!post.prompt && "\n\n(Full prompt not available, showing description)"}
-              </div>
-            </div>
-
-            {/* Metadata Grid */}
-            <div className="space-y-6">
-              {/* Aspect Ratio */}
-              <div>
-                <h3 className="font-bold text-sm mb-2">Aspect Ratio</h3>
-                <div className="flex items-center gap-2">
-                   <div className="w-10 h-10 border-2 border-slate-900 rounded-lg flex items-center justify-center">
-                      <RectangleVertical size={20} fill="currentColor" className="text-slate-900"/>
-                   </div>
-                   <span className="font-medium">{post.aspectRatio || '3:4'}</span>
-                </div>
-              </div>
-
-              {/* Source */}
-              <div>
-                 <h3 className="font-bold text-sm mb-2">Source</h3>
-                 <a href={post.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors text-sm font-medium">
-                    {post.platform === 'x' ? '𝕏' : '◎'} 
-                    {post.author || '@unknown_creator'}
-                 </a>
-              </div>
-
-               {/* Model */}
-               <div>
-                 <h3 className="font-bold text-sm mb-2">Model</h3>
-                 <p className="font-medium text-slate-700">{post.model || 'Nano Banana Pro'}</p>
-              </div>
-
-               {/* Tags */}
-               <div>
-                 <h3 className="font-bold text-sm mb-2">Tags</h3>
-                 <div className="flex flex-wrap gap-2">
-                    {(post.tags || ['Cinematic', 'Realistic', 'High Quality']).map(tag => (
-                        <span key={tag} className="bg-white border border-gray-200 px-3 py-1 rounded-full text-xs font-medium text-gray-600">
-                            {tag}
-                        </span>
-                    ))}
-                 </div>
               </div>
             </div>
 
