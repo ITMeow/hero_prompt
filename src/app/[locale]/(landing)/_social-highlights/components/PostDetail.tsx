@@ -48,12 +48,12 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
   };
 
   return (
-    <div className="min-h-screen bg-white pt-20 font-[family-name:var(--font-manrope)]">
+    <div className="min-h-screen bg-white dark:bg-background pt-20 font-[family-name:var(--font-manrope)] text-slate-900 dark:text-foreground">
       {/* Top Nav */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 pb-4">
         <button 
           onClick={onBack} 
-          className="flex items-center text-gray-500 hover:text-gray-900 transition-colors font-medium text-sm"
+          className="flex items-center text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors font-medium text-sm"
         >
           <ArrowLeft size={18} className="mr-2" /> {t('back_to_gallery')}
         </button>
@@ -64,8 +64,8 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
           
           {/* Left Column - Image */}
           <div className="flex flex-col gap-6">
-            <div className="rounded-[24px] p-1 border border-gray-200 shadow-lg bg-white cursor-pointer hover:shadow-xl transition-shadow" onClick={() => setSelectedImage(post.imageUrl)}>
-               <div className="relative rounded-[20px] overflow-hidden bg-gray-50 w-full flex justify-center items-center">
+            <div className="rounded-[24px] p-1 border border-gray-200 dark:border-border shadow-lg bg-white dark:bg-card cursor-pointer hover:shadow-xl transition-shadow" onClick={() => setSelectedImage(post.imageUrl)}>
+               <div className="relative rounded-[20px] overflow-hidden bg-gray-50 dark:bg-muted w-full flex justify-center items-center">
                  <img
                    src={post.imageUrl}
                    alt={post.title}
@@ -96,12 +96,12 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
 
           {/* Right Column - Details */}
           <div className="flex flex-col">
-            <h1 className="text-4xl font-extrabold text-slate-900 mb-4 leading-tight">
+            <h1 className="text-4xl font-extrabold text-slate-900 dark:text-foreground mb-4 leading-tight">
               {post.title}
             </h1>
 
             {/* Author & Stats Row */}
-            <div className="flex flex-wrap items-center gap-6 mb-8 text-sm text-gray-600">
+            <div className="flex flex-wrap items-center gap-6 mb-8 text-sm text-gray-600 dark:text-muted-foreground">
                {/* Author */}
                <div className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center text-slate-900 font-bold text-[10px] shadow-sm">
@@ -123,7 +123,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
                   </a>
                </div>
                
-               <div className="w-px h-4 bg-gray-300 mx-2 hidden sm:block"></div>
+               <div className="w-px h-4 bg-gray-300 dark:bg-border mx-2 hidden sm:block"></div>
 
                {/* Likes */}
                <div className="flex items-center gap-1.5" title="Likes">
@@ -155,8 +155,8 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
             </div>
 
             {/* Prompt Section */}
-            <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
-              <div className="prose prose-sm text-slate-700 max-w-none font-medium leading-relaxed whitespace-pre-line">
+            <div className="bg-gray-50 dark:bg-muted/50 rounded-2xl p-6 mb-8 border border-gray-100 dark:border-border">
+              <div className="prose prose-sm text-slate-700 dark:text-muted-foreground max-w-none font-medium leading-relaxed whitespace-pre-line">
                 {post.prompt ? post.prompt : post.description}
                 {!post.prompt && `\n\n${t('no_prompt_desc')}`}
               </div>
@@ -179,8 +179,8 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
 
       {/* Image Zoom Dialog */}
       <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
-        <DialogContent className="max-w-[90vw] max-h-[90vh] p-1 overflow-hidden border border-gray-200 bg-white">
-          <div className="relative w-full h-full flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden">
+        <DialogContent className="max-w-[90vw] max-h-[90vh] p-1 overflow-hidden border border-gray-200 dark:border-border bg-white dark:bg-card">
+          <div className="relative w-full h-full flex items-center justify-center bg-gray-50 dark:bg-muted rounded-lg overflow-hidden">
             {selectedImage && (
               <img
                 src={selectedImage}

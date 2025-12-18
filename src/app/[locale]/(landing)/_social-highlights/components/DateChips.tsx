@@ -55,10 +55,10 @@ export const DateChips: React.FC<DateChipsProps> = ({ selectedDate, onDateSelect
               flex flex-col items-center justify-center min-w-[64px] h-[64px] rounded-[24px] transition-all duration-200 active:scale-95
               ${isActive
                 ? 'bg-primary text-slate-900 shadow-lg shadow-primary/40 scale-105'
-                : 'bg-white text-gray-500 hover:bg-gray-50'}
+                : 'bg-white dark:bg-card text-gray-500 hover:bg-gray-50 dark:hover:bg-accent'}
             `}
           >
-            <span className={`text-xs font-bold ${isActive ? 'text-slate-900' : 'text-gray-900'}`}>
+            <span className={`text-xs font-bold ${isActive ? 'text-slate-900' : 'text-gray-900 dark:text-foreground'}`}>
               {date.label}
             </span>
             <span className={`text-[10px] font-medium ${isActive ? 'text-slate-800/70' : 'text-gray-400'}`}>

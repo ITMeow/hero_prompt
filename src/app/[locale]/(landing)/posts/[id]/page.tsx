@@ -44,7 +44,7 @@ export default function PostPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F0F2F5] pt-24 font-[family-name:var(--font-manrope)]">
+      <div className="flex items-center justify-center min-h-screen bg-[#F0F2F5] dark:bg-background pt-24 font-[family-name:var(--font-manrope)]">
         <Loader2 className="animate-spin text-gray-400" />
       </div>
     );
@@ -52,7 +52,7 @@ export default function PostPage() {
 
   if (!post) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F0F2F5] pt-24 font-[family-name:var(--font-manrope)]">
+      <div className="flex items-center justify-center min-h-screen bg-[#F0F2F5] dark:bg-background pt-24 font-[family-name:var(--font-manrope)]">
         <p>{t('post_not_found')}</p>
       </div>
     );

@@ -26,14 +26,14 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
       onClick={onClick}
       className={cn(
         "break-inside-avoid mb-6 rounded-[24px] overflow-hidden",
-        "bg-white border border-gray-100",
+        "bg-white dark:bg-card border border-gray-100 dark:border-border",
         "shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)]",
         "transition-all duration-300 group cursor-pointer relative",
         "flex flex-col"
       )}
     >
       {/* Image Container */}
-      <div className="relative w-full overflow-hidden bg-gray-50">
+      <div className="relative w-full overflow-hidden bg-gray-50 dark:bg-muted">
         <div className="relative">
           <img 
             src={imgSrc} 
@@ -66,20 +66,20 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
       {/* Content */}
       <div className="p-4 flex flex-col gap-3">
         {/* Prompt Text (Replacing Description) */}
-        <p className="text-gray-600 text-sm leading-relaxed line-clamp-4 min-h-[1.5rem]">
+        <p className="text-gray-600 dark:text-muted-foreground text-sm leading-relaxed line-clamp-4 min-h-[1.5rem]">
           {post.prompt || post.description /* Fallback to description if prompt is missing */}
         </p>
 
         {/* Footer Stats */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-50 mt-auto">
+        <div className="flex items-center justify-between pt-3 border-t border-gray-50 dark:border-border mt-auto">
           <div className="flex gap-2">
-            <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100">
+            <div className="flex items-center gap-1.5 bg-gray-50 dark:bg-muted px-2.5 py-1 rounded-full border border-gray-100 dark:border-border">
               <Heart size={12} className="text-gray-400" />
-              <span className="text-[11px] font-bold text-gray-600">{post.stats.likes}</span>
+              <span className="text-[11px] font-bold text-gray-600 dark:text-muted-foreground">{post.stats.likes}</span>
             </div>
           </div>
           
-          <span className="text-[11px] font-medium text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100">
+          <span className="text-[11px] font-medium text-gray-400 bg-gray-50 dark:bg-muted px-2.5 py-1 rounded-full border border-gray-100 dark:border-border">
             {post.stats.timeAgo}
           </span>
         </div>

@@ -39,7 +39,7 @@ export default function LandingClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5] font-[family-name:var(--font-manrope)] pt-20">
+    <div className="min-h-screen bg-[#F0F2F5] dark:bg-background font-[family-name:var(--font-manrope)] pt-20">
       <Header
         selectedDate={selectedDate}
         onDateSelect={setSelectedDate}
