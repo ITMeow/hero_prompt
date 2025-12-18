@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Copy, Heart, MessageCircle, ExternalLink } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useTranslations } from 'next-intl';
 import { SocialPost } from '../lib/types';
 import { PostCard } from './PostCard';
 
@@ -12,6 +13,8 @@ interface PostDetailProps {
 }
 
 export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBack, onPostClick }) => {
+  const t = useTranslations('social.landing');
+
   const handleCopyPrompt = () => {
     const text = post.prompt || post.description;
     navigator.clipboard.writeText(text);
@@ -46,7 +49,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
           onClick={onBack} 
           className="flex items-center text-gray-500 hover:text-gray-900 transition-colors font-medium text-sm"
         >
-          <ArrowLeft size={18} className="mr-2" /> Back to Gallery
+          <ArrowLeft size={18} className="mr-2" /> {t('back_to_gallery')}
         </button>
       </div>
 
@@ -67,7 +70,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
             
             {/* Reference Images */}
             <div className="mt-4">
-              <p className="text-muted-foreground mb-2 text-sm">Reference Images:</p>
+              <p className="text-muted-foreground mb-2 text-sm">{t('reference_images')}</p>
               <div className="flex flex-wrap gap-2">
                 <button className="border-border hover:ring-primary relative h-16 w-16 overflow-hidden rounded-xl border transition-all hover:ring-2">
                   <img 
@@ -106,7 +109,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
                         <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className="mr-1 h-3 w-3" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                           <path d="M17.6874 3.0625L12.6907 8.77425L8.37045 3.0625H2.11328L9.58961 12.8387L2.50378 20.9375H5.53795L11.0068 14.6886L15.7863 20.9375H21.8885L14.095 10.6342L20.7198 3.0625H17.6874ZM16.6232 19.1225L5.65436 4.78217H7.45745L18.3034 19.1225H16.6232Z"></path>
                         </svg>
-                        {post.author || 'Source'}
+                        {post.author || t('source')}
                       </span>
                   </a>
                </div>
@@ -134,18 +137,18 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
                 className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 flex-1 gap-2"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-copy h-4 w-4" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
-                Copy Prompt
+                {t('copy_prompt')}
               </button>
             </div>
 
             {/* Prompt Section */}
             <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
               <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">
-                Generate for: [{post.title}]
+                {t('generate_for')} [{post.title}]
               </p>
               <div className="prose prose-sm text-slate-700 max-w-none font-medium leading-relaxed whitespace-pre-line">
                 {post.prompt ? post.prompt : post.description}
-                {!post.prompt && "\n\n(Full prompt not available, showing description)"}
+                {!post.prompt && `\n\n${t('no_prompt_desc')}`}
               </div>
             </div>
 
@@ -154,7 +157,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
 
         {/* You Might Also Like */}
         <div className="mt-24">
-          <h2 className="text-2xl font-bold mb-8">You might also like</h2>
+          <h2 className="text-2xl font-bold mb-8">{t('you_might_like')}</h2>
           <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
               {relatedPosts.map((p) => (
                 <PostCard key={p.id} post={p} onClick={() => onPostClick(p)} />

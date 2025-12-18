@@ -1,5 +1,6 @@
 export interface PostStats {
   likes: string;
+  views?: string;
   comments?: string;
   timeAgo: string;
 }

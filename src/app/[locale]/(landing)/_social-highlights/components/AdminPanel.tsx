@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Loader2, Save, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { SocialPost } from '../lib/types';
 import { extractPostInfo } from '../lib/services/geminiService';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,6 +11,7 @@ interface AdminPanelProps {
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onSave }) => {
+  const t = useTranslations('social.landing');
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [extractedData, setExtractedData] = useState<Partial<SocialPost> | null>(null);
@@ -21,7 +23,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onSave }) => {
       const info = await extractPostInfo(url);
       setExtractedData(info);
     } catch (e) {
-      alert("Failed to extract info. Please check the API Key or try again.");
+      alert(t('extract_error'));
     } finally {
       setLoading(false);
     }
@@ -51,14 +53,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onSave }) => {
   return (
     <div className="max-w-3xl mx-auto p-6">
       <button onClick={onBack} className="flex items-center text-gray-500 hover:text-gray-900 mb-6">
-        <ArrowLeft size={20} className="mr-2" /> Back to Home
+        <ArrowLeft size={20} className="mr-2" /> {t('back_to_home')}
       </button>
 
       <div className="bg-white rounded-3xl p-8 shadow-xl">
-        <h2 className="text-2xl font-bold mb-6">Add New Highlight</h2>
+        <h2 className="text-2xl font-bold mb-6">{t('add_highlight')}</h2>
         
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Social Media Link (X or Xiaohongshu)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">{t('social_link_label')}</label>
           <div className="flex gap-2">
             <input 
               type="text" 
@@ -72,21 +74,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onSave }) => {
               disabled={loading || !url}
               className="bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {loading ? <Loader2 className="animate-spin" size={20}/> : 'Analyze'}
+              {loading ? <Loader2 className="animate-spin" size={20}/> : t('analyze')}
             </button>
           </div>
           <p className="text-xs text-gray-400 mt-2">
-            Uses Gemini 2.5 Flash with Grounding to attempt extraction.
+            {t('gemini_note')}
           </p>
         </div>
 
         {extractedData && (
           <div className="border-t pt-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h3 className="text-lg font-bold mb-4">Preview & Edit</h3>
+            <h3 className="text-lg font-bold mb-4">{t('preview_edit')}</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Title</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">{t('title_label')}</label>
                 <input 
                   value={extractedData.title} 
                   onChange={(e) => setExtractedData({...extractedData, title: e.target.value})}
@@ -94,7 +96,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onSave }) => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Views</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">{t('views_label')}</label>
                  <input 
                   value={extractedData.stats?.views} 
                   onChange={(e) => setExtractedData({...extractedData, stats: {...extractedData.stats!, views: e.target.value}})}
@@ -102,7 +104,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onSave }) => {
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Description</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">{t('desc_label')}</label>
                 <textarea 
                   value={extractedData.description}
                   onChange={(e) => setExtractedData({...extractedData, description: e.target.value})}
@@ -111,7 +113,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onSave }) => {
                 />
               </div>
               <div className="md:col-span-2">
-                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Image URL (Auto-generated placeholder if extraction fails)</label>
+                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">{t('image_url_label')}</label>
                  <input 
                   value={extractedData.imageUrl}
                   onChange={(e) => setExtractedData({...extractedData, imageUrl: e.target.value})}
@@ -133,11 +135,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onSave }) => {
 
             <div className="flex justify-end gap-3">
               <button onClick={() => setExtractedData(null)} className="px-6 py-3 rounded-xl font-medium text-gray-500 hover:bg-gray-100">
-                Cancel
+                {t('cancel')}
               </button>
               <button onClick={handleSave} className="bg-[#FFEA00] text-slate-900 px-8 py-3 rounded-xl font-bold shadow-lg shadow-[#FFEA00]/30 hover:shadow-[#FFEA00]/50 transform active:scale-95 transition-all flex items-center gap-2">
                 <Save size={18} />
-                Save to Home
+                {t('save_home')}
               </button>
             </div>
           </div>

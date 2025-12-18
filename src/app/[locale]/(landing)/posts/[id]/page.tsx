@@ -2,12 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { PostDetail } from '../../_social-highlights/components/PostDetail';
 import { SocialPost } from '../../_social-highlights/lib/types';
 import { mapDbPostToSocialPost } from '../../_social-highlights/lib/utils';
 import { Loader2 } from 'lucide-react';
 
 export default function PostPage() {
+  const t = useTranslations('social.landing');
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
@@ -51,7 +53,7 @@ export default function PostPage() {
   if (!post) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#F0F2F5] pt-24 font-[family-name:var(--font-manrope)]">
-        <p>Post not found</p>
+        <p>{t('post_not_found')}</p>
       </div>
     );
   }

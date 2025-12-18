@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, Sparkles, ArrowRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { SocialPost } from '../lib/types';
 import { cn } from '@/shared/lib/utils';
 
@@ -9,6 +10,7 @@ interface PostCardProps {
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
+  const t = useTranslations('social.landing');
   const [imgSrc, setImgSrc] = useState(post.imageUrl);
   const [hasError, setHasError] = useState(false);
 
@@ -48,7 +50,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
           <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-out">
             <div className="bg-white/90 backdrop-blur-md text-gray-900 py-2.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg border border-white/50">
               <Sparkles size={16} className="text-yellow-500" />
-              <span>Try this</span>
+              <span>{t('try_this')}</span>
             </div>
           </div>
         </div>

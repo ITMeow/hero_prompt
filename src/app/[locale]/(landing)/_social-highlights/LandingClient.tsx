@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import moment from 'moment';
+import { useTranslations } from 'next-intl';
 import { PostCard } from './components/PostCard';
 import { Header } from './components/Header';
 import { AdminPanel } from './components/AdminPanel';
@@ -16,6 +17,7 @@ enum AppView {
 }
 
 export default function LandingClient() {
+  const t = useTranslations('social.landing');
   const [view, setView] = useState<AppView>(AppView.HOME);
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,11 +77,11 @@ export default function LandingClient() {
         setPosts((prev) => [mapDbPostToSocialPost(savedPost), ...prev]);
         setView(AppView.HOME);
       } else {
-        alert('Failed to save post');
+        alert(t('error_save'));
       }
     } catch (e) {
       console.error(e);
-      alert('Error saving post');
+      alert(t('error_save_generic'));
     }
   };
 
@@ -95,7 +97,7 @@ export default function LandingClient() {
           
           <main className="px-4 md:px-8 max-w-7xl mx-auto pb-12">
             {loading ? (
-               <div className="flex justify-center py-20">Loading...</div>
+               <div className="flex justify-center py-20">{t('loading')}</div>
             ) : (
               /* Masonry Layout using CSS Columns */
               <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
