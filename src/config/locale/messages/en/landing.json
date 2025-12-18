@@ -14,11 +14,6 @@
     "nav": {
       "items": [
         {
-          "title": "Studio",
-          "url": "/studio",
-          "icon": "PlusSquare"
-        },
-        {
           "title": "Gallery",
           "url": "/",
           "icon": "Image"

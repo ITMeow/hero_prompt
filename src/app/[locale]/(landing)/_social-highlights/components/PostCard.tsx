@@ -49,7 +49,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
           {/* "Try this" Button Overlay */}
           <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 ease-out">
             <div className="bg-white/90 backdrop-blur-md text-gray-900 py-2.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg border border-white/50">
-              <Sparkles size={16} className="text-yellow-500" />
+              <Sparkles size={16} className="text-primary" />
               <span>{t('try_this')}</span>
             </div>
           </div>
@@ -69,9 +69,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
         {/* Footer Stats */}
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
           <div className="flex gap-2">
-            <div className="flex items-center gap-1.5 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-100">
-              <Heart size={12} className="text-rose-500 fill-rose-500" />
-              <span className="text-[11px] font-bold text-rose-600">{post.stats.likes}</span>
+            <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100">
+              <Heart size={12} className="text-gray-400" />
+              <span className="text-[11px] font-bold text-gray-600">{post.stats.likes}</span>
             </div>
           </div>
           

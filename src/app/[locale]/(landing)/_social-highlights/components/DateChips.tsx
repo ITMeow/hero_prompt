@@ -53,8 +53,8 @@ export const DateChips: React.FC<DateChipsProps> = ({ selectedDate, onDateSelect
             onClick={() => onDateSelect(date.fullDate)}
             className={`
               flex flex-col items-center justify-center min-w-[64px] h-[64px] rounded-[24px] transition-all duration-200 active:scale-95
-              ${isActive 
-                ? 'bg-[#FFEA00] text-slate-900 shadow-lg shadow-[#FFEA00]/40 scale-105' 
+              ${isActive
+                ? 'bg-primary text-slate-900 shadow-lg shadow-primary/40 scale-105'
                 : 'bg-white text-gray-500 hover:bg-gray-50'}
             `}
           >

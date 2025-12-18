@@ -1,9 +1,10 @@
-import React from 'react';
-import { ArrowLeft, Copy, Heart, MessageCircle, ExternalLink } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, Copy, Heart, MessageCircle, ExternalLink, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useTranslations } from 'next-intl';
 import { SocialPost } from '../lib/types';
 import { PostCard } from './PostCard';
+import { Dialog, DialogContent } from '@/shared/components/ui/dialog';
 
 interface PostDetailProps {
   post: SocialPost;
@@ -14,11 +15,16 @@ interface PostDetailProps {
 
 export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBack, onPostClick }) => {
   const t = useTranslations('social.landing');
+  const [copied, setCopied] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const handleCopyPrompt = () => {
     const text = post.prompt || post.description;
     navigator.clipboard.writeText(text);
-    
+
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -58,11 +64,11 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
           
           {/* Left Column - Image */}
           <div className="flex flex-col gap-6">
-            <div className="rounded-[24px] p-1 border border-gray-200 shadow-lg bg-white">
+            <div className="rounded-[24px] p-1 border border-gray-200 shadow-lg bg-white cursor-pointer hover:shadow-xl transition-shadow" onClick={() => setSelectedImage(post.imageUrl)}>
                <div className="relative rounded-[20px] overflow-hidden bg-gray-50 w-full flex justify-center items-center">
-                 <img 
-                   src={post.imageUrl} 
-                   alt={post.title} 
+                 <img
+                   src={post.imageUrl}
+                   alt={post.title}
                    className="w-auto h-auto max-w-full max-h-[80vh] object-contain"
                  />
                </div>
@@ -72,13 +78,16 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
             <div className="mt-4">
               <p className="text-muted-foreground mb-2 text-sm">{t('reference_images')}</p>
               <div className="flex flex-wrap gap-2">
-                <button className="border-border hover:ring-primary relative h-16 w-16 overflow-hidden rounded-xl border transition-all hover:ring-2">
-                  <img 
-                    alt="Reference 1" 
-                    loading="lazy" 
-                    decoding="async" 
+                <button
+                  onClick={() => setSelectedImage(post.referenceImageUrl || "https://cdn.bananaprompts.fun/prompts/GAS_dyoU4ZXa40EPCssHp.webp")}
+                  className="border-border hover:ring-primary relative h-16 w-16 overflow-hidden rounded-xl border transition-all hover:ring-2 cursor-pointer"
+                >
+                  <img
+                    alt="Reference 1"
+                    loading="lazy"
+                    decoding="async"
                     className="object-cover absolute inset-0 h-full w-full text-transparent"
-                    src={post.referenceImageUrl || "https://cdn.bananaprompts.fun/prompts/GAS_dyoU4ZXa40EPCssHp.webp"} 
+                    src={post.referenceImageUrl || "https://cdn.bananaprompts.fun/prompts/GAS_dyoU4ZXa40EPCssHp.webp"}
                   />
                 </button>
               </div>
@@ -131,21 +140,22 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
 
             {/* Action Buttons */}
             <div className="flex items-center gap-3 mb-8">
-              <button 
+              <button
                 onClick={handleCopyPrompt}
-                data-slot="button" 
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 flex-1 gap-2"
+                data-slot="button"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 h-9 px-4 py-2 has-[>svg]:px-3 flex-1 gap-2"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-copy h-4 w-4" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
-                {t('copy_prompt')}
+                {copied ? (
+                  <Check className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <Copy className="h-4 w-4" aria-hidden="true" />
+                )}
+                {copied ? t('copied') : t('copy_prompt')}
               </button>
             </div>
 
             {/* Prompt Section */}
             <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
-              <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">
-                {t('generate_for')} [{post.title}]
-              </p>
               <div className="prose prose-sm text-slate-700 max-w-none font-medium leading-relaxed whitespace-pre-line">
                 {post.prompt ? post.prompt : post.description}
                 {!post.prompt && `\n\n${t('no_prompt_desc')}`}
@@ -166,6 +176,21 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
         </div>
 
       </div>
+
+      {/* Image Zoom Dialog */}
+      <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
+        <DialogContent className="max-w-[90vw] max-h-[90vh] p-1 overflow-hidden border border-gray-200 bg-white">
+          <div className="relative w-full h-full flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden">
+            {selectedImage && (
+              <img
+                src={selectedImage}
+                alt="Enlarged view"
+                className="max-w-full max-h-[85vh] object-contain"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

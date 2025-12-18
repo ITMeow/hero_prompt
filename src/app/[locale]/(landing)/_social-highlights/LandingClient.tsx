@@ -6,19 +6,11 @@ import moment from 'moment';
 import { useTranslations } from 'next-intl';
 import { PostCard } from './components/PostCard';
 import { Header } from './components/Header';
-import { AdminPanel } from './components/AdminPanel';
 import { SocialPost } from './lib/types';
 import { mapDbPostToSocialPost } from './lib/utils';
 
-enum AppView {
-  HOME = 'HOME',
-  ADMIN = 'ADMIN',
-  DETAIL = 'DETAIL'
-}
-
 export default function LandingClient() {
   const t = useTranslations('social.landing');
-  const [view, setView] = useState<AppView>(AppView.HOME);
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string>(moment().format('YYYY-MM-DD'));
@@ -37,7 +29,7 @@ export default function LandingClient() {
       } else {
         console.error('Failed to fetch posts');
         // Fallback to seed posts if API fails (optional, or just show empty)
-        // setPosts(SEED_POSTS); 
+        // setPosts(SEED_POSTS);
       }
     } catch (err) {
       console.error(err);
@@ -46,82 +38,31 @@ export default function LandingClient() {
     }
   };
 
-  const handleSavePost = async (newPost: SocialPost) => {
-    // Optimistic update or wait for API?
-    // Let's call API.
-    try {
-      // Convert SocialPost back to DB shape (excluding ID as API generates it, but we might want to pass other fields)
-      // Actually AdminPanel passes a SocialPost object with a generated ID.
-      // We can send the relevant fields.
-      const payload = {
-        title: newPost.title,
-        description: newPost.description,
-        imageUrl: newPost.imageUrl,
-        sourceUrl: newPost.sourceUrl,
-        platform: newPost.platform,
-        prompt: newPost.prompt,
-        referenceImageUrl: newPost.referenceImageUrl,
-        author: newPost.author,
-        tags: newPost.tags ? newPost.tags.join(',') : '', // Convert array to string
-        model: newPost.model,
-      };
-
-      const res = await fetch('/api/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        const savedPost = await res.json();
-        setPosts((prev) => [mapDbPostToSocialPost(savedPost), ...prev]);
-        setView(AppView.HOME);
-      } else {
-        alert(t('error_save'));
-      }
-    } catch (e) {
-      console.error(e);
-      alert(t('error_save_generic'));
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#F0F2F5] font-[family-name:var(--font-manrope)] pt-20">
-      {view === AppView.HOME && (
-        <>
-          <Header 
-            onAdminClick={() => setView(AppView.ADMIN)} 
-            selectedDate={selectedDate}
-            onDateSelect={setSelectedDate}
-          />
-          
-          <main className="px-4 md:px-8 max-w-7xl mx-auto pb-12">
-            {loading ? (
-               <div className="flex justify-center py-20">{t('loading')}</div>
-            ) : (
-              /* Masonry Layout using CSS Columns */
-              <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-                {posts.map((post) => (
-                  <Link 
-                    key={post.id} 
-                    href={`/posts/${post.id}`}
-                    className="break-inside-avoid block group"
-                  >
-                    <PostCard post={post} />
-                  </Link>
-                ))}
-              </div>
-            )}
-          </main>
-        </>
-      )}
+      <Header
+        selectedDate={selectedDate}
+        onDateSelect={setSelectedDate}
+      />
 
-      {view === AppView.ADMIN && (
-        <AdminPanel 
-          onBack={() => setView(AppView.HOME)} 
-          onSave={handleSavePost}
-        />
-      )}
+      <main className="px-4 md:px-8 max-w-7xl mx-auto pb-12">
+        {loading ? (
+           <div className="flex justify-center py-20">{t('loading')}</div>
+        ) : (
+          /* Masonry Layout using CSS Columns */
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+            {posts.map((post) => (
+              <Link
+                key={post.id}
+                href={`/posts/${post.id}`}
+                className="break-inside-avoid block group"
+              >
+                <PostCard post={post} />
+              </Link>
+            ))}
+          </div>
+        )}
+      </main>
     </div>
   );
 }

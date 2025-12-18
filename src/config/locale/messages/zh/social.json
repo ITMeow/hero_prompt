@@ -1,29 +1,16 @@
 {
   "landing": {
     "loading": "加载中...",
-    "error_save": "保存帖子失败",
-    "error_save_generic": "保存帖子时出错",
     "try_this": "试试这个",
     "back_to_gallery": "返回图库",
     "reference_images": "参考图片:",
     "source": "来源",
     "copy_prompt": "复制提示词",
+    "copied": "已复制!",
     "generate_for": "生成:",
     "no_prompt_desc": "(完整提示词不可用，显示描述)",
     "you_might_like": "你可能也喜欢",
     "back_to_home": "返回首页",
-    "add_highlight": "添加新亮点",
-    "social_link_label": "社交媒体链接 (X 或 小红书)",
-    "analyze": "分析",
-    "gemini_note": "使用带有 Grounding 的 Gemini 2.5 Flash 尝试提取。",
-    "extract_error": "提取信息失败。请检查 API 密钥或重试。",
-    "preview_edit": "预览与编辑",
-    "title_label": "标题",
-    "views_label": "浏览量",
-    "desc_label": "描述",
-    "image_url_label": "图片 URL (如果提取失败则自动生成占位符)",
-    "cancel": "取消",
-    "save_home": "保存到首页",
     "post_not_found": "未找到帖子"
   }
 }

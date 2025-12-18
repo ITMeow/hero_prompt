@@ -1,29 +1,16 @@
 {
   "landing": {
     "loading": "Loading...",
-    "error_save": "Failed to save post",
-    "error_save_generic": "Error saving post",
     "try_this": "Try this",
     "back_to_gallery": "Back to Gallery",
     "reference_images": "Reference Images:",
     "source": "Source",
     "copy_prompt": "Copy Prompt",
+    "copied": "Copied!",
     "generate_for": "Generate for:",
     "no_prompt_desc": "(Full prompt not available, showing description)",
     "you_might_like": "You might also like",
     "back_to_home": "Back to Home",
-    "add_highlight": "Add New Highlight",
-    "social_link_label": "Social Media Link (X or Xiaohongshu)",
-    "analyze": "Analyze",
-    "gemini_note": "Uses Gemini 2.5 Flash with Grounding to attempt extraction.",
-    "extract_error": "Failed to extract info. Please check the API Key or try again.",
-    "preview_edit": "Preview & Edit",
-    "title_label": "Title",
-    "views_label": "Views",
-    "desc_label": "Description",
-    "image_url_label": "Image URL (Auto-generated placeholder if extraction fails)",
-    "cancel": "Cancel",
-    "save_home": "Save to Home",
     "post_not_found": "Post not found"
   }
 }
