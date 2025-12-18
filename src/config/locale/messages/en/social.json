@@ -1,7 +1,9 @@
 {
   "landing": {
     "loading": "Loading...",
-    "try_this": "Try this",
+    "try_this": "Try This",
+    "translate": "Translate",
+    "translated": "Translated",
     "back_to_gallery": "Back to Gallery",
     "reference_images": "Reference Images:",
     "source": "Source",

@@ -15,6 +15,9 @@ export interface SocialPost {
   sourceUrl: string;
   platform: 'x' | 'xiaohongshu' | 'other';
   author?: string; // e.g. @username
+  authorAvatar?: string | null;
+  authorDisplayName?: string | null;
+  promptCn?: string | null;
   stats: PostStats;
   tags?: string[];
   model?: string; // e.g. Nano Banana Pro

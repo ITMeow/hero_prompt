@@ -1,10 +1,25 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Copy, Heart, MessageCircle, ExternalLink, Check, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { useTranslations, useLocale } from 'next-intl';
+import {
+  ArrowLeft,
+  Check,
+  Heart,
+  MessageCircle,
+  Sparkles,
+  X,
+  ZoomIn,
+} from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
+
 import { SocialPost } from '../lib/types';
 import { PostCard } from './PostCard';
-import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/shared/components/ui/dialog';
 
 interface PostDetailProps {
   post: SocialPost;
@@ -13,11 +28,16 @@ interface PostDetailProps {
   onPostClick: (post: SocialPost) => void;
 }
 
-export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBack, onPostClick }) => {
+export const PostDetail: React.FC<PostDetailProps> = ({
+  post,
+  relatedPosts,
+  onBack,
+  onPostClick,
+}) => {
   const t = useTranslations('social.landing');
-  const locale = useLocale();
   const [copied, setCopied] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isTranslated, setIsTranslated] = useState(false);
 
   const handleCopyPrompt = () => {
     const text = post.prompt || post.description;
@@ -32,9 +52,9 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
 
     const randomInRange = (min: number, max: number) => {
       return Math.random() * (max - min) + min;
-    }
+    };
 
-    const interval: any = setInterval(function() {
+    const interval: any = setInterval(function () {
       const timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {
@@ -43,193 +63,245 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
 
       const particleCount = 50 * (timeLeft / duration);
       // since particles fall down, start a bit higher than random
-      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+      });
     }, 250);
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-background pt-20 font-[family-name:var(--font-manrope)] text-slate-900 dark:text-foreground">
+    <div className="dark:bg-background dark:text-foreground min-h-screen bg-white pt-20 font-[family-name:var(--font-manrope)] text-slate-900">
       {/* Top Nav */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 pb-4">
-        <button 
-          onClick={onBack} 
-          className="flex items-center text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors font-medium text-sm"
+      <div className="container mx-auto px-4 pt-6 pb-4 sm:px-6">
+        <button
+          onClick={onBack}
+          className="dark:text-muted-foreground dark:hover:text-foreground flex items-center text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
         >
           <ArrowLeft size={18} className="mr-2" /> {t('back_to_gallery')}
         </button>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          
-          {/* Left Column - Image */}
-          <div className="flex flex-col gap-6">
-            {/* 1:1 Image Container adapting to viewport height */}
-            <div className="flex justify-center w-full">
-                <div 
-                    className="relative rounded-[24px] p-1 border border-gray-200 dark:border-border shadow-lg bg-white dark:bg-card cursor-pointer hover:shadow-xl transition-shadow aspect-square w-full"
-                    style={{ maxWidth: 'calc(100vh - 250px)' }}
-                    onClick={() => setSelectedImage(post.imageUrl)}
-                >
-                    <div className="relative rounded-[20px] overflow-hidden bg-gray-50 dark:bg-muted w-full h-full flex justify-center items-center">
-                        <img
-                        src={post.imageUrl}
-                        alt={post.title}
-                        className="w-full h-full object-contain"
-                        />
-                    </div>
+      <div className="container mx-auto px-4 pb-20 sm:px-6">
+        {/* Main Grid Layout */}
+        <div className="mt-4 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-16">
+          {/* Left Column - Image (7 cols) */}
+          <div className="lg:col-span-7" style={{ contain: 'layout' }}>
+            <section className="text-center">
+              <button
+                type="button"
+                className="group focus:ring-primary dark:bg-transparent relative flex w-full cursor-zoom-in justify-center overflow-hidden rounded-2xl border-0 bg-transparent p-0 focus:ring-2 focus:outline-none"
+                style={{
+                  maxHeight: '80vh',
+                  height: 'auto',
+                  contain: 'layout style',
+                }}
+                onClick={() => setSelectedImage(post.imageUrl)}
+              >
+                <img
+                  alt={post.title}
+                  fetchPriority="high"
+                  className="h-auto max-h-[80vh] w-auto max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+                  src={post.imageUrl}
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 backdrop-blur-[1px] transition-opacity duration-200 group-hover:opacity-100">
+                  <div className="bg-background/80 rounded-full p-3 shadow-lg backdrop-blur-md">
+                    <ZoomIn size={24} className="text-foreground" />
+                  </div>
                 </div>
-            </div>
-            
-            {/* Reference Images */}
-            <div className="mt-4">
-              <p className="text-muted-foreground mb-2 text-sm">{t('reference_images')}</p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedImage(post.referenceImageUrl || "https://cdn.bananaprompts.fun/prompts/GAS_dyoU4ZXa40EPCssHp.webp")}
-                  className="border-border hover:ring-primary relative h-16 w-16 overflow-hidden rounded-xl border transition-all hover:ring-2 cursor-pointer"
-                >
-                  <img
-                    alt="Reference 1"
-                    loading="lazy"
-                    decoding="async"
-                    className="object-cover absolute inset-0 h-full w-full text-transparent"
-                    src={post.referenceImageUrl || "https://cdn.bananaprompts.fun/prompts/GAS_dyoU4ZXa40EPCssHp.webp"}
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
+              </button>
+            </section>
 
-          {/* Right Column - Details */}
-          <div className="flex flex-col">
-            <h1 className="text-4xl font-extrabold text-slate-900 dark:text-foreground mb-4 leading-tight">
+            <h1 className="dark:text-foreground mb-4 mt-6 text-3xl leading-tight font-extrabold text-slate-900 md:text-4xl">
               {post.title}
             </h1>
+          </div>
 
+          {/* Right Column - Details (5 cols) */}
+          <div className="flex flex-col lg:col-span-5">
             {/* Author & Stats Row */}
-            <div className="flex flex-wrap items-center gap-6 mb-8 text-sm text-gray-600 dark:text-muted-foreground">
-               {/* Author */}
-               <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center text-slate-900 font-bold text-[10px] shadow-sm">
-                    {post.author ? post.author[1]?.toUpperCase() : 'U'}
+            <div className="dark:text-muted-foreground mb-8 flex flex-wrap items-center gap-6 text-sm text-gray-600">
+              {/* Author */}
+              <div className="flex items-center gap-2">
+                {/* Avatar */}
+                {post.authorAvatar ? (
+                  <img
+                    src={post.authorAvatar}
+                    alt={post.authorDisplayName || 'Author'}
+                    className="ring-border h-6 w-6 rounded-full object-cover shadow-sm ring-1"
+                  />
+                ) : (
+                  <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shadow-sm">
+                    {post.authorDisplayName
+                      ? post.authorDisplayName[0]?.toUpperCase()
+                      : post.author
+                        ? post.author[0]?.toUpperCase()
+                        : 'U'}
                   </div>
-                  {/* Source Link */}
-                  <a 
-                    href={post.sourceUrl} 
-                    target="_blank" 
-                    rel="noreferrer" 
-                    className="inline-flex items-center gap-2"
+                )}
+
+                {/* Display Name */}
+                {(post.authorDisplayName || post.author) && (
+                  <span className="dark:text-foreground font-semibold text-slate-900">
+                    {post.authorDisplayName || post.author}
+                  </span>
+                )}
+
+                {/* Source Link */}
+                <a
+                  href={post.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2"
+                >
+                  <span
+                    data-slot="badge"
+                    className="focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground hover:bg-secondary inline-flex w-fit shrink-0 cursor-pointer items-center justify-center gap-1 overflow-hidden rounded-md border px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:ring-[3px] [&>svg]:pointer-events-none [&>svg]:size-3"
                   >
-                      <span data-slot="badge" className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive overflow-hidden text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground hover:bg-secondary cursor-pointer transition-colors">
-                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className="mr-1 h-3 w-3" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M17.6874 3.0625L12.6907 8.77425L8.37045 3.0625H2.11328L9.58961 12.8387L2.50378 20.9375H5.53795L11.0068 14.6886L15.7863 20.9375H21.8885L14.095 10.6342L20.7198 3.0625H17.6874ZM16.6232 19.1225L5.65436 4.78217H7.45745L18.3034 19.1225H16.6232Z"></path>
-                        </svg>
-                        {post.author || t('source')}
-                      </span>
-                  </a>
-               </div>
-               
-               <div className="w-px h-4 bg-gray-300 dark:bg-border mx-2 hidden sm:block"></div>
+                    <svg
+                      stroke="currentColor"
+                      fill="currentColor"
+                      strokeWidth="0"
+                      viewBox="0 0 24 24"
+                      className="mr-1 h-3 w-3"
+                      height="1em"
+                      width="1em"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M17.6874 3.0625L12.6907 8.77425L8.37045 3.0625H2.11328L9.58961 12.8387L2.50378 20.9375H5.53795L11.0068 14.6886L15.7863 20.9375H21.8885L14.095 10.6342L20.7198 3.0625H17.6874ZM16.6232 19.1225L5.65436 4.78217H7.45745L18.3034 19.1225H16.6232Z"></path>
+                    </svg>
+                    Source
+                  </span>
+                </a>
+              </div>
 
-               {/* Likes */}
-               <div className="flex items-center gap-1.5" title="Likes">
-                  <Heart size={18} className="text-gray-400" />
-                  <span className="font-medium">{post.stats.likes}</span>
-               </div>
+              <div className="dark:bg-border mx-2 hidden h-4 w-px bg-gray-300 sm:block"></div>
 
-               {/* Comments */}
-               <div className="flex items-center gap-1.5" title="Comments">
-                  <MessageCircle size={18} className="text-gray-400" />
-                  <span className="font-medium">{post.stats.comments || '0'}</span>
-               </div>
+              {/* Likes */}
+              <div className="flex items-center gap-1.5" title="Likes">
+                <Heart size={18} className="text-gray-400" />
+                <span className="font-medium">{post.stats.likes}</span>
+              </div>
+
+              {/* Comments */}
+              <div className="flex items-center gap-1.5" title="Comments">
+                <MessageCircle size={18} className="text-gray-400" />
+                <span className="font-medium">
+                  {post.stats.comments || '0'}
+                </span>
+              </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-3 mb-8">
+            <div className="mb-8 flex items-center gap-3">
               <button
                 onClick={handleCopyPrompt}
                 data-slot="button"
-                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 h-9 px-4 py-2 has-[>svg]:px-3 flex-1 gap-2"
+                className="focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-md px-6 py-2 text-sm font-medium whitespace-nowrap shadow-sm transition-all outline-none focus-visible:ring-[3px] active:scale-95 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
               >
                 {copied ? (
                   <Check className="h-4 w-4" aria-hidden="true" />
                 ) : (
-                  <Copy className="h-4 w-4" aria-hidden="true" />
+                  <Sparkles className="h-4 w-4" aria-hidden="true" />
                 )}
-                {copied ? t('copied') : t('copy_prompt')}
+                {copied ? t('copied') : t('try_this')}
+              </button>
+
+              <button
+                onClick={() => setIsTranslated(!isTranslated)}
+                className={`inline-flex h-10 items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-medium whitespace-nowrap shadow-sm transition-all ${isTranslated ? 'bg-secondary text-secondary-foreground border-transparent' : 'bg-background border-input hover:bg-accent hover:text-accent-foreground'}`}
+              >
+                {isTranslated ? t('translated') : t('translate')}
               </button>
             </div>
 
             {/* Prompt Section - Fixed Height & Scrollable */}
             <div className="space-y-4">
-                {/* English / Default Prompt */}
-                <div>
-                   {locale === 'zh' && <p className="text-sm text-gray-500 mb-1">English</p>}
-                   <div className="bg-gray-50 dark:bg-muted/50 rounded-2xl p-6 border border-gray-100 dark:border-border h-60 overflow-y-auto">
-                        <div className="prose prose-sm text-slate-700 dark:text-muted-foreground max-w-none font-medium leading-relaxed whitespace-pre-line">
-                            {post.prompt ? post.prompt : post.description}
-                            {!post.prompt && `\n\n${t('no_prompt_desc')}`}
-                        </div>
-                   </div>
+              <div className="dark:bg-muted/30 dark:border-border custom-scrollbar h-[400px] overflow-y-auto rounded-2xl border border-gray-100 bg-gray-50 p-6">
+                <div className="prose prose-sm dark:text-muted-foreground max-w-none leading-relaxed font-medium whitespace-pre-line text-slate-700">
+                  {isTranslated
+                    ? post.promptCn || t('no_prompt_desc')
+                    : post.prompt || post.description}
+                  {!post.prompt &&
+                    !isTranslated &&
+                    `\n\n${t('no_prompt_desc')}`}
                 </div>
-
-                {/* Chinese Translation (Only visible if locale is 'zh') */}
-                {locale === 'zh' && (
-                    <div>
-                        <p className="text-sm text-gray-500 mb-1">中文</p>
-                        <div className="bg-gray-50 dark:bg-muted/50 rounded-2xl p-6 border border-gray-100 dark:border-border h-60 overflow-y-auto">
-                             <div className="prose prose-sm text-slate-700 dark:text-muted-foreground max-w-none font-medium leading-relaxed whitespace-pre-line">
-                                 {/* Using description as placeholder for Chinese content or duplicating prompt if description is not Chinese */}
-                                 {post.description} 
-                             </div>
-                        </div>
-                    </div>
-                )}
+              </div>
             </div>
 
+            {/* Reference Images */}
+            {post.referenceImageUrl && (
+              <div className="mt-6 text-left">
+                <p className="text-muted-foreground mb-2 text-sm font-medium">
+                  {t('reference_images')}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setSelectedImage(post.referenceImageUrl!)}
+                    className="border-border hover:ring-primary dark:bg-muted relative h-20 w-20 cursor-pointer overflow-hidden rounded-xl border bg-gray-100 transition-all hover:ring-2"
+                  >
+                    <img
+                      alt="Reference"
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute inset-0 h-full w-full object-cover"
+                      src={post.referenceImageUrl}
+                    />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         {/* You Might Also Like */}
         <div className="mt-24">
-          <h2 className="text-2xl font-bold mb-8">{t('you_might_like')}</h2>
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-              {relatedPosts.map((p) => (
-                <PostCard key={p.id} post={p} onClick={() => onPostClick(p)} />
-              ))}
+          <h2 className="mb-8 text-2xl font-bold">{t('you_might_like')}</h2>
+          <div className="columns-1 gap-6 space-y-6 md:columns-2 lg:columns-3">
+            {relatedPosts.map((p) => (
+              <PostCard key={p.id} post={p} onClick={() => onPostClick(p)} />
+            ))}
           </div>
         </div>
-
       </div>
 
       {/* Image Zoom Dialog */}
-      <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
-        <DialogContent 
-            className="!w-screen !h-screen !max-w-none !max-h-none !m-0 !p-0 border-none shadow-none bg-transparent"
-            showCloseButton={false}
+      <Dialog
+        open={!!selectedImage}
+        onOpenChange={(open) => !open && setSelectedImage(null)}
+      >
+        <DialogContent
+          className="!m-0 !h-screen !max-h-none !w-screen !max-w-none border-none bg-transparent !p-0 shadow-none"
+          showCloseButton={false}
         >
-            <DialogTitle className="sr-only">Zoomed Image</DialogTitle>
-            
-            {/* Custom Close Button */}
-            <DialogClose className="absolute top-8 right-8 z-50 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-all cursor-pointer outline-none">
-              <X size={32} />
-              <span className="sr-only">Close</span>
-            </DialogClose>
+          <DialogTitle className="sr-only">Zoomed Image</DialogTitle>
 
-            <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
-                {selectedImage && (
-                <img
-                    src={selectedImage}
-                    alt="Enlarged view"
-                    className="w-[80vw] h-[80vh] object-contain pointer-events-auto"
-                />
-                )}
-            </div>
+          {/* Custom Close Button */}
+          <DialogClose className="absolute top-8 right-8 z-50 cursor-pointer rounded-full bg-black/20 p-2 text-white backdrop-blur-sm transition-all outline-none hover:bg-black/40">
+            <X size={32} />
+            <span className="sr-only">Close</span>
+          </DialogClose>
+
+          <div
+            className="pointer-events-none relative flex h-full w-full items-center justify-center"
+            onClick={() => setSelectedImage(null)}
+          >
+            {selectedImage && (
+              <img
+                src={selectedImage}
+                alt="Enlarged view"
+                className="pointer-events-auto h-[90vh] w-[90vw] object-contain"
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
   );
 };
-

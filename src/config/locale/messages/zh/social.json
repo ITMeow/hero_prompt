@@ -1,7 +1,9 @@
 {
   "landing": {
     "loading": "加载中...",
-    "try_this": "试试这个",
+    "try_this": "立即尝试",
+    "translate": "翻以前",
+    "translated": "翻译后",
     "back_to_gallery": "返回图库",
     "reference_images": "参考图片:",
     "source": "来源",

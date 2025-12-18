@@ -608,6 +608,9 @@ export const landingPost = pgTable(
     updatedAt: timestamp('updated_at')
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
+    authorAvatar: text('author_avatar'),
+    authorDisplayName: text('author_display_name'),
+    promptCn: text('prompt_cn'),
   },
   (table) => [
     index('idx_landing_post_created_at').on(table.createdAt),
