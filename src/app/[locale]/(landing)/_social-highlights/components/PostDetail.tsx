@@ -66,7 +66,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
           {/* Left Column - Image */}
           <div className="flex flex-col gap-6">
             {/* 1:1 Image Container adapting to viewport height */}
-            <div className="flex justify-center w-full">
+            <div className="flex justify-start w-full">
                 <div 
                     className="relative rounded-[24px] p-1 border border-gray-200 dark:border-border shadow-lg bg-white dark:bg-card cursor-pointer hover:shadow-xl transition-shadow aspect-square w-full"
                     style={{ maxWidth: 'calc(100vh - 250px)' }}
