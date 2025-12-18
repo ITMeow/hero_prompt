@@ -539,3 +539,77 @@ export const chatMessage = pgTable(
     index('idx_chat_message_user_id').on(table.userId, table.status),
   ]
 );
+
+export const socialPost = pgTable(
+  'social_post',
+  {
+    id: text('id').primaryKey(),
+    title: text('title').notNull(),
+    description: text('description').notNull(),
+    prompt: text('prompt'),
+    imageUrl: text('image_url').notNull(),
+    referenceImageUrl: text('reference_image_url'),
+    sourceUrl: text('source_url').notNull(),
+    platform: text('platform').notNull(), // 'x', 'xiaohongshu', 'other'
+    author: text('author'),
+    likes: integer('likes').default(0).notNull(),
+    comments: integer('comments').default(0).notNull(),
+    tags: text('tags'), // Comma separated tags
+    model: text('model'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_social_post_created_at').on(table.createdAt),
+  ]
+);
+
+// Legacy table from previous migrations (keeping to satisfy drizzle-kit)
+export const socialPostLegacy = pgTable('social_post', {
+  id: text('id').primaryKey(),
+  platform: text('platform').notNull(),
+  originalUrl: text('original_url').notNull(),
+  content: text('content'),
+  imageUrl: text('image_url'),
+  authorName: text('author_name'),
+  authorHandle: text('author_handle'),
+  likesCount: integer('likes_count').default(0),
+  commentsCount: integer('comments_count').default(0),
+  publishedAt: timestamp('published_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').notNull(),
+}, (table) => [
+  index('idx_social_post_platform').on(table.platform),
+  // idx_social_post_created_at name collision? 
+  // The index name in DB is unique per schema.
+  // The definition in 0001 uses 'idx_social_post_created_at'.
+  index('idx_social_post_created_at_legacy').on(table.createdAt), 
+]);
+
+export const landingPost = pgTable(
+  'landing_post',
+  {
+    id: text('id').primaryKey(),
+    title: text('title').notNull(),
+    description: text('description').notNull(),
+    prompt: text('prompt'),
+    imageUrl: text('image_url').notNull(),
+    referenceImageUrl: text('reference_image_url'),
+    sourceUrl: text('source_url').notNull(),
+    platform: text('platform').notNull(), // 'x', 'xiaohongshu', 'other'
+    author: text('author'),
+    likes: integer('likes').default(0).notNull(),
+    comments: integer('comments').default(0).notNull(),
+    tags: text('tags'), // Comma separated tags
+    model: text('model'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_landing_post_created_at').on(table.createdAt),
+  ]
+);

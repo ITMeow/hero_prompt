@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { ArrowLeft, Loader2, Save, X } from 'lucide-react';
 import { SocialPost } from '../lib/types';
 import { extractPostInfo } from '../lib/services/geminiService';
-import { savePost } from '../lib/db';
 import { v4 as uuidv4 } from 'uuid';
 
 interface AdminPanelProps {
   onBack: () => void;
-  onPostSaved: () => void;
+  onSave: (post: SocialPost) => void;
 }
 
-export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onPostSaved }) => {
+export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onSave }) => {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [extractedData, setExtractedData] = useState<Partial<SocialPost> | null>(null);
@@ -28,7 +27,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onPostSaved }) =
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!extractedData) return;
     
     const newPost: SocialPost = {
@@ -46,8 +45,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onBack, onPostSaved }) =
       createdAt: Date.now()
     };
 
-    await savePost(newPost);
-    onPostSaved();
+    onSave(newPost);
   };
 
   return (

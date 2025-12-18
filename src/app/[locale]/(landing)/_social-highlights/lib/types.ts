@@ -1,6 +1,6 @@
 export interface PostStats {
-  views: string;
   likes: string;
+  comments?: string;
   timeAgo: string;
 }
 
@@ -10,6 +10,7 @@ export interface SocialPost {
   description: string;
   prompt?: string; // The AI generation prompt
   imageUrl: string;
+  referenceImageUrl?: string; // Optional reference image used for generation
   sourceUrl: string;
   platform: 'x' | 'xiaohongshu' | 'other';
   author?: string; // e.g. @username

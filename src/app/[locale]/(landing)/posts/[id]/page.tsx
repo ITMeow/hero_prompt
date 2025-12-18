@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { PostDetail } from '../../_social-highlights/components/PostDetail';
-import { getPostById, getAllPosts } from '../../_social-highlights/lib/db';
 import { SocialPost } from '../../_social-highlights/lib/types';
+import { mapDbPostToSocialPost } from '../../_social-highlights/lib/utils';
 import { Loader2 } from 'lucide-react';
 
 export default function PostPage() {
@@ -22,19 +22,19 @@ export default function PostPage() {
   }, [id]);
 
   const loadPost = async (postId: string) => {
-    setLoading(true);
     try {
-      const p = await getPostById(postId);
-      if (p) {
-        setPost(p);
-        // Load related posts (simple mock: just take first 3 other posts)
-        const all = await getAllPosts();
-        setRelatedPosts(all.filter(x => x.id !== postId).slice(0, 3));
+      setLoading(true);
+      const res = await fetch(`/api/posts/${postId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setPost(mapDbPostToSocialPost(data.post));
+        setRelatedPosts(data.relatedPosts.map(mapDbPostToSocialPost));
       } else {
-         // Handle not found
+        setPost(null);
       }
     } catch (e) {
       console.error(e);
+      setPost(null);
     } finally {
       setLoading(false);
     }
@@ -43,7 +43,7 @@ export default function PostPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#F0F2F5] pt-24 font-[family-name:var(--font-manrope)]">
-        <Loader2 className="animate-spin w-10 h-10 text-gray-400" />
+        <Loader2 className="animate-spin text-gray-400" />
       </div>
     );
   }
