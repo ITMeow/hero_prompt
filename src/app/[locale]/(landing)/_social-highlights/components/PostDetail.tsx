@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Copy, Heart, MessageCircle, ExternalLink, Check } from 'lucide-react';
+import { ArrowLeft, Copy, Heart, MessageCircle, ExternalLink, Check, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useTranslations, useLocale } from 'next-intl';
 import { SocialPost } from '../lib/types';
 import { PostCard } from './PostCard';
-import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/shared/components/ui/dialog';
 
 interface PostDetailProps {
   post: SocialPost;
@@ -208,9 +208,16 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
       <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
         <DialogContent 
             className="!w-screen !h-screen !max-w-none !max-h-none !m-0 !p-0 border-none shadow-none bg-transparent"
-            showCloseButton={true}
+            showCloseButton={false}
         >
             <DialogTitle className="sr-only">Zoomed Image</DialogTitle>
+            
+            {/* Custom Close Button */}
+            <DialogClose className="absolute top-8 right-8 z-50 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white transition-all cursor-pointer outline-none">
+              <X size={32} />
+              <span className="sr-only">Close</span>
+            </DialogClose>
+
             <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
                 {selectedImage && (
                 <img
@@ -225,3 +232,4 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
     </div>
   );
 };
+
