@@ -4,7 +4,7 @@ import confetti from 'canvas-confetti';
 import { useTranslations, useLocale } from 'next-intl';
 import { SocialPost } from '../lib/types';
 import { PostCard } from './PostCard';
-import { Dialog, DialogContent } from '@/shared/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/dialog';
 
 interface PostDetailProps {
   post: SocialPost;
@@ -206,16 +206,20 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
 
       {/* Image Zoom Dialog */}
       <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
-        <DialogContent className="w-[80vw] h-[80vw] max-w-[80vw] max-h-[80vh] p-1 overflow-hidden border border-gray-200 dark:border-border bg-white dark:bg-card">
-          <div className="relative w-full h-full flex items-center justify-center bg-gray-50 dark:bg-muted rounded-lg overflow-hidden">
-            {selectedImage && (
-              <img
-                src={selectedImage}
-                alt="Enlarged view"
-                className="w-full h-full object-contain"
-              />
-            )}
-          </div>
+        <DialogContent 
+            className="w-screen h-screen max-w-none max-h-none p-0 border-none shadow-none bg-transparent"
+            showCloseButton={true}
+        >
+            <DialogTitle className="sr-only">Zoomed Image</DialogTitle>
+            <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
+                {selectedImage && (
+                <img
+                    src={selectedImage}
+                    alt="Enlarged view"
+                    className="w-auto h-auto max-w-[95vw] max-h-[95vh] object-contain pointer-events-auto"
+                />
+                )}
+            </div>
         </DialogContent>
       </Dialog>
     </div>
