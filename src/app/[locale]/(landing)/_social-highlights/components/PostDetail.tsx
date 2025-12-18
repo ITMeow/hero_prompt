@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Copy, Heart, MessageCircle, ExternalLink, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { SocialPost } from '../lib/types';
 import { PostCard } from './PostCard';
 import { Dialog, DialogContent } from '@/shared/components/ui/dialog';
@@ -15,6 +15,7 @@ interface PostDetailProps {
 
 export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBack, onPostClick }) => {
   const t = useTranslations('social.landing');
+  const locale = useLocale();
   const [copied, setCopied] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -64,14 +65,21 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
           
           {/* Left Column - Image */}
           <div className="flex flex-col gap-6">
-            <div className="rounded-[24px] p-1 border border-gray-200 dark:border-border shadow-lg bg-white dark:bg-card cursor-pointer hover:shadow-xl transition-shadow" onClick={() => setSelectedImage(post.imageUrl)}>
-               <div className="relative rounded-[20px] overflow-hidden bg-gray-50 dark:bg-muted w-full flex justify-center items-center">
-                 <img
-                   src={post.imageUrl}
-                   alt={post.title}
-                   className="w-auto h-auto max-w-full max-h-[80vh] object-contain"
-                 />
-               </div>
+            {/* 1:1 Image Container adapting to viewport height */}
+            <div className="flex justify-center w-full">
+                <div 
+                    className="relative rounded-[24px] p-1 border border-gray-200 dark:border-border shadow-lg bg-white dark:bg-card cursor-pointer hover:shadow-xl transition-shadow aspect-square w-full"
+                    style={{ maxWidth: 'calc(100vh - 250px)' }}
+                    onClick={() => setSelectedImage(post.imageUrl)}
+                >
+                    <div className="relative rounded-[20px] overflow-hidden bg-gray-50 dark:bg-muted w-full h-full flex justify-center items-center">
+                        <img
+                        src={post.imageUrl}
+                        alt={post.title}
+                        className="w-full h-full object-contain"
+                        />
+                    </div>
+                </div>
             </div>
             
             {/* Reference Images */}
@@ -154,12 +162,31 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
               </button>
             </div>
 
-            {/* Prompt Section */}
-            <div className="bg-gray-50 dark:bg-muted/50 rounded-2xl p-6 mb-8 border border-gray-100 dark:border-border">
-              <div className="prose prose-sm text-slate-700 dark:text-muted-foreground max-w-none font-medium leading-relaxed whitespace-pre-line">
-                {post.prompt ? post.prompt : post.description}
-                {!post.prompt && `\n\n${t('no_prompt_desc')}`}
-              </div>
+            {/* Prompt Section - Fixed Height & Scrollable */}
+            <div className="space-y-4">
+                {/* English / Default Prompt */}
+                <div>
+                   {locale === 'zh' && <p className="text-sm text-gray-500 mb-1">English</p>}
+                   <div className="bg-gray-50 dark:bg-muted/50 rounded-2xl p-6 border border-gray-100 dark:border-border h-60 overflow-y-auto">
+                        <div className="prose prose-sm text-slate-700 dark:text-muted-foreground max-w-none font-medium leading-relaxed whitespace-pre-line">
+                            {post.prompt ? post.prompt : post.description}
+                            {!post.prompt && `\n\n${t('no_prompt_desc')}`}
+                        </div>
+                   </div>
+                </div>
+
+                {/* Chinese Translation (Only visible if locale is 'zh') */}
+                {locale === 'zh' && (
+                    <div>
+                        <p className="text-sm text-gray-500 mb-1">中文</p>
+                        <div className="bg-gray-50 dark:bg-muted/50 rounded-2xl p-6 border border-gray-100 dark:border-border h-60 overflow-y-auto">
+                             <div className="prose prose-sm text-slate-700 dark:text-muted-foreground max-w-none font-medium leading-relaxed whitespace-pre-line">
+                                 {/* Using description as placeholder for Chinese content or duplicating prompt if description is not Chinese */}
+                                 {post.description} 
+                             </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
           </div>
@@ -179,13 +206,13 @@ export const PostDetail: React.FC<PostDetailProps> = ({ post, relatedPosts, onBa
 
       {/* Image Zoom Dialog */}
       <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
-        <DialogContent className="max-w-[90vw] max-h-[90vh] p-1 overflow-hidden border border-gray-200 dark:border-border bg-white dark:bg-card">
+        <DialogContent className="w-[80vw] h-[80vw] max-w-[80vw] max-h-[80vh] p-1 overflow-hidden border border-gray-200 dark:border-border bg-white dark:bg-card">
           <div className="relative w-full h-full flex items-center justify-center bg-gray-50 dark:bg-muted rounded-lg overflow-hidden">
             {selectedImage && (
               <img
                 src={selectedImage}
                 alt="Enlarged view"
-                className="max-w-full max-h-[85vh] object-contain"
+                className="w-full h-full object-contain"
               />
             )}
           </div>
