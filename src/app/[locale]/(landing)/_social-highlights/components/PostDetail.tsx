@@ -266,18 +266,21 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                   {t('reference_images')}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setSelectedImage(post.referenceImageUrl!)}
-                    className="border-border hover:ring-primary dark:bg-muted relative h-20 w-20 cursor-pointer overflow-hidden rounded-xl border bg-gray-100 transition-all hover:ring-2"
-                  >
-                    <img
-                      alt="Reference"
-                      loading="lazy"
-                      decoding="async"
-                      className="absolute inset-0 h-full w-full object-cover"
-                      src={post.referenceImageUrl}
-                    />
-                  </button>
+                  {post.referenceImageUrl.split(',').map((url, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImage(url.trim())}
+                      className="border-border hover:ring-primary dark:bg-muted relative h-20 w-20 cursor-pointer overflow-hidden rounded-xl border bg-gray-100 transition-all hover:ring-2"
+                    >
+                      <img
+                        alt={`Reference ${index + 1}`}
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover"
+                        src={url.trim()}
+                      />
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
