@@ -9,7 +9,8 @@ import {
   X,
   ZoomIn,
 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { tagTranslator, type Language } from '@/shared/lib/tagTranslator';
 
 import {
   Dialog,
@@ -35,12 +36,21 @@ export const PostDetail: React.FC<PostDetailProps> = ({
   onPostClick,
 }) => {
   const t = useTranslations('social.landing');
+  const locale = useLocale();
   const [copied, setCopied] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isTranslated, setIsTranslated] = useState(false);
 
+  // Determine current language
+  const currentLanguage: Language = locale === 'en' ? 'en' : 'zh-CN';
+  // Get the opposite language for translation toggle
+  const translatedLanguage: Language = currentLanguage === 'zh-CN' ? 'en' : 'zh-CN';
+
   const handleCopyPrompt = () => {
-    const text = post.prompt || post.description;
+    // Get the prompt in the currently displayed language
+    const text = isTranslated && post.i18nContent
+      ? post.i18nContent[translatedLanguage].prompt
+      : post.prompt;
     navigator.clipboard.writeText(text);
 
     setCopied(true);
@@ -196,6 +206,20 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                   {post.stats.comments || '0'}
                 </span>
               </div>
+
+              {/* Tags */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((tagKey) => (
+                    <span
+                      key={tagKey}
+                      className="text-xs font-medium px-3 py-1 rounded-full bg-primary text-primary-foreground dark:bg-primary/20 dark:text-primary"
+                    >
+                      {tagTranslator.translate(tagKey, currentLanguage)}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}
@@ -225,8 +249,8 @@ export const PostDetail: React.FC<PostDetailProps> = ({
             <div className="space-y-4">
               <div className="dark:bg-muted/30 dark:border-border custom-scrollbar h-[400px] overflow-y-auto rounded-2xl border border-gray-100 bg-gray-50 p-6">
                 <div className="prose prose-sm dark:text-muted-foreground max-w-none leading-relaxed font-medium whitespace-pre-line text-slate-700">
-                  {isTranslated
-                    ? post.promptCn || t('no_prompt_desc')
+                  {isTranslated && post.i18nContent
+                    ? post.i18nContent[translatedLanguage].prompt || t('no_prompt_desc')
                     : post.prompt || post.description}
                   {!post.prompt &&
                     !isTranslated &&

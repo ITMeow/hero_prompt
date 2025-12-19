@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Heart, Sparkles, ArrowRight } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { SocialPost } from '../lib/types';
 import { cn } from '@/shared/lib/utils';
+import { tagTranslator, type Language } from '@/shared/lib/tagTranslator';
 
 interface PostCardProps {
   post: SocialPost;
@@ -11,8 +12,12 @@ interface PostCardProps {
 
 export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
   const t = useTranslations('social.landing');
+  const locale = useLocale();
   const [imgSrc, setImgSrc] = useState(post.imageUrl);
   const [hasError, setHasError] = useState(false);
+
+  // Determine language for tag translation
+  const language: Language = locale === 'en' ? 'en' : 'zh-CN';
 
   const handleImgError = () => {
     if (!hasError) {
@@ -70,6 +75,25 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
           {post.prompt || post.description /* Fallback to description if prompt is missing */}
         </p>
 
+        {/* Tags */}
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {post.tags.slice(0, 3).map((tagKey) => (
+              <span
+                key={tagKey}
+                className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-primary text-primary-foreground dark:bg-primary/20 dark:text-primary"
+              >
+                {tagTranslator.translate(tagKey, language)}
+              </span>
+            ))}
+            {post.tags.length > 3 && (
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground">
+                +{post.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Footer Stats */}
         <div className="flex items-center justify-between pt-3 border-t border-gray-50 dark:border-border mt-auto">
           <div className="flex gap-2">
@@ -78,7 +102,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
               <span className="text-[11px] font-bold text-gray-600 dark:text-muted-foreground">{post.stats.likes}</span>
             </div>
           </div>
-          
+
           <span className="text-[11px] font-medium text-gray-400 bg-gray-50 dark:bg-muted px-2.5 py-1 rounded-full border border-gray-100 dark:border-border">
             {post.stats.timeAgo}
           </span>
