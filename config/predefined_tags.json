@@ -1,0 +1,265 @@
+{
+  "use_cases": {
+    "label_cn": "使用场景",
+    "label_en": "Use Cases",
+    "tags": [
+      {
+        "key": "profile_avatar",
+        "cn": "个人资料 / 头像",
+        "en": "Profile / Avatar"
+      },
+      {
+        "key": "social_media_post",
+        "cn": "社交媒体帖子",
+        "en": "Social Media Post"
+      },
+      {
+        "key": "portrait_selfie",
+        "cn": "人像 / 自拍",
+        "en": "Portrait / Selfie"
+      },
+      {
+        "key": "product_marketing",
+        "cn": "产品营销",
+        "en": "Product Marketing"
+      },
+      {
+        "key": "brand_identity",
+        "cn": "品牌标识",
+        "en": "Brand Identity"
+      },
+      {
+        "key": "editorial_magazine",
+        "cn": "编辑 / 杂志",
+        "en": "Editorial / Magazine"
+      },
+      {
+        "key": "book_cover",
+        "cn": "书籍封面",
+        "en": "Book Cover"
+      },
+      {
+        "key": "album_cover",
+        "cn": "专辑封面",
+        "en": "Album Cover"
+      },
+      {
+        "key": "poster_flyer",
+        "cn": "海报 / 传单",
+        "en": "Poster / Flyer"
+      },
+      {
+        "key": "wallpaper_background",
+        "cn": "壁纸 / 背景",
+        "en": "Wallpaper / Background"
+      },
+      {
+        "key": "logo_icon",
+        "cn": "Logo / 图标",
+        "en": "Logo / Icon"
+      },
+      {
+        "key": "game_asset",
+        "cn": "游戏素材",
+        "en": "Game Asset"
+      },
+      {
+        "key": "ui_design",
+        "cn": "UI 设计",
+        "en": "UI Design"
+      },
+      {
+        "key": "illustration",
+        "cn": "插画",
+        "en": "Illustration"
+      }
+    ]
+  },
+  "styles": {
+    "label_cn": "风格",
+    "label_en": "Style",
+    "tags": [
+      {
+        "key": "photography",
+        "cn": "摄影",
+        "en": "Photography"
+      },
+      {
+        "key": "cinematic",
+        "cn": "电影感 / 电影剧照",
+        "en": "Cinematic / Film Still"
+      },
+      {
+        "key": "minimalism",
+        "cn": "极简主义",
+        "en": "Minimalism"
+      },
+      {
+        "key": "abstract",
+        "cn": "抽象",
+        "en": "Abstract"
+      },
+      {
+        "key": "surrealism",
+        "cn": "超现实主义",
+        "en": "Surrealism"
+      },
+      {
+        "key": "cyberpunk_scifi",
+        "cn": "赛博朋克 / 科幻",
+        "en": "Cyberpunk / Sci-Fi"
+      },
+      {
+        "key": "fantasy",
+        "cn": "奇幻",
+        "en": "Fantasy"
+      },
+      {
+        "key": "anime_manga",
+        "cn": "动漫 / 漫画",
+        "en": "Anime / Manga"
+      },
+      {
+        "key": "cartoon_comic",
+        "cn": "卡通 / 漫画",
+        "en": "Cartoon / Comic"
+      },
+      {
+        "key": "pixel_art",
+        "cn": "像素艺术",
+        "en": "Pixel Art"
+      },
+      {
+        "key": "watercolor",
+        "cn": "水彩",
+        "en": "Watercolor"
+      },
+      {
+        "key": "oil_painting",
+        "cn": "油画",
+        "en": "Oil Painting"
+      },
+      {
+        "key": "sketch_drawing",
+        "cn": "素描 / 绘画",
+        "en": "Sketch / Drawing"
+      },
+      {
+        "key": "vintage_retro",
+        "cn": "复古 / 怀旧",
+        "en": "Vintage / Retro"
+      },
+      {
+        "key": "modern_contemporary",
+        "cn": "现代 / 当代",
+        "en": "Modern / Contemporary"
+      },
+      {
+        "key": "art_deco",
+        "cn": "装饰艺术",
+        "en": "Art Deco"
+      },
+      {
+        "key": "pop_art",
+        "cn": "波普艺术",
+        "en": "Pop Art"
+      },
+      {
+        "key": "gothic_dark",
+        "cn": "哥特 / 黑暗",
+        "en": "Gothic / Dark"
+      },
+      {
+        "key": "kawaii_cute",
+        "cn": "可爱 / Kawaii",
+        "en": "Kawaii / Cute"
+      },
+      {
+        "key": "realistic_hyperrealistic",
+        "cn": "写实 / 超写实",
+        "en": "Realistic / Hyperrealistic"
+      }
+    ]
+  },
+  "subjects": {
+    "label_cn": "主题",
+    "label_en": "Subject",
+    "tags": [
+      {
+        "key": "people_portraits",
+        "cn": "人物 / 肖像",
+        "en": "People / Portraits"
+      },
+      {
+        "key": "animals_pets",
+        "cn": "动物 / 宠物",
+        "en": "Animals / Pets"
+      },
+      {
+        "key": "nature_landscape",
+        "cn": "自然 / 风景",
+        "en": "Nature / Landscape"
+      },
+      {
+        "key": "architecture_buildings",
+        "cn": "建筑 / 楼宇",
+        "en": "Architecture / Buildings"
+      },
+      {
+        "key": "food_beverage",
+        "cn": "食物 / 饮料",
+        "en": "Food / Beverage"
+      },
+      {
+        "key": "vehicles_transportation",
+        "cn": "车辆 / 交通工具",
+        "en": "Vehicles / Transportation"
+      },
+      {
+        "key": "fashion_clothing",
+        "cn": "时尚 / 服装",
+        "en": "Fashion / Clothing"
+      },
+      {
+        "key": "technology_gadgets",
+        "cn": "科技 / 设备",
+        "en": "Technology / Gadgets"
+      },
+      {
+        "key": "space_astronomy",
+        "cn": "太空 / 天文",
+        "en": "Space / Astronomy"
+      },
+      {
+        "key": "underwater_ocean",
+        "cn": "水下 / 海洋",
+        "en": "Underwater / Ocean"
+      },
+      {
+        "key": "abstract_patterns",
+        "cn": "抽象 / 图案",
+        "en": "Abstract / Patterns"
+      },
+      {
+        "key": "characters_creatures",
+        "cn": "角色 / 生物",
+        "en": "Characters / Creatures"
+      },
+      {
+        "key": "objects_still_life",
+        "cn": "物体 / 静物",
+        "en": "Objects / Still Life"
+      },
+      {
+        "key": "text_typography",
+        "cn": "文字 / 排版",
+        "en": "Text / Typography"
+      },
+      {
+        "key": "flowers_plants",
+        "cn": "花卉 / 植物",
+        "en": "Flowers / Plants"
+      }
+    ]
+  }
+}

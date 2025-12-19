@@ -136,7 +136,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
           {/* Right Column - Details (5 cols) */}
           <div className="flex flex-col lg:col-span-5">
             {/* Author & Stats Row */}
-            <div className="dark:text-muted-foreground mb-8 flex flex-wrap items-center gap-6 text-sm text-gray-600">
+            <div className="dark:text-muted-foreground mb-4 flex flex-wrap items-center gap-6 text-sm text-gray-600">
               {/* Author */}
               <div className="flex items-center gap-2">
                 {/* Avatar */}
@@ -206,21 +206,21 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                   {post.stats.comments || '0'}
                 </span>
               </div>
-
-              {/* Tags */}
-              {post.tags && post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tagKey) => (
-                    <span
-                      key={tagKey}
-                      className="text-xs font-medium px-3 py-1 rounded-full bg-primary text-primary-foreground dark:bg-primary/20 dark:text-primary"
-                    >
-                      {tagTranslator.translate(tagKey, currentLanguage)}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
+
+            {/* Tags */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="mb-8 flex flex-wrap gap-2">
+                {post.tags.map((tagKey) => (
+                  <span
+                    key={tagKey}
+                    className="text-xs font-medium px-3 py-1 rounded-full bg-primary text-primary-foreground dark:bg-primary/20 dark:text-primary"
+                  >
+                    {tagTranslator.translate(tagKey, currentLanguage)}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div className="mb-8 flex items-center gap-3">

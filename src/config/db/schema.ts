@@ -2,6 +2,7 @@ import {
   boolean,
   index,
   integer,
+  jsonb,
   pgTable,
   text,
   timestamp,
@@ -592,27 +593,39 @@ export const landingPost = pgTable(
   'landing_post',
   {
     id: text('id').primaryKey(),
-    title: text('title').notNull(),
-    description: text('description').notNull(),
-    prompt: text('prompt'),
+    i18nContent: jsonb('i18n_content').notNull().$type<{
+      en: {
+        title: string;
+        description: string;
+        prompt: string;
+      };
+      'zh-CN': {
+        title: string;
+        description: string;
+        prompt: string;
+      };
+    }>(), // JSONB multi-language content
+    tagsArray: jsonb('tags_array').$type<{
+      en: string[];
+      'zh-CN': string[];
+    }>(), // JSONB multi-language tags
+    sourceUrl: text('source_url').notNull().unique(),
+    platform: text('platform').notNull(), // 'x', 'xiaohongshu', 'youtube'
+    author: text('author'),
+    authorAvatar: text('author_avatar'),
+    authorDisplayName: text('author_display_name'),
     imageUrl: text('image_url').notNull(),
     referenceImageUrl: text('reference_image_url'),
-    sourceUrl: text('source_url').notNull(),
-    platform: text('platform').notNull(), // 'x', 'xiaohongshu', 'other'
-    author: text('author'),
     likes: integer('likes').default(0).notNull(),
     comments: integer('comments').default(0).notNull(),
-    tags: text('tags'), // Comma separated tags
     model: text('model'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
-    authorAvatar: text('author_avatar'),
-    authorDisplayName: text('author_display_name'),
-    promptCn: text('prompt_cn'),
   },
   (table) => [
     index('idx_landing_post_created_at').on(table.createdAt),
+    index('idx_landing_post_platform').on(table.platform),
   ]
 );

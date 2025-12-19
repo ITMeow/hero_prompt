@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/core/db';
 import { landingPost } from '@/config/db/schema';
-import { eq, not, desc } from 'drizzle-orm';
+import { eq, not, desc, sql } from 'drizzle-orm';
 
 export async function GET(
   request: Request,
@@ -21,33 +21,61 @@ export async function GET(
     }
 
     const post = posts[0];
-    
-    // Recommendation logic
+
+    // Helper to extract all tags from multilingual object
+    const getAllTags = (tagsObj: any): string[] => {
+      if (!tagsObj) return [];
+      if (Array.isArray(tagsObj)) return tagsObj; // legacy support if any
+      // tagsObj is { en: string[], 'zh-CN': string[] }
+      // Extract all arrays and flatten
+      return Object.values(tagsObj).flat() as string[];
+    };
+
+    // Recommendation logic based on tags similarity
     // Fetch candidates (e.g. 50 latest) excluding current
     const candidates = await db()
-        .select()
-        .from(landingPost)
-        .where(not(eq(landingPost.id, id)))
-        .orderBy(desc(landingPost.createdAt))
-        .limit(50);
+      .select()
+      .from(landingPost)
+      .where(not(eq(landingPost.id, id)))
+      .orderBy(desc(landingPost.createdAt))
+      .limit(50);
 
     let relatedPosts = [];
-    
-    if (post.tags) {
-        const currentTags = post.tags.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+
+    const currentPostTags = getAllTags(post.tagsArray);
+
+    if (currentPostTags.length > 0) {
+      // Calculate tag similarity for each candidate
+      const scored = candidates.map(p => {
+        const candidateTags = getAllTags(p.tagsArray);
         
-        const scored = candidates.map(p => {
-            if (!p.tags) return { p, score: 0 };
-            const pTags = p.tags.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
-            const intersection = currentTags.filter(t => pTags.includes(t));
-            return { p, score: intersection.length };
-        });
-        
-        // Sort by score desc
-        scored.sort((a, b) => b.score - a.score);
-        relatedPosts = scored.slice(0, 3).map(x => x.p);
+        if (candidateTags.length === 0) {
+          return { p, score: 0 };
+        }
+
+        // Count matching tags (intersection)
+        const matchingTags = candidateTags.filter(tag =>
+          currentPostTags.includes(tag)
+        );
+
+        return { p, score: matchingTags.length };
+      });
+
+      // Sort by score (most similar first), then by likes, then by date
+      scored.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        if (b.p.likes !== a.p.likes) return b.p.likes - a.p.likes;
+        return new Date(b.p.createdAt).getTime() - new Date(a.p.createdAt).getTime();
+      });
+
+      // Take top 3 posts with at least 1 matching tag
+      relatedPosts = scored
+        .filter(x => x.score > 0)
+        .slice(0, 3)
+        .map(x => x.p);
     } else {
-        relatedPosts = candidates.slice(0, 3);
+      // If current post has no tags, just return most recent posts
+      relatedPosts = candidates.slice(0, 3);
     }
 
     return NextResponse.json({ post, relatedPosts });

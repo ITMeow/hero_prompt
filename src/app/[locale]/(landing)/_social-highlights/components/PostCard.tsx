@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Heart, Sparkles, ArrowRight } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
+import moment from 'moment';
 import { SocialPost } from '../lib/types';
 import { cn } from '@/shared/lib/utils';
-import { tagTranslator, type Language } from '@/shared/lib/tagTranslator';
+import { Badge } from '@/shared/components/ui/badge';
 
 interface PostCardProps {
   post: SocialPost;
@@ -16,8 +17,8 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
   const [imgSrc, setImgSrc] = useState(post.imageUrl);
   const [hasError, setHasError] = useState(false);
 
-  // Determine language for tag translation
-  const language: Language = locale === 'en' ? 'en' : 'zh-CN';
+  // Check if post is new (created today)
+  const isNew = moment(post.createdAt).isSame(moment(), 'day');
 
   const handleImgError = () => {
     if (!hasError) {
@@ -48,6 +49,15 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
             style={{ display: 'block' }}
           />
           
+          {/* New Badge */}
+          {isNew && (
+            <div className="absolute top-3 right-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
+               <Badge className="bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm px-2 py-0.5 text-xs font-semibold">
+                 New
+               </Badge>
+            </div>
+          )}
+
           {/* Gradient Overlay for Title Readability */}
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
 
@@ -78,12 +88,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
-            {post.tags.slice(0, 3).map((tagKey) => (
+            {post.tags.slice(0, 3).map((tag, index) => (
               <span
-                key={tagKey}
+                key={index}
                 className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-primary text-primary-foreground dark:bg-primary/20 dark:text-primary"
               >
-                {tagTranslator.translate(tagKey, language)}
+                {tag}
               </span>
             ))}
             {post.tags.length > 3 && (
