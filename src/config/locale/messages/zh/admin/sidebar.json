@@ -79,7 +79,7 @@
       "title": "业务",
       "items": [
         {
-          "title": "AI任务",
+          "title": "AI 任务",
           "url": "/admin/ai-tasks",
           "icon": "Brain"
         },
