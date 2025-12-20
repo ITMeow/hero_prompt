@@ -243,7 +243,14 @@ export function ImageGenerator({
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    if (!urlPrompt) {
+      const storedPrompt = sessionStorage.getItem('ai_generator_prompt');
+      if (storedPrompt) {
+        setPrompt(storedPrompt);
+        sessionStorage.removeItem('ai_generator_prompt');
+      }
+    }
+  }, [urlPrompt]);
 
   const promptLength = prompt.trim().length;
   const remainingCredits = user?.credits?.remainingCredits ?? 0;

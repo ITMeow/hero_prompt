@@ -51,7 +51,9 @@ export const PostDetail: React.FC<PostDetailProps> = ({
       ? post.i18nContent[translatedLanguage].prompt
       : post.prompt;
     
-    router.push(`/${locale}/ai-image-generator?prompt=${encodeURIComponent(text)}`);
+    // Save to sessionStorage to avoid URL length limits
+    sessionStorage.setItem('ai_generator_prompt', text);
+    router.push(`/${locale}/ai-image-generator`);
   };
 
   return (
