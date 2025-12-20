@@ -14,7 +14,7 @@ export function Input({
 }) {
   return (
     <InputComponent
-      value={formField.value as string}
+      value={(formField.value as string) ?? ''}
       onChange={formField.onChange}
       type={field.type || 'text'}
       placeholder={field.placeholder}

@@ -13,6 +13,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { Link } from '@/core/i18n/navigation';
+import { useSearchParams } from 'next/navigation';
 import { AIMediaType, AITaskStatus } from '@/extensions/ai/types';
 import {
   ImageUploader,
@@ -210,14 +211,16 @@ export function ImageGenerator({
   className,
 }: ImageGeneratorProps) {
   const t = useTranslations('ai.image.generator');
+  const searchParams = useSearchParams();
+  const urlPrompt = searchParams.get('prompt');
 
   const [activeTab, setActiveTab] =
     useState<ImageGeneratorTab>('text-to-image');
 
   const [costCredits, setCostCredits] = useState<number>(2);
-  const [provider, setProvider] = useState(PROVIDER_OPTIONS[0]?.value ?? '');
-  const [model, setModel] = useState(MODEL_OPTIONS[0]?.value ?? '');
-  const [prompt, setPrompt] = useState('');
+  const [provider, setProvider] = useState('gemini');
+  const [model, setModel] = useState('gemini-3-pro-image-preview');
+  const [prompt, setPrompt] = useState(urlPrompt ?? '');
   const [referenceImageItems, setReferenceImageItems] = useState<
     ImageUploaderValue[]
   >([]);
@@ -528,10 +531,21 @@ export function ImageGenerator({
       });
 
       if (!resp.ok) {
+        const errorText = await resp.text();
+        console.error('API Error Response:', errorText);
         throw new Error(`request failed with status: ${resp.status}`);
       }
 
-      const { code, message, data } = await resp.json();
+      const respText = await resp.text();
+      let json;
+      try {
+        json = JSON.parse(respText);
+      } catch (e) {
+        console.error('Failed to parse JSON response:', respText);
+        throw new Error('Invalid response from server');
+      }
+
+      const { code, message, data } = json;
       if (code !== 0) {
         throw new Error(message || 'Failed to create an image task');
       }
@@ -631,7 +645,7 @@ export function ImageGenerator({
                   </TabsList>
                 </Tabs>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 hidden">
                   <div className="space-y-2">
                     <Label>{t('form.provider')}</Label>
                     <Select

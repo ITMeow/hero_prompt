@@ -100,6 +100,11 @@ export async function getAllConfigs(): Promise<Configs> {
 
   const settingNames = await getAllSettingNames();
   settingNames.forEach((key) => {
+    // only load from env if not in db
+    if (dbConfigs[key]) {
+      return;
+    }
+
     const upperKey = key.toUpperCase();
     // use env configs if available
     if (process.env[upperKey]) {

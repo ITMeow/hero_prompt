@@ -8,4 +8,4 @@ node_modules
 .cursorrules
 .git
 vercel.json
-wrangler.toml
+wrangler.tomlscripts/grant-credits.ts

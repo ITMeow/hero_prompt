@@ -52,7 +52,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
           {/* New Badge */}
           {isNew && (
             <div className="absolute top-3 right-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
-               <Badge className="bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm px-2 py-0.5 text-xs font-semibold">
+               <Badge className="bg-primary hover:bg-primary/90 text-primary-foreground border-0 shadow-sm px-2 py-0.5 text-xs font-semibold">
                  New
                </Badge>
             </div>

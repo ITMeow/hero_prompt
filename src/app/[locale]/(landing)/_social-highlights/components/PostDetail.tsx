@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import confetti from 'canvas-confetti';
+import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
-  Check,
   Heart,
   MessageCircle,
   Sparkles,
@@ -35,9 +34,9 @@ export const PostDetail: React.FC<PostDetailProps> = ({
   onBack,
   onPostClick,
 }) => {
+  const router = useRouter();
   const t = useTranslations('social.landing');
   const locale = useLocale();
-  const [copied, setCopied] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isTranslated, setIsTranslated] = useState(false);
 
@@ -46,44 +45,13 @@ export const PostDetail: React.FC<PostDetailProps> = ({
   // Get the opposite language for translation toggle
   const translatedLanguage: Language = currentLanguage === 'zh-CN' ? 'en' : 'zh-CN';
 
-  const handleCopyPrompt = () => {
+  const handleTryThis = () => {
     // Get the prompt in the currently displayed language
     const text = isTranslated && post.i18nContent
       ? post.i18nContent[translatedLanguage].prompt
       : post.prompt;
-    navigator.clipboard.writeText(text);
-
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-
-    const duration = 3 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-    const randomInRange = (min: number, max: number) => {
-      return Math.random() * (max - min) + min;
-    };
-
-    const interval: any = setInterval(function () {
-      const timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
-
-      const particleCount = 50 * (timeLeft / duration);
-      // since particles fall down, start a bit higher than random
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-      });
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-      });
-    }, 250);
+    
+    router.push(`/${locale}/ai-image-generator?prompt=${encodeURIComponent(text)}`);
   };
 
   return (
@@ -225,16 +193,12 @@ export const PostDetail: React.FC<PostDetailProps> = ({
             {/* Action Buttons */}
             <div className="mb-8 flex items-center gap-3">
               <button
-                onClick={handleCopyPrompt}
+                onClick={handleTryThis}
                 data-slot="button"
                 className="focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-md px-6 py-2 text-sm font-medium whitespace-nowrap shadow-sm transition-all outline-none focus-visible:ring-[3px] active:scale-95 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
               >
-                {copied ? (
-                  <Check className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <Sparkles className="h-4 w-4" aria-hidden="true" />
-                )}
-                {copied ? t('copied') : t('try_this')}
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                {t('try_this')}
               </button>
 
               <button

@@ -772,6 +772,15 @@ export async function getSettings() {
       tab: 'ai',
     },
     {
+      name: 'gemini_base_url',
+      title: 'Gemini Base URL',
+      type: 'url',
+      placeholder: 'https://generativelanguage.googleapis.com',
+      group: 'gemini',
+      tip: 'Set any OpenAI compatible API URL, leave empty to use the default Gemini API URL',
+      tab: 'ai',
+    },
+    {
       name: 'kie_api_key',
       title: 'Kie API Key',
       type: 'password',

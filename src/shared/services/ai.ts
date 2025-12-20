@@ -44,6 +44,7 @@ export function getAIManagerWithConfigs(configs: Configs) {
     aiManager.addProvider(
       new GeminiProvider({
         apiKey: configs.gemini_api_key,
+        baseUrl: configs.gemini_base_url,
       })
     );
   }

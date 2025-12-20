@@ -17,6 +17,7 @@ import {
  */
 export interface GeminiConfigs extends AIConfigs {
   apiKey: string;
+  baseUrl?: string;
 }
 
 /**
@@ -53,7 +54,10 @@ export class GeminiProvider implements AIProvider {
       throw new Error('prompt is required');
     }
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.configs.apiKey}`;
+    const baseUrl =
+      this.configs.baseUrl?.replace(/\/$/, '') ||
+      'https://generativelanguage.googleapis.com';
+    const apiUrl = `${baseUrl}/v1beta/models/${model}:generateContent?key=${this.configs.apiKey}`;
 
     const requestParts: any[] = [
       {
@@ -88,23 +92,35 @@ export class GeminiProvider implements AIProvider {
     const { image_input, ...generationConfig } = options || {};
 
     const payload = {
-      contents: {
-        role: 'user',
-        parts: requestParts,
-      },
+      contents: [
+        {
+          role: 'user',
+          parts: requestParts,
+        },
+      ],
       generation_config: {
         response_modalities: ['TEXT', 'IMAGE'],
         ...generationConfig,
       },
     };
 
-    const resp = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    console.log('--- Gemini Request Start ---');
+    console.log('API URL:', apiUrl);
+    console.log('Payload:', JSON.stringify(payload, null, 2));
+    console.log('--- Gemini Request End ---');
+
+    let resp;
+    try {
+      resp = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch (e: any) {
+      throw new Error(`Gemini API request failed: ${e.message}`);
+    }
 
     if (!resp.ok) {
       const errorText = await resp.text();

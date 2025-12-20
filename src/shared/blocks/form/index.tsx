@@ -347,7 +347,8 @@ export function Form({
                     <FormControl>
                       {item.type === 'textarea' ? (
                         <Textarea
-                          {...(field as any)}
+                          {...field}
+                          value={(field.value as string) ?? ''}
                           placeholder={item.placeholder}
                           {...item.attributes}
                         />
