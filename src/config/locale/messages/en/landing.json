@@ -30,11 +30,6 @@
           "title": "Billing",
           "url": "/settings/billing",
           "icon": "CreditCard"
-        },
-        {
-          "title": "My Creations",
-          "url": "/my-creations",
-          "icon": "RiImageLine"
         }
       ]
     },

@@ -1,5 +1,5 @@
-import { ChatGenerator } from '@/shared/blocks/chat/generator';
+import NotFoundPage from '@/app/not-found';
 
 export default function ChatPage() {
-  return <ChatGenerator />;
+  return <NotFoundPage />;
 }

@@ -1,22 +1,12 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
-
-import { getThemePage } from '@/core/theme';
-import { VideoGenerator } from '@/shared/blocks/generator';
-import { getMetadata } from '@/shared/lib/seo';
-import { DynamicPage } from '@/shared/types/blocks/landing';
-
-export const revalidate = 3600;
-
-export const generateMetadata = getMetadata({
-  metadataKey: 'ai.video.metadata',
-  canonicalUrl: '/ai-video-generator',
-});
+import NotFoundPage from '@/app/not-found';
 
 export default async function AiVideoGeneratorPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
+  return <NotFoundPage />;
+
   const { locale } = await params;
   setRequestLocale(locale);
 

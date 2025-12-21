@@ -14,7 +14,16 @@ export default async function ActivityLayout({
   const title = t('title');
 
   // settings nav
-  const nav = t.raw('nav');
+  let nav = t.raw('nav');
+
+  // Filter out hidden items from nav
+  if (nav && nav.items && Array.isArray(nav.items)) {
+    nav.items = nav.items.filter(
+      (item: any) =>
+        !item.url?.includes('/activity/chats') &&
+        !item.url?.includes('/activity/ai-tasks')
+    );
+  }
 
   const topNav = t.raw('top_nav');
 

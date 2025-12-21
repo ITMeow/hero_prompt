@@ -1,22 +1,12 @@
-import { getTranslations } from 'next-intl/server';
-
-import { Empty } from '@/shared/blocks/common';
-import { TableCard } from '@/shared/blocks/table';
-import {
-  Chat,
-  ChatStatus,
-  getChats,
-  getChatsCount,
-} from '@/shared/models/chat';
-import { getUserInfo } from '@/shared/models/user';
-import { Button, Tab } from '@/shared/types/blocks/common';
-import { type Table } from '@/shared/types/blocks/table';
+import NotFoundPage from '@/app/not-found';
 
 export default async function ChatsPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: number; pageSize?: number }>;
 }) {
+  return <NotFoundPage />;
+
   const { page: pageNum, pageSize } = await searchParams;
   const page = pageNum || 1;
   const limit = pageSize || 20;

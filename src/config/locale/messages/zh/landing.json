@@ -30,11 +30,6 @@
           "title": "账单",
           "url": "/settings/billing",
           "icon": "CreditCard"
-        },
-        {
-          "title": "我的创作",
-          "url": "/my-creations",
-          "icon": "RiImageLine"
         }
       ]
     },

@@ -1,18 +1,12 @@
-import { getTranslations } from 'next-intl/server';
-
-import { AITaskStatus } from '@/extensions/ai';
-import { AudioPlayer, Empty, LazyImage } from '@/shared/blocks/common';
-import { TableCard } from '@/shared/blocks/table';
-import { AITask, getAITasks, getAITasksCount } from '@/shared/models/ai_task';
-import { getUserInfo } from '@/shared/models/user';
-import { Button, Tab } from '@/shared/types/blocks/common';
-import { type Table } from '@/shared/types/blocks/table';
+import NotFoundPage from '@/app/not-found';
 
 export default async function AiTasksPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: number; pageSize?: number; type?: string }>;
 }) {
+  return <NotFoundPage />;
+
   const { page: pageNum, pageSize, type } = await searchParams;
   const page = pageNum || 1;
   const limit = pageSize || 20;

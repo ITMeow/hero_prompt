@@ -14,9 +14,25 @@ export default async function SettingsLayout({
   const title = t('title');
 
   // settings nav
-  const nav = t.raw('nav');
+  let nav = t.raw('nav');
 
-  const topNav = t.raw('top_nav');
+  // Filter out hidden items from nav (sidebar)
+  if (nav && nav.items && Array.isArray(nav.items)) {
+    nav.items = nav.items.filter(
+      (item: any) =>
+        !item.url?.includes('/settings/apikeys') &&
+        !item.url?.includes('/activity')
+    );
+  }
+
+  let topNav = t.raw('top_nav');
+
+  // Filter out hidden items from top_nav (e.g. Activity)
+  if (topNav && topNav.items && Array.isArray(topNav.items)) {
+    topNav.items = topNav.items.filter(
+      (item: any) => !item.url?.includes('/activity')
+    );
+  }
 
   return (
     <ConsoleLayout

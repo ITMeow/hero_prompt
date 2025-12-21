@@ -1,26 +1,12 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
-
-import { getThemePage } from '@/core/theme';
-import { getMetadata } from '@/shared/lib/seo';
-import {
-  getLocalPostsAndCategories,
-  PostType as PostDataType,
-} from '@/shared/models/post';
-import { Blog as BlogType, Post as PostType } from '@/shared/types/blocks/blog';
-import { DynamicPage } from '@/shared/types/blocks/landing';
-
-export const revalidate = 3600;
-
-export const generateMetadata = getMetadata({
-  metadataKey: 'updates.metadata',
-  canonicalUrl: '/updates',
-});
+import NotFoundPage from '@/app/not-found';
 
 export default async function UpdatesPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
+  return <NotFoundPage />;
+
   const { locale } = await params;
   setRequestLocale(locale);
 

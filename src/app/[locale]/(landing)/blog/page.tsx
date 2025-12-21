@@ -1,21 +1,4 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
-
-import { getThemePage } from '@/core/theme';
-import { getMetadata } from '@/shared/lib/seo';
-import { getPostsAndCategories } from '@/shared/models/post';
-import {
-  Blog as BlogType,
-  Category as CategoryType,
-  Post as PostType,
-} from '@/shared/types/blocks/blog';
-import { DynamicPage } from '@/shared/types/blocks/landing';
-
-export const revalidate = 3600;
-
-export const generateMetadata = getMetadata({
-  metadataKey: 'blog.metadata',
-  canonicalUrl: '/blog',
-});
+import NotFoundPage from '@/app/not-found';
 
 export default async function BlogPage({
   params,
@@ -24,8 +7,9 @@ export default async function BlogPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ page?: number; pageSize?: number }>;
 }) {
+  return <NotFoundPage />;
+
   const { locale } = await params;
-  setRequestLocale(locale);
 
   // load blog data
   const t = await getTranslations('blog');

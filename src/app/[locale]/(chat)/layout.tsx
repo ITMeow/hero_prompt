@@ -10,18 +10,20 @@ import { ChatContextProvider } from '@/shared/contexts/chat';
 import { Sidebar as SidebarType } from '@/shared/types/blocks/dashboard';
 
 export default function ChatLayout({ children }: { children: ReactNode }) {
-  const t = useTranslations('ai.chat');
+  // const t = useTranslations('ai.chat');
 
-  const sidebar: SidebarType = t.raw('sidebar');
+  // const sidebar: SidebarType = t.raw('sidebar');
 
-  sidebar.library = <ChatLibrary />;
+  // sidebar.library = <ChatLibrary />;
 
   return (
-    <ChatContextProvider>
-      <DashboardLayout sidebar={sidebar}>
-        <LocaleDetector />
-        {children}
-      </DashboardLayout>
-    </ChatContextProvider>
+    // <ChatContextProvider>
+    //   <DashboardLayout sidebar={sidebar}>
+    <>
+      <LocaleDetector />
+      {children}
+    </>
+    //   </DashboardLayout>
+    // </ChatContextProvider>
   );
 }
