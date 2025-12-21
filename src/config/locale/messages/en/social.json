@@ -13,6 +13,15 @@
     "no_prompt_desc": "(Full prompt not available, showing description)",
     "you_might_like": "You might also like",
     "back_to_home": "Back to Home",
-    "post_not_found": "Post not found"
+    "post_not_found": "Post not found",
+    "search_placeholder": "Search title, description, prompt...",
+    "search_button": "Search",
+    "filter_all": "All",
+    "total_results": "Total {count} results",
+    "filter_button": "Filter",
+    "select_tags": "Select Tags",
+    "apply": "Apply",
+    "reset": "Reset",
+    "cancel": "Cancel"
   }
 }

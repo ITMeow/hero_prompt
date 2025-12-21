@@ -40,7 +40,6 @@ export default async function AiImageGeneratorPage({
       generator: {
         component: <ImageGenerator srOnlyTitle={t.raw('generator.title')} />,
       },
-      faq: tl.raw('faq'),
       cta: tl.raw('cta'),
     },
   };

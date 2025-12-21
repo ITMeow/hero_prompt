@@ -325,13 +325,13 @@ export async function grantCreditsForNewUser(user: User) {
   // get configs from db
   const configs = await getAllConfigs();
 
-  // if initial credits enabled
-  if (configs.initial_credits_enabled !== 'true') {
+  // if initial credits enabled (default to true)
+  if (configs.initial_credits_enabled === 'false') {
     return;
   }
 
-  // get initial credits amount and valid days
-  const credits = parseInt(configs.initial_credits_amount as string) || 0;
+  // get initial credits amount and valid days (default to 20)
+  const credits = parseInt((configs.initial_credits_amount || '20') as string) || 0;
   if (credits <= 0) {
     return;
   }
