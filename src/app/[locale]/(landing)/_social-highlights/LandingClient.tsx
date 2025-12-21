@@ -212,6 +212,7 @@ export default function LandingClient() {
               <Button 
                 variant="outline" 
                 onClick={handleOpenFilter}
+                suppressHydrationWarning
                 className="rounded-full px-6 h-10 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2"
               >
                 <Filter className="w-4 h-4" />
