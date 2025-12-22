@@ -140,12 +140,23 @@ export class GeminiProvider implements AIProvider {
     const parts = candidate.content?.parts;
 
     if (!parts || parts.length === 0) {
+      if (candidate.finishReason) {
+        throw new Error(`generation failed with reason: ${candidate.finishReason}`);
+      }
       throw new Error('no parts returned');
     }
 
     const imagePart = parts.find((p: any) => p.inlineData);
 
     if (!imagePart) {
+      // if no image part, try to find text part for error message
+      const textPart = parts.find((p: any) => p.text);
+      if (textPart) {
+        throw new Error(textPart.text);
+      }
+      if (candidate.finishReason) {
+        throw new Error(`generation failed with reason: ${candidate.finishReason}`);
+      }
       throw new Error('no image part returned');
     }
 
