@@ -19,12 +19,13 @@ import NotFoundPage from '@/app/not-found';
 export default async function DocsContentPage(props: {
   params: Promise<{ slug?: string[]; locale?: string }>;
 }) {
-  return <NotFoundPage />;
-
   const params = await props.params;
   const page = source.getPage(params.slug, params.locale);
 
-  if (!page) notFound();
+  if (!page) {
+    notFound();
+    return null;
+  }
 
   const MDXContent = page.data.body;
 

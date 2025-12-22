@@ -7,6 +7,7 @@ export default async function ApiKeysPage({
 }) {
   return <NotFoundPage />;
 
+  /*
   const { page: pageNum, pageSize } = await searchParams;
   const page = pageNum || 1;
   const limit = pageSize || 20;
@@ -85,4 +86,5 @@ export default async function ApiKeysPage({
       <TableCard title={t('list.title')} buttons={buttons} table={table} />
     </div>
   );
+  */
 }

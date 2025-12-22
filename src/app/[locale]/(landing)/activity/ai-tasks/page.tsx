@@ -7,6 +7,7 @@ export default async function AiTasksPage({
 }) {
   return <NotFoundPage />;
 
+  /*
   const { page: pageNum, pageSize, type } = await searchParams;
   const page = pageNum || 1;
   const limit = pageSize || 20;
@@ -167,4 +168,5 @@ export default async function AiTasksPage({
       <TableCard title={t('list.title')} tabs={tabs} table={table} />
     </div>
   );
+  */
 }

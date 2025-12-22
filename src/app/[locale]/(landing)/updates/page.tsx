@@ -7,6 +7,7 @@ export default async function UpdatesPage({
 }) {
   return <NotFoundPage />;
 
+  /*
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -53,4 +54,5 @@ export default async function UpdatesPage({
   const Page = await getThemePage('dynamic-page');
 
   return <Page locale={locale} page={page} />;
+  */
 }

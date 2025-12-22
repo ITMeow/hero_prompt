@@ -7,6 +7,7 @@ export default async function ChatsPage({
 }) {
   return <NotFoundPage />;
 
+  /*
   const { page: pageNum, pageSize } = await searchParams;
   const page = pageNum || 1;
   const limit = pageSize || 20;
@@ -26,6 +27,7 @@ export default async function ChatsPage({
 
   const total = await getChatsCount({
     userId: user.id,
+    mediaType: 'text',
   });
 
   const table: Table = {
@@ -77,4 +79,5 @@ export default async function ChatsPage({
       <TableCard title={t('list.title')} table={table} buttons={buttons} />
     </div>
   );
+  */
 }

@@ -12,20 +12,24 @@
 ### 核心策略
 不使用 `next/navigation` 的 `notFound()` 函数抛出异常，而是直接在页面组件（Page Component）中渲染根目录下的 404 组件。
 
+**注意：** 为了解决 Next.js 构建过程（`pnpm build`）中对不可达代码（Dead Code）的类型检查报错，**原始的页面逻辑代码已被注释块 `/* ... */` 包裹**。
+
 **代码模式示例：**
 
 ```typescript
-// 原始代码被注释或移除
-// import { OriginalComponent } from ...
-
 // 引入根目录的 404 组件
 import NotFoundPage from '@/app/not-found';
 
 export default function TargetPage() {
-  // 直接返回 404 组件，不执行原有逻辑
+  // 1. 直接返回 404 组件
   return <NotFoundPage />;
   
-  // 原有的逻辑代码保留在下方（不可达）或已被移除
+  // 2. 原始逻辑代码被注释（为了通过构建检查）
+  /*
+  const { locale } = await params;
+  // ... 原始业务逻辑 ...
+  return <Page ... />;
+  */
 }
 ```
 

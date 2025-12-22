@@ -7,6 +7,7 @@ export default async function BlogDetailPage({
 }) {
   return <NotFoundPage />;
 
+  /*
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
@@ -31,4 +32,5 @@ export default async function BlogDetailPage({
   const Page = await getThemePage('dynamic-page');
 
   return <Page locale={locale} page={page} />;
+  */
 }

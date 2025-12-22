@@ -9,6 +9,7 @@ export default async function CategoryBlogPage({
 }) {
   return <NotFoundPage />;
 
+  /*
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
@@ -101,4 +102,5 @@ export default async function CategoryBlogPage({
   const Page = await getThemePage('dynamic-page');
 
   return <Page locale={locale} page={_page} />;
+  */
 }

@@ -9,6 +9,7 @@ export default async function BlogPage({
 }) {
   return <NotFoundPage />;
 
+  /*
   const { locale } = await params;
 
   // load blog data
@@ -69,4 +70,5 @@ export default async function BlogPage({
   const Page = await getThemePage('dynamic-page');
 
   return <Page locale={locale} page={page} />;
+  */
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Heart, Sparkles, ArrowRight } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import moment from 'moment';
 import { SocialPost } from '../lib/types';
 import { cn } from '@/shared/lib/utils';
@@ -14,6 +15,7 @@ interface PostCardProps {
 export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
   const t = useTranslations('social.landing');
   const locale = useLocale();
+  const router = useRouter();
   const [imgSrc, setImgSrc] = useState(post.imageUrl);
   const [hasError, setHasError] = useState(false);
 
@@ -25,6 +27,21 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
       setImgSrc('/imgs/bg/tree.jpg');
       setHasError(true);
     }
+  };
+
+  const handleTryThis = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const textToCopy = post.prompt || post.description || '';
+    
+    // Copy to clipboard
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(textToCopy).catch(err => console.error('Failed to copy:', err));
+    }
+    
+    // Navigate with prompt
+    router.push(`/${locale}/ai-image-generator?prompt=${encodeURIComponent(textToCopy)}`);
   };
 
   return (
@@ -68,12 +85,15 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
             </h3>
           </div>
           
-          {/* "Try this" Button Overlay - Moved to Top Right */}
-          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transform translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300 ease-out z-20">
-            <div className="bg-white/90 backdrop-blur-md text-gray-900 py-2 px-3 rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 shadow-lg border border-white/50">
-              <Sparkles size={14} className="text-primary" />
+          {/* "Try this" Button - Moved above title */}
+          <div className="absolute bottom-20 left-0 right-0 px-6 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out z-20 flex justify-center">
+            <button 
+              onClick={handleTryThis}
+              className="w-full bg-white/90 hover:bg-white backdrop-blur-md text-gray-900 py-3 rounded-full font-semibold text-sm flex items-center justify-center gap-2 shadow-lg border border-white/50 transform hover:scale-[1.02] transition-all"
+            >
+              <Sparkles size={16} className="text-primary" />
               <span>{t('try_this')}</span>
-            </div>
+            </button>
           </div>
         </div>
       </div>

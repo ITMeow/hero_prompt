@@ -7,6 +7,7 @@ export default async function AiMusicGeneratorPage({
 }) {
   return <NotFoundPage />;
 
+  /*
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -39,4 +40,5 @@ export default async function AiMusicGeneratorPage({
   const Page = await getThemePage('dynamic-page');
 
   return <Page locale={locale} page={page} />;
+  */
 }
