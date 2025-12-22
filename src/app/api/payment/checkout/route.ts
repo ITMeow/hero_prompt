@@ -1,5 +1,8 @@
 import { getTranslations } from 'next-intl/server';
+import { and, eq } from 'drizzle-orm';
 
+import { db } from '@/core/db';
+import { order as orderSchema } from '@/config/db/schema';
 import {
   PaymentInterval,
   PaymentOrder,
@@ -9,6 +12,13 @@ import {
 import { getSnowId, getUuid } from '@/shared/lib/hash';
 import { respData, respErr } from '@/shared/lib/resp';
 import { getAllConfigs } from '@/shared/models/config';
+import {
+  calculateCreditExpirationTime,
+  createCredit,
+  CreditStatus,
+  CreditTransactionScene,
+  CreditTransactionType,
+} from '@/shared/models/credit';
 import {
   createOrder,
   NewOrder,
@@ -41,7 +51,7 @@ export async function POST(req: Request) {
       return respErr('pricing item not found');
     }
 
-    if (!pricingItem.product_id && !pricingItem.amount) {
+    if (!pricingItem.product_id && !pricingItem.amount && pricingItem.amount !== 0) {
       return respErr('invalid pricing item');
     }
 
@@ -59,7 +69,11 @@ export async function POST(req: Request) {
     if (!paymentProviderName) {
       paymentProviderName = configs.default_payment_provider;
     }
-    if (!paymentProviderName) {
+
+    // Check if it is a free product
+    const isFreeProduct = pricingItem.amount === 0;
+
+    if (!paymentProviderName && !isFreeProduct) {
       return respErr('no payment provider configured');
     }
 
@@ -84,7 +98,7 @@ export async function POST(req: Request) {
     }
 
     // If payment_providers is configured, validate the selected provider
-    if (allowedProviders && allowedProviders.length > 0) {
+    if (allowedProviders && allowedProviders.length > 0 && !isFreeProduct) {
       if (!allowedProviders.includes(paymentProviderName)) {
         return respErr(
           `payment provider ${paymentProviderName} is not supported for this currency`
@@ -95,9 +109,12 @@ export async function POST(req: Request) {
     // get default payment provider
     const paymentService = await getPaymentService();
 
-    const paymentProvider = paymentService.getProvider(paymentProviderName);
-    if (!paymentProvider || !paymentProvider.name) {
-      return respErr('no payment provider configured');
+    let paymentProvider: any = { name: 'system' };
+    if (!isFreeProduct) {
+      paymentProvider = paymentService.getProvider(paymentProviderName);
+      if (!paymentProvider || !paymentProvider.name) {
+        return respErr('no payment provider configured');
+      }
     }
 
     // checkout currency and amount - calculate from server-side data only (never trust client input)
@@ -127,6 +144,75 @@ export async function POST(req: Request) {
         // If currency not found in list, fallback to default (already set above)
       }
       // If no currencies list exists, fallback to default (already set above)
+    }
+
+    // Handle Free Trial (Amount === 0)
+    if (checkoutAmount === 0) {
+      // Check if user has already claimed this product
+      const existingOrder = await db().query.order.findFirst({
+        where: and(
+          eq(orderSchema.userId, user.id),
+          eq(orderSchema.productId, pricingItem.product_id),
+          eq(orderSchema.status, OrderStatus.PAID)
+        ),
+      });
+
+      if (existingOrder) {
+        return respErr('You have already claimed this free trial.');
+      }
+
+      const orderNo = getSnowId();
+      const currentTime = new Date();
+
+      const order: NewOrder = {
+        id: getUuid(),
+        orderNo: orderNo,
+        userId: user.id,
+        userEmail: user.email,
+        status: OrderStatus.PAID,
+        amount: 0,
+        currency: checkoutCurrency,
+        productId: pricingItem.product_id,
+        paymentType: PaymentType.ONE_TIME,
+        paymentInterval: PaymentInterval.ONE_TIME,
+        paymentProvider: 'system',
+        checkoutInfo: '{}',
+        createdAt: currentTime,
+        paidAt: currentTime,
+        productName: pricingItem.product_name,
+        description: pricingItem.description,
+        callbackUrl: '',
+        creditsAmount: pricingItem.credits,
+        creditsValidDays: pricingItem.valid_days,
+        planName: pricingItem.plan_name || '',
+        paymentProductId: '',
+        discountCode: '',
+      };
+
+      await createOrder(order);
+
+      // Grant Credits
+      const creditsValidDays = pricingItem.valid_days || 0;
+      const expiresAt = calculateCreditExpirationTime({
+        creditsValidDays,
+      });
+
+      await createCredit({
+        id: getUuid(),
+        userId: user.id,
+        userEmail: user.email,
+        orderNo: orderNo,
+        transactionNo: getSnowId(),
+        transactionType: CreditTransactionType.GRANT,
+        transactionScene: CreditTransactionScene.GIFT,
+        credits: pricingItem.credits || 0,
+        remainingCredits: pricingItem.credits || 0,
+        description: `Free Trial: ${pricingItem.product_name}`,
+        status: CreditStatus.ACTIVE,
+        expiresAt: expiresAt,
+      });
+
+      return respData({ checkoutUrl: null, success: true });
     }
 
     // get payment interval

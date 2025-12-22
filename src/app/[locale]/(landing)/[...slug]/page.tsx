@@ -63,10 +63,15 @@ export async function generateMetadata({
     typeof slug === 'string' ? slug : (slug as string[]).join('.') || '';
 
   const messageKey = `pages.${dynamicPageSlug}`;
-  const t = await getTranslations({ locale, namespace: messageKey });
+  let t;
+  try {
+    t = await getTranslations({ locale, namespace: messageKey });
+  } catch (e) {
+    // ignore
+  }
 
   // return dynamic page metadata
-  if (t.has('metadata')) {
+  if (t?.has('metadata')) {
     title = t.raw('metadata.title');
     description = t.raw('metadata.description');
 
@@ -134,7 +139,12 @@ export default async function DynamicPage({
 
   const messageKey = `pages.${dynamicPageSlug}`;
 
-  const t = await getTranslations({ locale, namespace: messageKey });
+  let t;
+  try {
+    t = await getTranslations({ locale, namespace: messageKey });
+  } catch (error) {
+    return notFound();
+  }
 
   // return dynamic page
   if (t.has('page')) {

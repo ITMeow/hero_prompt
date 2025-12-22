@@ -32,7 +32,7 @@ export function BrandLogo({ brand }: { brand: BrandType }) {
         </svg>
       </div>
       <span className="text-slate-900 dark:text-slate-100 text-2xl font-semibold tracking-tight">
-        {brand.title || 'Cyber Hero Prompt'}
+        {brand.title || 'HeroPrompt'}
       </span>
     </Link>
   );

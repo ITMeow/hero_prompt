@@ -80,10 +80,12 @@ export function Pricing({
   pricing,
   className,
   currentSubscription,
+  purchasedProducts = [],
 }: {
   pricing: PricingType;
   className?: string;
   currentSubscription?: Subscription;
+  purchasedProducts?: string[];
 }) {
   const locale = useLocale();
   const t = useTranslations('pricing.page');
@@ -301,14 +303,19 @@ export function Pricing({
       }
 
       const { checkoutUrl } = data;
-      if (!checkoutUrl) {
-        throw new Error('checkout url not found');
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        toast.success(t('payment_success') || 'Payment successful');
+        window.location.reload();
       }
-
-      window.location.href = checkoutUrl;
     } catch (e: any) {
       console.log('checkout failed: ', e);
-      toast.error('checkout failed: ' + e.message);
+      if (e.message?.includes('no payment provider configured')) {
+        toast.warning('支付系统正在建设和审核当中,请耐心等待');
+      } else {
+        toast.error('checkout failed: ' + e.message);
+      }
 
       setIsLoading(false);
       setProductId(null);
@@ -378,6 +385,8 @@ export function Pricing({
             ) {
               isCurrentPlan = true;
             }
+
+            const isPurchased = purchasedProducts?.includes(item.product_id);
 
             // Get currency state for this item
             const currencyState = itemCurrencies[item.product_id];
@@ -464,6 +473,16 @@ export function Pricing({
                     >
                       <span className="hidden text-sm md:block">
                         {t('current_plan')}
+                      </span>
+                    </Button>
+                  ) : isPurchased && item.amount === 0 ? (
+                    <Button
+                      variant="outline"
+                      className="mt-4 h-9 w-full px-4 py-2"
+                      disabled
+                    >
+                      <span className="hidden text-sm md:block">
+                        {t('already_claimed') || 'Already Claimed'}
                       </span>
                     </Button>
                   ) : (

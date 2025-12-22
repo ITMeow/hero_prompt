@@ -39,8 +39,8 @@
   },
   "hero": {
     "id": "hero",
-    "title": "Unleash Your Creativity with Cyber Hero Prompt",
-    "highlight_text": "Cyber Hero Prompt",
+    "title": "Unleash Your Creativity with HeroPrompt",
+    "highlight_text": "HeroPrompt",
     "description": "Experience the next evolution in AI image generation. Powered by the advanced Nano Banana 2 and Gemini 3 Pro Image models, turn your imagination into reality in seconds.",
     "announcement": {
       "badge": "New",
@@ -65,7 +65,7 @@
       }
     ],
     "show_avatars": true,
-    "avatars_tip": "10k+ creators are using Cyber Hero Prompt",
+    "avatars_tip": "10k+ creators are using HeroPrompt",
     "show_award": false,
     "image": {
       "src": "/imgs/features/landing-page.png",
@@ -88,10 +88,10 @@
     "title": "Powered by world-class AI technology",
     "items": [
       {
-        "title": "Cyber Hero Prompt",
+        "title": "HeroPrompt",
         "image": {
           "src": "/imgs/logos/nextjs.svg",
-          "alt": "Cyber Hero Prompt"
+          "alt": "HeroPrompt"
         }
       },
       {
@@ -127,9 +127,9 @@
   "introduce": {
     "block": "features-list",
     "id": "introduce",
-    "title": "What is Cyber Hero Prompt?",
+    "title": "What is HeroPrompt?",
     "label": "Introduction",
-    "description": "Cyber Hero Prompt is a state-of-the-art AI image generator that leverages the power of Nano Banana 2 to deliver hyper-realistic and artistic visuals.",
+    "description": "HeroPrompt is a state-of-the-art AI image generator that leverages the power of Nano Banana 2 to deliver hyper-realistic and artistic visuals.",
     "image": {
       "src": "/imgs/features/landing-page.png",
       "alt": "introduce"
@@ -177,13 +177,13 @@
   "benefits": {
     "block": "features-accordion",
     "id": "benefits",
-    "title": "Why Choose Cyber Hero Prompt",
+    "title": "Why Choose HeroPrompt",
     "label": "Benefits",
     "description": "Unlock the full potential of AI art with features designed for professionals and enthusiasts alike.",
     "items": [
       {
         "title": "Superior Image Quality",
-        "description": "Cyber Hero Prompt delivers industry-leading image fidelity, perfect for print and digital media.",
+        "description": "HeroPrompt delivers industry-leading image fidelity, perfect for print and digital media.",
         "icon": "RiHdLine",
         "image": {
           "src": "/imgs/features/user-billing.png",
@@ -323,12 +323,12 @@
   "testimonials": {
     "id": "testimonials",
     "title": "What Our Users Say",
-    "description": "See how Cyber Hero Prompt is transforming creative workflows.",
+    "description": "See how HeroPrompt is transforming creative workflows.",
     "items": [
       {
         "name": "Sarah Jenkins",
         "role": "Digital Artist",
-        "quote": "Cyber Hero Prompt's ability to understand complex prompts is unmatched. It's become an essential part of my concept art workflow.",
+        "quote": "HeroPrompt's ability to understand complex prompts is unmatched. It's become an essential part of my concept art workflow.",
         "image": {
           "src": "/imgs/avatars/1.png",
           "alt": "Sarah"
@@ -364,7 +364,7 @@
       {
         "name": "Lisa Wang",
         "role": "Content Creator",
-        "quote": "I love the community gallery! It's so inspiring to see what others are creating with Cyber Hero Prompt. The interface is super user-friendly too.",
+        "quote": "I love the community gallery! It's so inspiring to see what others are creating with HeroPrompt. The interface is super user-friendly too.",
         "image": {
           "src": "/imgs/avatars/5.png",
           "alt": "Lisa"
@@ -388,8 +388,8 @@
     "tip": "Can't find what you're looking for? Contact our <a href='/contact' class='text-primary font-medium hover:underline'>support team</a>",
     "items": [
       {
-        "question": "What is Cyber Hero Prompt?",
-        "answer": "Cyber Hero Prompt is an advanced AI platform that allows you to generate high-quality images from text descriptions using state-of-the-art models like Nano Banana 2 and Gemini 3 Pro."
+        "question": "What is HeroPrompt?",
+        "answer": "HeroPrompt is an advanced AI platform that allows you to generate high-quality images from text descriptions using state-of-the-art models like Nano Banana 2 and Gemini 3 Pro."
       },
       {
         "question": "Can I use the images for commercial purposes?",
@@ -405,7 +405,7 @@
       },
       {
         "question": "Is there a free trial?",
-        "answer": "Yes, we offer a free tier with daily credits so you can try out Cyber Hero Prompt and see the magic for yourself before subscribing."
+        "answer": "Yes, we offer a free tier with daily credits so you can try out HeroPrompt and see the magic for yourself before subscribing."
       },
       {
         "question": "Can I upload my own images?",
@@ -416,7 +416,7 @@
   "cta": {
     "id": "cta",
     "title": "Start Creating Today",
-    "description": "Join thousands of creators and unleash your imagination with Cyber Hero Prompt.",
+    "description": "Join thousands of creators and unleash your imagination with HeroPrompt.",
     "buttons": [
       {
         "title": "Get Started for Free",
@@ -453,11 +453,11 @@
     "hidden": true,
     "id": "footer",
     "brand": {
-      "title": "Cyber Hero Prompt",
-      "description": "Cyber Hero Prompt is the ultimate AI image generation platform for creators, designers, and visionaries.",
+      "title": "HeroPrompt",
+      "description": "HeroPrompt is the ultimate AI image generation platform for creators, designers, and visionaries.",
       "logo": {
         "src": "/logo.png",
-        "alt": "Cyber Hero Prompt",
+        "alt": "HeroPrompt",
         "width": 100,
         "height": 100
       },

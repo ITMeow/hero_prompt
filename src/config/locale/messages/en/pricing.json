@@ -5,9 +5,9 @@
   },
   "pricing": {
     "id": "pricing",
-    "sr_only_title": "ShipAny Pricing",
+    "sr_only_title": "HeroPrompt Pricing",
     "title": "Pricing",
-    "description": "Get all features of ShipAny, Ship your AI SaaS startups fast.",
+    "description": "Unlock infinite inspiration. Make every Prompt a masterpiece.",
     "groups": [
       {
         "name": "one-time",
@@ -17,318 +17,168 @@
         "name": "monthly",
         "title": "Monthly",
         "is_featured": true,
-        "label": "save 15%"
-      },
-      {
-        "name": "yearly",
-        "title": "Annually"
+        "label": "Best Value"
       }
     ],
     "items": [
       {
-        "title": "Starter",
-        "description": "Get started with your first SaaS startup.",
+        "title": "Free Trial",
+        "description": "Try HeroPrompt free.",
         "features_title": "Includes",
         "features": [
-          "100 credits, valid for 1 month",
-          "NextJS boilerplate",
-          "SEO-friendly structure",
-          "Payment with Stripe",
-          "Data storage with Supabase",
-          "Google Oauth & One-Tap Login",
-          "i18n support"
+          "10 Credits, instant access",
+          "Limit 1 per user",
+          "Standard generation speed",
+          "Basic Prompt templates"
         ],
         "interval": "one-time",
-        "amount": 9900,
+        "amount": 0,
         "currency": "USD",
-        "price": "$99",
-        "original_price": "$199",
+        "price": "$0",
+        "original_price": "",
+        "currencies": [],
         "unit": "",
         "is_featured": false,
-        "tip": "Pay once. Build unlimited projects!",
+        "tip": "No card required. Start now!",
         "button": {
-          "title": "Get ShipAny",
+          "title": "Get Free Trial",
           "url": "/#pricing",
           "icon": "RiFlashlightFill"
         },
-        "product_id": "starter",
-        "product_name": "ShipAny Boilerplate Starter",
-        "credits": 100,
-        "valid_days": 30,
-        "group": "one-time"
-      },
-      {
-        "title": "Standard",
-        "description": "Ship Fast with your SaaS Startups.",
-        "label": "Popular",
-        "features_title": "Everything in Starter, plus",
-        "features": [
-          "200 credits, valid for 3 month",
-          "Deploy with Vercel or Cloudflare",
-          "Generation of Privacy & Terms",
-          "Google Analytics Integration",
-          "Google Search Console Integration",
-          "Discord community",
-          "Technical support for your first ship",
-          "Lifetime updates"
-        ],
-        "interval": "one-time",
-        "amount": 19900,
-        "currency": "USD",
-        "price": "$199",
-        "original_price": "$299",
-        "unit": "",
-        "is_featured": true,
-        "tip": "Pay once. Build unlimited projects!",
-        "button": {
-          "title": "Get ShipAny",
-          "url": "/#pricing",
-          "icon": "RiFlashlightFill"
-        },
-        "product_id": "standard",
-        "product_name": "ShipAny Boilerplate Standard",
-        "credits": 200,
-        "valid_days": 90,
-        "group": "one-time"
-      },
-      {
-        "title": "Premium",
-        "description": "Ship Any AI SaaS Startups.",
-        "features_title": "Everything in Standard, plus",
-        "features": [
-          "300 credits, valid for 1 year",
-          "Business Functions with AI",
-          "User Center",
-          "Credits System",
-          "API Sales for your SaaS",
-          "Admin System",
-          "Priority Technical Support"
-        ],
-        "interval": "one-time",
-        "amount": 29900,
-        "currency": "USD",
-        "price": "$299",
-        "original_price": "$399",
-        "unit": "",
-        "is_featured": false,
-        "tip": "Pay once. Build unlimited projects!",
-        "button": {
-          "title": "Get ShipAny",
-          "url": "/#pricing",
-          "icon": "RiFlashlightFill"
-        },
-        "product_id": "premium",
-        "product_name": "ShipAny Boilerplate Premium",
-        "credits": 300,
+        "product_id": "credit-free",
+        "product_name": "HeroPrompt Trial Pack",
+        "credits": 10,
         "valid_days": 365,
         "group": "one-time"
       },
       {
-        "title": "Starter",
-        "description": "Get started with your first SaaS startup.",
+        "title": "Basic Pack",
+        "description": "Flexible top-up, use as you go.",
         "features_title": "Includes",
         "features": [
-          "100 credits, valid for 1 month",
-          "NextJS boilerplate",
-          "SEO-friendly structure",
-          "Payment with Stripe",
-          "Data storage with Supabase",
-          "Google Oauth & One-Tap Login",
-          "i18n support"
+          "50 Credits",
+          "Credits never expire",
+          "Unlock all premium templates",
+          "Cloud history sync"
         ],
-        "interval": "month",
-        "amount": 8900,
+        "interval": "one-time",
+        "amount": 500,
         "currency": "USD",
-        "price": "$89",
-        "original_price": "$99",
-        "unit": "/ month",
+        "price": "$5",
+        "original_price": "",
+        "currencies": [],
+        "unit": "",
         "is_featured": false,
-        "tip": "Pay monthly. Build unlimited projects!",
+        "tip": "Perfect for occasional creators.",
         "button": {
-          "title": "Get ShipAny",
+          "title": "Buy Credits",
           "url": "/#pricing",
           "icon": "RiFlashlightFill"
         },
-        "product_id": "starter-monthly",
-        "product_name": "ShipAny Boilerplate Starter Monthly",
-        "credits": 100,
+        "product_id": "credit-basic",
+        "product_name": "HeroPrompt Basic Credits",
+        "credits": 50,
+        "valid_days": 365,
+        "group": "one-time"
+      },
+      {
+        "title": "Value Pack",
+        "description": "More credits, more creative freedom.",
+        "label": "Recommended",
+        "features_title": "Everything in Basic, plus",
+        "features": [
+          "200 Credits (Lower unit cost)",
+          "Priority generation queue",
+          "Bulk generation",
+          "Exclusive Discord role"
+        ],
+        "interval": "one-time",
+        "amount": 2000,
+        "currency": "USD",
+        "price": "$20",
+        "original_price": "$25",
+        "currencies": [],
+        "unit": "",
+        "is_featured": true,
+        "tip": "Fuel your imagination!",
+        "button": {
+          "title": "Buy Credits",
+          "url": "/#pricing",
+          "icon": "RiFlashlightFill"
+        },
+        "product_id": "credit-pro",
+        "product_name": "HeroPrompt Value Credits",
+        "credits": 200,
+        "valid_days": 365,
+        "group": "one-time"
+      },
+      {
+        "title": "Starter Subscription",
+        "description": "Keep the inspiration flowing.",
+        "features_title": "Includes",
+        "features": [
+          "150 Credits / month",
+          "Monthly credit reset",
+          "Commercial license",
+          "Member community access"
+        ],
+        "interval": "month",
+        "amount": 990,
+        "currency": "USD",
+        "price": "$9.9",
+        "original_price": "$15",
+        "unit": "/ month",
+        "is_featured": false,
+        "tip": "Start your AI creation journey.",
+        "button": {
+          "title": "Subscribe Starter",
+          "url": "/#pricing",
+          "icon": "RiFlashlightFill"
+        },
+        "product_id": "sub-starter",
+        "product_name": "HeroPrompt Starter Sub",
+        "credits": 150,
         "valid_days": 30,
         "group": "monthly",
         "plan_name": "Starter"
       },
       {
-        "title": "Standard",
-        "description": "Ship Fast with your SaaS Startups.",
-        "label": "Popular",
+        "title": "Pro Subscription",
+        "description": "Built for professional creators.",
+        "label": "Best Value",
         "features_title": "Everything in Starter, plus",
         "features": [
-          "200 credits, valid for 1 month",
-          "Deploy with Vercel or Cloudflare",
-          "Generation of Privacy & Terms",
-          "Google Analytics Integration",
-          "Google Search Console Integration",
-          "Discord community",
-          "Technical support for your first ship",
-          "Lifetime updates"
+          "400 Credits / month",
+          "Top priority generation",
+          "Early access to new features",
+          "1-on-1 priority support"
         ],
         "interval": "month",
-        "amount": 16900,
+        "amount": 1990,
         "currency": "USD",
-        "price": "$169",
-        "original_price": "$199",
+        "price": "$19.9",
+        "original_price": "$40",
         "unit": "/ month",
         "is_featured": true,
-        "tip": "Pay monthly. Ship Fast with your SaaS Startups.",
+        "tip": "The choice for professionals.",
         "button": {
-          "title": "Get ShipAny",
+          "title": "Subscribe Pro",
           "url": "/#pricing",
           "icon": "RiFlashlightFill"
         },
-        "product_id": "standard-monthly",
-        "product_name": "ShipAny Boilerplate Standard Monthly",
-        "credits": 200,
+        "product_id": "sub-pro",
+        "product_name": "HeroPrompt Pro Sub",
+        "credits": 400,
         "valid_days": 30,
         "group": "monthly",
-        "plan_name": "Standard"
-      },
-      {
-        "title": "Premium",
-        "description": "Ship Any AI SaaS Startups.",
-        "features_title": "Everything in Standard, plus",
-        "features": [
-          "300 credits, valid for 1 month",
-          "Business Functions with AI",
-          "User Center",
-          "Credits System",
-          "API Sales for your SaaS",
-          "Admin System",
-          "Priority Technical Support"
-        ],
-        "interval": "month",
-        "amount": 24900,
-        "currency": "USD",
-        "price": "$249",
-        "original_price": "$299",
-        "unit": "/ month",
-        "is_featured": false,
-        "tip": "Pay monthly. Ship Any AI SaaS Startups.",
-        "button": {
-          "title": "Get ShipAny",
-          "url": "/#pricing",
-          "icon": "RiFlashlightFill"
-        },
-        "product_id": "premium-monthly",
-        "product_name": "ShipAny Boilerplate Premium Monthly",
-        "credits": 300,
-        "valid_days": 30,
-        "group": "monthly",
-        "plan_name": "Premium"
-      },
-      {
-        "title": "Starter",
-        "description": "Get started with your first SaaS startup.",
-        "features_title": "Includes",
-        "features": [
-          "100 credits, valid for 1 year",
-          "NextJS boilerplate",
-          "SEO-friendly structure",
-          "Payment with Stripe",
-          "Data storage with Supabase",
-          "Google Oauth & One-Tap Login",
-          "i18n support"
-        ],
-        "interval": "year",
-        "amount": 82800,
-        "currency": "USD",
-        "price": "$69",
-        "original_price": "$89",
-        "unit": "/ month",
-        "is_featured": false,
-        "tip": "Pay annually. Build unlimited projects!",
-        "button": {
-          "title": "Get ShipAny",
-          "url": "/#pricing",
-          "icon": "RiFlashlightFill"
-        },
-        "product_id": "starter-yearly",
-        "product_name": "ShipAny Boilerplate Starter Annually",
-        "credits": 1200,
-        "valid_days": 365,
-        "group": "yearly",
-        "plan_name": "Starter"
-      },
-      {
-        "title": "Standard",
-        "description": "Ship Fast with your SaaS Startups.",
-        "label": "Popular",
-        "features_title": "Everything in Starter, plus",
-        "features": [
-          "200 credits, valid for 1 year",
-          "Deploy with Vercel or Cloudflare",
-          "Generation of Privacy & Terms",
-          "Google Analytics Integration",
-          "Google Search Console Integration",
-          "Discord community",
-          "Technical support for your first ship",
-          "Lifetime updates"
-        ],
-        "interval": "year",
-        "amount": 154800,
-        "currency": "USD",
-        "price": "$129",
-        "original_price": "$169",
-        "unit": "/ month",
-        "is_featured": true,
-        "tip": "Pay annually. Ship Fast with your SaaS Startups.",
-        "button": {
-          "title": "Get ShipAny",
-          "url": "/#pricing",
-          "icon": "RiFlashlightFill"
-        },
-        "product_id": "standard-yearly",
-        "product_name": "ShipAny Boilerplate Standard Annually",
-        "credits": 2400,
-        "valid_days": 365,
-        "group": "yearly",
-        "plan_name": "Standard"
-      },
-      {
-        "title": "Premium",
-        "description": "Ship Any AI SaaS Startups.",
-        "features_title": "Everything in Standard, plus",
-        "features": [
-          "300 credits, valid for 1 year",
-          "Business Functions with AI",
-          "User Center",
-          "Credits System",
-          "API Sales for your SaaS",
-          "Admin System",
-          "Priority Technical Support"
-        ],
-        "interval": "year",
-        "amount": 226800,
-        "currency": "USD",
-        "price": "$189",
-        "original_price": "$249",
-        "unit": "/ month",
-        "is_featured": false,
-        "tip": "Pay annually. Ship Any AI SaaS Startups.",
-        "button": {
-          "title": "Get ShipAny",
-          "url": "/#pricing",
-          "icon": "RiFlashlightFill"
-        },
-        "product_id": "premium-yearly",
-        "product_name": "ShipAny Boilerplate Premium Annually",
-        "credits": 3600,
-        "valid_days": 365,
-        "group": "yearly",
-        "plan_name": "Premium"
+        "plan_name": "Pro"
       }
     ]
   },
   "page": {
     "current_plan": "Current Plan",
-    "processing": "Processing"
+    "processing": "Processing",
+    "payment_success": "Payment successful",
+    "already_claimed": "Already Claimed"
   }
 }

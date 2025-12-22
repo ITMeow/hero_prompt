@@ -39,8 +39,8 @@
   },
   "hero": {
     "id": "hero",
-    "title": "用 Cyber Hero Prompt 释放你的创造力",
-    "highlight_text": "Cyber Hero Prompt",
+    "title": "用 HeroPrompt 释放你的创造力",
+    "highlight_text": "HeroPrompt",
     "description": "体验 AI 图像生成的下一次进化。由先进的 Nano Banana 2 和 Gemini 3 Pro 图像模型驱动，瞬间将您的想象变为现实。",
     "announcement": {
       "badge": "最新",
@@ -65,7 +65,7 @@
       }
     ],
     "show_avatars": true,
-    "avatars_tip": "10k+ 创作者正在使用 Cyber Hero Prompt",
+    "avatars_tip": "10k+ 创作者正在使用 HeroPrompt",
     "show_award": false,
     "image": {
       "src": "/imgs/features/landing-page.png",
@@ -88,10 +88,10 @@
     "title": "由世界级 AI 技术驱动",
     "items": [
       {
-        "title": "Cyber Hero Prompt",
+        "title": "HeroPrompt",
         "image": {
           "src": "/imgs/logos/nextjs.svg",
-          "alt": "Cyber Hero Prompt"
+          "alt": "HeroPrompt"
         }
       },
       {
@@ -127,9 +127,9 @@
   "introduce": {
     "block": "features-list",
     "id": "introduce",
-    "title": "什么是 Cyber Hero Prompt？",
+    "title": "什么是 HeroPrompt？",
     "label": "产品介绍",
-    "description": "Cyber Hero Prompt 是一款最先进的 AI 图像生成器，利用 Nano Banana 2 的力量提供超逼真和艺术化的视觉效果。",
+    "description": "HeroPrompt 是一款最先进的 AI 图像生成器，利用 Nano Banana 2 的力量提供超逼真和艺术化的视觉效果。",
     "image": {
       "src": "/imgs/features/landing-page.png",
       "alt": "introduce"
@@ -177,13 +177,13 @@
   "benefits": {
     "block": "features-accordion",
     "id": "benefits",
-    "title": "为什么选择 Cyber Hero Prompt",
+    "title": "为什么选择 HeroPrompt",
     "label": "产品优势",
     "description": "为专业人士和爱好者设计的功能，释放 AI 艺术的全部潜力。",
     "items": [
       {
         "title": "卓越的图像质量",
-        "description": "Cyber Hero Prompt 提供业界领先的图像保真度，非常适合印刷和数字媒体。",
+        "description": "HeroPrompt 提供业界领先的图像保真度，非常适合印刷和数字媒体。",
         "icon": "RiHdLine",
         "image": {
           "src": "/imgs/features/user-billing.png",
@@ -323,12 +323,12 @@
   "testimonials": {
     "id": "testimonials",
     "title": "用户评价",
-    "description": "看看 Cyber Hero Prompt 如何改变创意工作流。",
+    "description": "看看 HeroPrompt 如何改变创意工作流。",
     "items": [
       {
         "name": "Sarah Jenkins",
         "role": "数字艺术家",
-        "quote": "Cyber Hero Prompt 理解复杂提示词的能力无与伦比。它已成为我概念艺术工作流中不可或缺的一部分。",
+        "quote": "HeroPrompt 理解复杂提示词的能力无与伦比。它已成为我概念艺术工作流中不可或缺的一部分。",
         "image": {
           "src": "/imgs/avatars/1.png",
           "alt": "Sarah"
@@ -364,7 +364,7 @@
       {
         "name": "Lisa Wang",
         "role": "内容创作者",
-        "quote": "我喜欢社区画廊！看到其他人用 Cyber Hero Prompt 创作的东西真是太鼓舞人心了。界面也非常用户友好。",
+        "quote": "我喜欢社区画廊！看到其他人用 HeroPrompt 创作的东西真是太鼓舞人心了。界面也非常用户友好。",
         "image": {
           "src": "/imgs/avatars/5.png",
           "alt": "Lisa"
@@ -388,8 +388,8 @@
     "tip": "没找到您想要的？请联系 <a href='/contact' class='text-primary font-medium hover:underline'>支持团队</a>",
     "items": [
       {
-        "question": "什么是 Cyber Hero Prompt？",
-        "answer": "Cyber Hero Prompt 是一个先进的 AI 平台，允许您使用 Nano Banana 2 和 Gemini 3 Pro 等最先进的模型，根据文本描述生成高质量的图像。"
+        "question": "什么是 HeroPrompt？",
+        "answer": "HeroPrompt 是一个先进的 AI 平台，允许您使用 Nano Banana 2 和 Gemini 3 Pro 等最先进的模型，根据文本描述生成高质量的图像。"
       },
       {
         "question": "我可以将图片用于商业用途吗？",
@@ -405,7 +405,7 @@
       },
       {
         "question": "有免费试用吗？",
-        "answer": "有的，我们提供带有每日积分的免费层级，因此您可以在订阅之前试用 Cyber Hero Prompt 并亲自体验魔法。"
+        "answer": "有的，我们提供带有每日积分的免费层级，因此您可以在订阅之前试用 HeroPrompt 并亲自体验魔法。"
       },
       {
         "question": "我可以上传自己的图片吗？",
@@ -416,7 +416,7 @@
   "cta": {
     "id": "cta",
     "title": "今天就开始创作",
-    "description": "加入成千上万的创作者，用 Cyber Hero Prompt 释放您的想象力。",
+    "description": "加入成千上万的创作者，用 HeroPrompt 释放您的想象力。",
     "buttons": [
       {
         "title": "免费开始",
@@ -453,11 +453,11 @@
     "hidden": true,
     "id": "footer",
     "brand": {
-      "title": "Cyber Hero Prompt",
-      "description": "Cyber Hero Prompt 是面向创作者、设计师和梦想家的终极 AI 图像生成平台。",
+      "title": "HeroPrompt",
+      "description": "HeroPrompt 是面向创作者、设计师和梦想家的终极 AI 图像生成平台。",
       "logo": {
         "src": "/logo.png",
-        "alt": "Cyber Hero Prompt",
+        "alt": "HeroPrompt",
         "width": 100,
         "height": 100
       },
