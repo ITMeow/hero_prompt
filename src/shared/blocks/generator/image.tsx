@@ -71,7 +71,7 @@ type ImageGeneratorTab = 'text-to-image' | 'image-to-image';
 
 const POLL_INTERVAL = 5000;
 const GENERATION_TIMEOUT = 180000;
-const MAX_PROMPT_LENGTH = 2000;
+const MAX_PROMPT_LENGTH = 5000;
 
 const MODEL_OPTIONS = [
   {
