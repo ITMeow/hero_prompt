@@ -7,6 +7,8 @@ import {
   Sparkles,
   X,
   ZoomIn,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { tagTranslator, type Language } from '@/shared/lib/tagTranslator';
@@ -17,6 +19,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
+import { toast } from 'sonner';
 
 import { SocialPost } from '../lib/types';
 import { PostCard } from './PostCard';
@@ -39,11 +42,30 @@ export const PostDetail: React.FC<PostDetailProps> = ({
   const locale = useLocale();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isTranslated, setIsTranslated] = useState(false);
+  const [hasCopied, setHasCopied] = useState(false);
 
   // Determine current language
   const currentLanguage: Language = locale === 'en' ? 'en' : 'zh-CN';
   // Get the opposite language for translation toggle
   const translatedLanguage: Language = currentLanguage === 'zh-CN' ? 'en' : 'zh-CN';
+
+  const handleCopy = async () => {
+    const text = isTranslated && post.i18nContent
+      ? post.i18nContent[translatedLanguage].prompt
+      : post.prompt || post.description;
+
+    if (text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        setHasCopied(true);
+        toast.success(t('copied'));
+        setTimeout(() => setHasCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+        toast.error('Failed to copy');
+      }
+    }
+  };
 
   const handleTryThis = () => {
     // Get the prompt in the currently displayed language
@@ -213,14 +235,27 @@ export const PostDetail: React.FC<PostDetailProps> = ({
 
             {/* Prompt Section - Fixed Height & Scrollable */}
             <div className="space-y-4">
-              <div className="dark:bg-muted/30 dark:border-border custom-scrollbar h-[400px] overflow-y-auto rounded-2xl border border-gray-100 bg-gray-50 p-6">
-                <div className="prose prose-sm dark:text-muted-foreground max-w-none leading-relaxed font-medium whitespace-pre-line text-slate-700">
-                  {isTranslated && post.i18nContent
-                    ? post.i18nContent[translatedLanguage].prompt || t('no_prompt_desc')
-                    : post.prompt || post.description}
-                  {!post.prompt &&
-                    !isTranslated &&
-                    `\n\n${t('no_prompt_desc')}`}
+              <div className="group relative dark:bg-muted/30 dark:border-border rounded-2xl border border-gray-100 bg-gray-50">
+                <button
+                  onClick={handleCopy}
+                  className="absolute top-3 right-3 z-10 rounded-lg bg-white/80 p-2 shadow-sm backdrop-blur-sm transition-all hover:bg-white dark:bg-black/20 dark:hover:bg-black/40"
+                  title={t('copy_prompt')}
+                >
+                  {hasCopied ? (
+                    <Check size={16} className="text-green-600 dark:text-green-400" />
+                  ) : (
+                    <Copy size={16} className="text-gray-600 dark:text-gray-400" />
+                  )}
+                </button>
+                <div className="custom-scrollbar h-[400px] overflow-y-auto p-6">
+                  <div className="prose prose-sm dark:text-muted-foreground max-w-none leading-relaxed font-medium whitespace-pre-line text-slate-700">
+                    {isTranslated && post.i18nContent
+                      ? post.i18nContent[translatedLanguage].prompt || t('no_prompt_desc')
+                      : post.prompt || post.description}
+                    {!post.prompt &&
+                      !isTranslated &&
+                      `\n\n${t('no_prompt_desc')}`}
+                  </div>
                 </div>
               </div>
             </div>
