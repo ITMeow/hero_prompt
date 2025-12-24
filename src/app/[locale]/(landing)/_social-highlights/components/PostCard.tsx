@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, Sparkles, ArrowRight } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -18,9 +18,18 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
   const router = useRouter();
   const [imgSrc, setImgSrc] = useState(post.imageUrl);
   const [hasError, setHasError] = useState(false);
+  const [isNew, setIsNew] = useState(false);
 
-  // Check if post is new (created today)
-  const isNew = moment(post.createdAt).isSame(moment(), 'day');
+  // Check if post is new (created today) - Client side only to prevent hydration mismatch
+  useEffect(() => {
+    setIsNew(moment(post.createdAt).isSame(moment(), 'day'));
+  }, [post.createdAt]);
+
+  // Update image source if post changes
+  useEffect(() => {
+    setImgSrc(post.imageUrl);
+    setHasError(false);
+  }, [post.imageUrl]);
 
   const handleImgError = () => {
     if (!hasError) {
