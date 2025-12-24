@@ -26,11 +26,25 @@ import {
 import { Badge } from '@/shared/components/ui/badge';
 import { Filter } from 'lucide-react';
 
-export default function LandingClient() {
+interface LandingClientProps {
+  initialPosts?: any[];
+  initialTotal?: number;
+}
+
+export default function LandingClient({ initialPosts = [], initialTotal = 0 }: LandingClientProps) {
   const t = useTranslations('social.landing');
   const locale = useLocale();
-  const [posts, setPosts] = useState<SocialPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  
+  // Determine current language for data mapping
+  const language: Language = locale === 'en' ? 'en' : 'zh-CN';
+  const isZh = language === 'zh-CN';
+
+  // Map initial posts to SocialPost format
+  const [posts, setPosts] = useState<SocialPost[]>(() => 
+    initialPosts.map((dbPost: any) => mapDbPostToSocialPost(dbPost, language))
+  );
+  
+  const [loading, setLoading] = useState(initialPosts.length === 0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -39,9 +53,12 @@ export default function LandingClient() {
   const [tempTags, setTempTags] = useState<Set<string>>(new Set());
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const [totalPosts, setTotalPosts] = useState(0);
+  const [totalPosts, setTotalPosts] = useState(initialTotal);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(initialPosts.length > 0 ? initialPosts.length < initialTotal : true);
+  
+  // Track if it's the first render to avoid double fetching
+  const isFirstRender = React.useRef(true);
 
   // Responsive columns
   const isDesktop = useMediaQuery('(min-width: 1024px)');
@@ -61,10 +78,6 @@ export default function LandingClient() {
     });
     return cols;
   }, [posts, numCols]);
-
-  // Determine current language for data mapping
-  const language: Language = locale === 'en' ? 'en' : 'zh-CN';
-  const isZh = language === 'zh-CN';
 
   const fetchPosts = useCallback(async (pageNum: number, query: string, tags: Set<string>, isLoadMore: boolean = false) => {
     try {
@@ -115,11 +128,17 @@ export default function LandingClient() {
   useEffect(() => {
     // Debounce search
     const timer = setTimeout(() => {
+      // Skip initial fetch if we already have SSR data and no filters are applied
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+        if (initialPosts.length > 0) return;
+      }
+      
       setPage(1);
       fetchPosts(1, searchQuery, activeTags, false);
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchQuery, activeTags, fetchPosts]);
+  }, [searchQuery, activeTags, fetchPosts, initialPosts.length]);
 
   const handleLoadMore = useCallback(() => {
     const nextPage = page + 1;
@@ -204,6 +223,9 @@ export default function LandingClient() {
       />
 
       <main className="px-4 md:px-8 max-w-7xl mx-auto pb-12">
+        <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+          {t('trending_prompts')}
+        </h2>
         {/* Filter Section */}
         <div className="flex flex-row justify-between items-center mb-8 gap-4">
           

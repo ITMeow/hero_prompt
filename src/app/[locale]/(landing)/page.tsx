@@ -1,5 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import LandingClient from './_social-highlights/LandingClient';
+import { getPosts } from '@/shared/services/postService';
 
 export const revalidate = 3600;
 
@@ -11,5 +12,13 @@ export default async function LandingPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return <LandingClient />;
+  // Fetch initial posts (SSR)
+  const { posts: initialPosts, total: initialTotal } = await getPosts({
+    page: 1,
+    limit: 30, // Match the client limit
+    q: '',
+    tags: []
+  });
+
+  return <LandingClient initialPosts={initialPosts} initialTotal={initialTotal} />;
 }

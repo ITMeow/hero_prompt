@@ -11,7 +11,16 @@ export const Header: React.FC<HeaderProps> = ({ searchQuery, onSearchChange }) =
   const t = useTranslations('social.landing');
 
   return (
-    <div className="py-10 px-4 md:px-8 max-w-7xl mx-auto w-full font-[family-name:var(--font-manrope)] flex justify-center">
+    <div className="py-10 px-4 md:px-8 max-w-7xl mx-auto w-full font-[family-name:var(--font-manrope)] flex flex-col items-center gap-8">
+      <div className="text-center space-y-4 max-w-3xl">
+        <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
+          {t('hero_title')}
+        </h1>
+        <h2 className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
+          {t('hero_subtitle')}
+        </h2>
+      </div>
+
       <div className="relative w-full max-w-2xl">
         {/* Input Container */}
         <div className="relative flex items-center bg-white dark:bg-secondary/50 rounded-[24px] border border-gray-100 dark:border-none shadow-none focus-within:shadow-[0_4px_16px_rgba(0,0,0,0.04)] focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-300 group">
