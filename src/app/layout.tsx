@@ -1,6 +1,7 @@
 import '@/config/style/global.css';
 
 import { JetBrains_Mono, Manrope, Merriweather, Noto_Sans_Mono } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { getLocale, setRequestLocale } from 'next-intl/server';
 import NextTopLoader from 'nextjs-toploader';
 
@@ -164,6 +165,8 @@ export default async function RootLayout({
         />
 
         {children}
+
+        <Analytics />
 
         {/* inject ads body scripts */}
         {adsBodyScripts}
