@@ -2,7 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import LandingClient from './_social-highlights/LandingClient';
 import { getPosts } from '@/shared/services/postService';
 
-export const revalidate = 3600;
+export const revalidate = 900; // 15 minutes
 
 export default async function LandingPage({
   params,
