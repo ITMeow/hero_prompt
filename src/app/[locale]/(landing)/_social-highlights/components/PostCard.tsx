@@ -57,7 +57,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
     <div 
       onClick={onClick}
       className={cn(
-        "break-inside-avoid mb-6 rounded-[24px] overflow-hidden",
+        "rounded-[24px] overflow-hidden h-full",
         "bg-white dark:bg-card border border-gray-100 dark:border-border",
         "shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)]",
         "transition-all duration-300 group cursor-pointer relative",
@@ -65,13 +65,13 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
       )}
     >
       {/* Image Container */}
-      <div className="relative w-full overflow-hidden bg-gray-50 dark:bg-muted">
-        <div className="relative">
+      <div className="relative w-full aspect-square overflow-hidden bg-gray-50 dark:bg-muted">
+        <div className="relative w-full h-full">
           <img 
             src={imgSrc} 
             alt={post.title} 
             onError={handleImgError}
-            className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
             style={{ display: 'block' }}
           />
           
@@ -110,7 +110,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
       {/* Content */}
       <div className="p-4 flex flex-col gap-3">
         {/* Prompt Text (Replacing Description) */}
-        <p className="text-gray-600 dark:text-muted-foreground text-sm leading-relaxed line-clamp-4 min-h-[1.5rem]">
+        <p className="text-gray-600 dark:text-muted-foreground text-sm leading-relaxed line-clamp-4 h-[6.5em] text-left">
           {post.prompt || post.description /* Fallback to description if prompt is missing */}
         </p>
 

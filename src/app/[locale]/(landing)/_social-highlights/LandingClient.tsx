@@ -11,7 +11,6 @@ import { mapDbPostToSocialPost } from './lib/utils';
 import type { Language } from '@/shared/lib/tagTranslator';
 import { Button } from '@/shared/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { useMediaQuery } from '@/shared/hooks/use-media-query';
 
 import predefinedTags from '@/config/predefined_tags.json';
 import { 
@@ -59,25 +58,6 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   
   // Track if it's the first render to avoid double fetching
   const isFirstRender = React.useRef(true);
-
-  // Responsive columns
-  const isDesktop = useMediaQuery('(min-width: 1024px)');
-  const isTablet = useMediaQuery('(min-width: 768px)');
-  
-  const numCols = useMemo(() => {
-    if (isDesktop) return 3;
-    if (isTablet) return 2;
-    return 1;
-  }, [isDesktop, isTablet]);
-
-  // Distribute posts into columns for horizontal masonry order
-  const columns = useMemo(() => {
-    const cols: SocialPost[][] = Array.from({ length: numCols }, () => []);
-    posts.forEach((post, index) => {
-      cols[index % numCols].push(post);
-    });
-    return cols;
-  }, [posts, numCols]);
 
   const fetchPosts = useCallback(async (pageNum: number, query: string, tags: Set<string>, isLoadMore: boolean = false) => {
     try {
@@ -222,7 +202,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
         onSearchChange={setSearchQuery}
       />
 
-      <main className="px-4 md:px-8 max-w-7xl mx-auto pb-12">
+      <main className="px-4 md:px-8 w-full mx-auto pb-12">
         <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
           {t('trending_prompts')}
         </h2>
@@ -312,20 +292,16 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
             {posts.length === 0 ? (
                <div className="text-center py-20 text-gray-500">{t('post_not_found') || 'No posts found.'}</div>
             ) : (
-              /* Custom Masonry Layout (Horizontal Order) */
-              <div className="flex gap-6 items-start">
-                {columns.map((colPosts, colIndex) => (
-                  <div key={colIndex} className="flex-1 flex flex-col gap-6 min-w-0">
-                    {colPosts.map((post) => (
-                      <Link
-                        key={post.id}
-                        href={`/posts/${post.id}`}
-                        className="block group w-full"
-                      >
-                        <PostCard post={post} />
-                      </Link>
-                    ))}
-                  </div>
+              /* Responsive Grid Layout */
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 min-[1800px]:grid-cols-7 min-[2000px]:grid-cols-8 gap-4 md:gap-6">
+                {posts.map((post) => (
+                  <Link
+                    key={post.id}
+                    href={`/posts/${post.id}`}
+                    className="block group w-full h-full"
+                  >
+                    <PostCard post={post} />
+                  </Link>
                 ))}
               </div>
             )}
