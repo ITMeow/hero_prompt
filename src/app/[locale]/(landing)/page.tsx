@@ -2,7 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import LandingClient from './_social-highlights/LandingClient';
 import { getPosts } from '@/shared/services/postService';
 
-export const revalidate = 900; // 15 minutes
+export const revalidate = 0;
 
 export default async function LandingPage({
   params,
@@ -15,7 +15,7 @@ export default async function LandingPage({
   // Fetch initial posts (SSR)
   const { posts: initialPosts, total: initialTotal } = await getPosts({
     page: 1,
-    limit: 30, // Match the client limit
+    limit: 12, // Match the client limit
     q: '',
     tags: []
   });

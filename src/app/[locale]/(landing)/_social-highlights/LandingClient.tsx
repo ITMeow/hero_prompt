@@ -69,7 +69,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
       }
 
       const tagsParam = Array.from(tags).join(',');
-      const res = await fetch(`/api/posts?page=${pageNum}&limit=30&q=${encodeURIComponent(query)}&tags=${encodeURIComponent(tagsParam)}`);
+      const res = await fetch(`/api/posts?page=${pageNum}&limit=12&q=${encodeURIComponent(query)}&tags=${encodeURIComponent(tagsParam)}`);
       
       if (res.ok) {
         const data = await res.json();
@@ -83,7 +83,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
           setPosts(mappedPosts);
         }
         
-        if (mappedPosts.length < 30) {
+        if (mappedPosts.length < 12) {
           setHasMore(false);
         } else {
           setHasMore(true);

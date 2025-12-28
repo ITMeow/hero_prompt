@@ -64,3 +64,5 @@ src/config/db/migrations
 
 .chats
 .gemini-clipboardscripts/grant-credits.ts
+
+.claude
