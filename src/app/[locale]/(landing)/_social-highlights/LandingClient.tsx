@@ -53,13 +53,12 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const [totalPosts, setTotalPosts] = useState(initialTotal);
-  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialPosts.length > 0 ? initialPosts.length < initialTotal : true);
   
   // Track if it's the first render to avoid double fetching
   const isFirstRender = React.useRef(true);
 
-  const fetchPosts = useCallback(async (pageNum: number, query: string, tags: Set<string>, isLoadMore: boolean = false) => {
+  const fetchPosts = useCallback(async (offset: number, query: string, tags: Set<string>, isLoadMore: boolean = false) => {
     try {
       if (!isLoadMore) {
         setLoading(true);
@@ -68,8 +67,9 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
         setLoadingMore(true);
       }
 
+      const limit = isLoadMore ? 12 : 30;
       const tagsParam = Array.from(tags).join(',');
-      const res = await fetch(`/api/posts?page=${pageNum}&limit=12&q=${encodeURIComponent(query)}&tags=${encodeURIComponent(tagsParam)}`);
+      const res = await fetch(`/api/posts?offset=${offset}&limit=${limit}&q=${encodeURIComponent(query)}&tags=${encodeURIComponent(tagsParam)}`);
       
       if (res.ok) {
         const data = await res.json();
@@ -83,7 +83,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
           setPosts(mappedPosts);
         }
         
-        if (mappedPosts.length < 12) {
+        if (mappedPosts.length < limit) {
           setHasMore(false);
         } else {
           setHasMore(true);
@@ -114,17 +114,15 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
         if (initialPosts.length > 0) return;
       }
       
-      setPage(1);
-      fetchPosts(1, searchQuery, activeTags, false);
+      fetchPosts(0, searchQuery, activeTags, false);
     }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery, activeTags, fetchPosts, initialPosts.length]);
 
   const handleLoadMore = useCallback(() => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchPosts(nextPage, searchQuery, activeTags, true);
-  }, [page, searchQuery, activeTags, fetchPosts]);
+    const offset = posts.length;
+    fetchPosts(offset, searchQuery, activeTags, true);
+  }, [posts.length, searchQuery, activeTags, fetchPosts]);
 
   // Use refs to access latest state in scroll handler
   const stateRef = React.useRef({ hasMore, loadingMore });

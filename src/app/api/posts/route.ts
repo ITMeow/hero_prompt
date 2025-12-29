@@ -9,6 +9,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '15');
+    const offsetParam = searchParams.get('offset');
+    const offset = offsetParam ? parseInt(offsetParam) : undefined;
     const q = searchParams.get('q') || '';
     const tagKeysParam = searchParams.get('tags') || '';
     
@@ -18,6 +20,7 @@ export async function GET(request: Request) {
     const result = await getPosts({
       page,
       limit,
+      offset,
       q,
       tags
     });

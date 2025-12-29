@@ -6,11 +6,12 @@ import predefinedTags from '@/config/predefined_tags.json';
 export async function getPosts(options: {
   page?: number;
   limit?: number;
+  offset?: number;
   q?: string;
   tags?: string[];
 }) {
   const { page = 1, limit = 15, q = '', tags = [] } = options;
-  const offset = (page - 1) * limit;
+  const offset = options.offset !== undefined ? options.offset : (page - 1) * limit;
 
   let whereClause = undefined;
   const conditions = [];
