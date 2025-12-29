@@ -68,14 +68,14 @@ export async function GET(
         return new Date(b.p.createdAt).getTime() - new Date(a.p.createdAt).getTime();
       });
 
-      // Take top 3 posts with at least 1 matching tag
+      // Take top 6 posts with at least 1 matching tag
       relatedPosts = scored
         .filter(x => x.score > 0)
-        .slice(0, 3)
+        .slice(0, 6)
         .map(x => x.p);
     } else {
       // If current post has no tags, just return most recent posts
-      relatedPosts = candidates.slice(0, 3);
+      relatedPosts = candidates.slice(0, 6);
     }
 
     return NextResponse.json({ post, relatedPosts });
