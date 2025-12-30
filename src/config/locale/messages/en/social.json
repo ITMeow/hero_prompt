@@ -25,6 +25,10 @@
     "select_tags": "Select Tags",
     "apply": "Apply",
     "reset": "Reset",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "preview_interaction": "Preview",
+    "edit_template": "Edit Template",
+    "save_image": "Save Image",
+    "copy_result": "Copy Result"
   }
 }

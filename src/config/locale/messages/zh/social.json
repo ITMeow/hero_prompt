@@ -25,6 +25,10 @@
     "select_tags": "选择标签",
     "apply": "应用",
     "reset": "重置",
-    "cancel": "取消"
+    "cancel": "取消",
+    "preview_interaction": "预览交互",
+    "edit_template": "编辑模板",
+    "save_image": "保存长图",
+    "copy_result": "复制结果"
   }
 }

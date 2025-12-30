@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import NProgress from 'nprogress';
-import { PostDetail } from '../../_social-highlights/components/PostDetail';
-import { SocialPost } from '../../_social-highlights/lib/types';
-import { mapDbPostToSocialPost } from '../../_social-highlights/lib/utils';
+import { PostDetail } from '@/app/[locale]/(landing)/_social-highlights/components/PostDetail';
+import { SocialPost } from '@/app/[locale]/(landing)/_social-highlights/lib/types';
+import { mapDbPostToSocialPost } from '@/app/[locale]/(landing)/_social-highlights/lib/utils';
 import { Loader2 } from 'lucide-react';
 import type { Language } from '@/shared/lib/tagTranslator';
 
