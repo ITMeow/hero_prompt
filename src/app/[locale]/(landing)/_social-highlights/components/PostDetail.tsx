@@ -7,6 +7,7 @@ import {
   Sparkles,
   X,
   ZoomIn,
+  PanelRightClose
 } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { tagTranslator, type Language } from '@/shared/lib/tagTranslator';
@@ -41,6 +42,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
   const locale = useLocale();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isTranslated, setIsTranslated] = useState(false);
+  const [showRightPanel, setShowRightPanel] = useState(true);
 
   // Determine current language
   const currentLanguage: Language = locale === 'en' ? 'en' : 'zh-CN';
@@ -74,22 +76,25 @@ export const PostDetail: React.FC<PostDetailProps> = ({
   };
 
   return (
-    <div className="dark:bg-background dark:text-foreground h-full w-full bg-white flex flex-col font-[family-name:var(--font-manrope)] text-slate-900 overflow-hidden">
+    <div className="dark:bg-background dark:text-foreground h-full w-full bg-background flex flex-col font-[family-name:var(--font-manrope)] text-slate-900 overflow-hidden">
       
-      <div className="flex-1 w-full px-4 py-4 md:px-6 lg:px-8 min-h-0">
-        {/* Main Grid Layout - 3 Column Panels */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-6 h-full">
+      <div className="flex-1 w-full min-h-0">
+        {/* Main Grid Layout - 3 Column Panels (VS Code Style: No Gap, Borders Only) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 h-full">
           
           {/* Left Column - Panel */}
-          <div className="lg:col-span-3 flex flex-col h-full bg-white dark:bg-muted/10 rounded-xl border border-border shadow-sm overflow-hidden">
+          <div className="lg:col-span-3 flex flex-col h-full bg-background border-r border-border overflow-hidden">
             {/* Panel Header */}
-            <div className="flex items-center px-3 h-14 shrink-0 border-b bg-muted/20">
-               <button
-                  onClick={onBack}
-                  className="dark:text-muted-foreground dark:hover:text-foreground flex w-full items-center text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 hover:bg-black/5 dark:hover:bg-white/5 rounded-md px-2 py-1.5"
-                >
-                  <ArrowLeft size={16} className="mr-2" /> {t('back_to_gallery')}
-                </button>
+            <div className="flex items-center px-4 h-10 shrink-0 border-b border-border bg-muted/20">
+               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('back_to_gallery')}</span>
+               <div className="ml-auto flex items-center">
+                  <button
+                    onClick={onBack}
+                    className="p-1 hover:bg-muted rounded-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <ArrowLeft size={14} />
+                  </button>
+               </div>
             </div>
             
             {/* Panel Body */}
@@ -100,7 +105,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                     <section className="text-center">
                       <button
                         type="button"
-                        className="group focus:ring-primary dark:bg-transparent relative flex w-full cursor-zoom-in justify-center overflow-hidden rounded-xl border-0 bg-transparent p-0 focus:ring-2 focus:outline-none"
+                        className="group focus:ring-primary dark:bg-transparent relative flex w-full cursor-zoom-in justify-center overflow-hidden rounded-lg border-0 bg-transparent p-0 focus:ring-2 focus:outline-none"
                         style={{
                           height: 'auto',
                           contain: 'layout style',
@@ -110,19 +115,19 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                         <img
                           alt={post.title}
                           fetchPriority="high"
-                          className="h-auto w-auto max-w-full rounded-xl object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+                          className="h-auto w-auto max-w-full rounded-lg object-contain transition-transform duration-300 group-hover:scale-[1.01]"
                           src={post.imageUrl}
                         />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 backdrop-blur-[1px] transition-opacity duration-200 group-hover:opacity-100 rounded-xl">
-                          <div className="bg-background/80 rounded-full p-3 shadow-lg backdrop-blur-md">
-                            <ZoomIn size={24} className="text-foreground" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 backdrop-blur-[1px] transition-opacity duration-200 group-hover:opacity-100 rounded-lg">
+                          <div className="bg-background/80 rounded-full p-2 shadow-lg backdrop-blur-md">
+                            <ZoomIn size={20} className="text-foreground" />
                           </div>
                         </div>
                       </button>
                     </section>
 
                     {/* Title */}
-                    <h1 className="dark:text-foreground text-xl leading-tight font-extrabold text-slate-900 text-left">
+                    <h1 className="dark:text-foreground text-lg leading-tight font-bold text-slate-900 text-left">
                       {post.title}
                     </h1>
 
@@ -134,10 +139,10 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                             <img
                               src={post.authorAvatar}
                               alt={post.authorDisplayName || 'Author'}
-                              className="ring-border h-8 w-8 rounded-full object-cover shadow-sm ring-1"
+                              className="ring-border h-6 w-6 rounded-full object-cover shadow-sm ring-1"
                             />
                           ) : (
-                            <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shadow-sm">
+                            <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shadow-sm">
                               {post.authorDisplayName
                                 ? post.authorDisplayName[0]?.toUpperCase()
                                 : post.author
@@ -147,11 +152,11 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                           )}
                           
                           <div className="flex flex-col">
-                              <span className="dark:text-foreground font-semibold text-slate-900 text-sm">
+                              <span className="dark:text-foreground font-semibold text-slate-900 text-xs">
                                 {post.authorDisplayName || post.author || 'Unknown'}
                               </span>
                               {post.sourceUrl && (
-                                  <a href={post.sourceUrl} target="_blank" rel="noreferrer" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+                                  <a href={post.sourceUrl} target="_blank" rel="noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1">
                                     <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className="h-3 w-3" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M17.6874 3.0625L12.6907 8.77425L8.37045 3.0625H2.11328L9.58961 12.8387L2.50378 20.9375H5.53795L11.0068 14.6886L15.7863 20.9375H21.8885L14.095 10.6342L20.7198 3.0625H17.6874ZM16.6232 19.1225L5.65436 4.78217H7.45745L18.3034 19.1225H16.6232Z"></path>
                                     </svg>
@@ -161,13 +166,13 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                           </div>
                       </div>
 
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             <div className="flex items-center gap-1.5" title="Likes">
-                                <Heart size={16} />
+                                <Heart size={14} />
                                 <span className="font-medium">{post.stats.likes}</span>
                             </div>
                             <div className="flex items-center gap-1.5" title="Comments">
-                                <MessageCircle size={16} />
+                                <MessageCircle size={14} />
                                 <span className="font-medium">{post.stats.comments || '0'}</span>
                             </div>
                       </div>
@@ -179,7 +184,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                         {post.tags.map((tagKey) => (
                           <span
                             key={tagKey}
-                            className="text-xs font-medium px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground"
+                            className="text-[10px] font-medium px-2 py-0.5 rounded bg-secondary text-secondary-foreground"
                           >
                             {tagTranslator.translate(tagKey, currentLanguage)}
                           </span>
@@ -188,12 +193,12 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                     )}
 
                     {/* Action Buttons */}
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2">
                       <button
                         onClick={handleTryThis}
-                        className="w-full focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 py-2 text-sm font-medium shadow-sm transition-all focus-visible:ring-2 focus-visible:outline-none disabled:opacity-50"
+                        className="w-full focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-8 items-center justify-center gap-2 rounded-md px-4 text-xs font-medium shadow-sm transition-all focus-visible:ring-2 focus-visible:outline-none disabled:opacity-50"
                       >
-                        <Sparkles className="h-4 w-4" />
+                        <Sparkles className="h-3.5 w-3.5" />
                         {t('try_this')}
                       </button>
                     </div>
@@ -201,7 +206,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                     {/* Reference Images */}
                     {post.referenceImageUrl && (
                       <div className="mt-2">
-                        <p className="text-muted-foreground mb-2 text-sm font-medium">
+                        <p className="text-muted-foreground mb-2 text-xs font-medium uppercase tracking-wider">
                           {t('reference_images')}
                         </p>
                         <div className="grid grid-cols-4 gap-2">
@@ -209,7 +214,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                             <button
                               key={index}
                               onClick={() => setSelectedImage(url.trim())}
-                              className="aspect-square border-border hover:ring-primary dark:bg-muted relative cursor-pointer overflow-hidden rounded-lg border bg-gray-100 transition-all hover:ring-2"
+                              className="aspect-square border-border hover:ring-primary dark:bg-muted relative cursor-pointer overflow-hidden rounded border bg-gray-100 transition-all hover:ring-2"
                             >
                               <img
                                 alt={`Reference ${index + 1}`}
@@ -228,42 +233,53 @@ export const PostDetail: React.FC<PostDetailProps> = ({
             </div>
           </div>
 
-          {/* Middle Column - Prompt Editor (6 cols) */}
-          <div className="lg:col-span-6 flex flex-col h-full lg:overflow-hidden">
+          {/* Middle Column - Prompt Editor */}
+          <div className={`${showRightPanel ? 'lg:col-span-6' : 'lg:col-span-9'} flex flex-col h-full lg:overflow-hidden bg-background transition-all duration-300`}>
              <PromptEditor 
                 initialContent={currentContent || ''} 
                 isJson={isJsonContent(currentContent)}
                 onTranslate={() => setIsTranslated(!isTranslated)}
                 isTranslated={isTranslated}
+                showRightPanel={showRightPanel}
+                onToggleRightPanel={() => setShowRightPanel(!showRightPanel)}
              />
           </div>
 
           {/* Right Column - Panel */}
-          <div className="lg:col-span-3 hidden lg:flex flex-col h-full bg-white dark:bg-muted/10 rounded-xl border border-border shadow-sm overflow-hidden">
-             {/* Panel Header */}
-             <div className="flex items-center px-4 h-14 shrink-0 border-b bg-muted/20">
-                <span className="text-sm font-semibold text-foreground">{t('you_might_like')}</span>
-             </div>
-             
-             {/* Panel Body */}
-             <div className="flex-1 min-h-0 relative">
-                <ScrollArea className="h-full">
-                    <div className="p-4 space-y-6">
-                        {/* Placeholder for future widgets */}
-                        <div className="rounded-lg border border-dashed border-border p-4 min-h-[100px] flex items-center justify-center text-muted-foreground text-sm bg-muted/5">
-                            <p>Recommended & Ads Space</p>
-                        </div>
+          {showRightPanel && (
+            <div className="lg:col-span-3 hidden lg:flex flex-col h-full bg-background border-l border-border overflow-hidden animate-in fade-in slide-in-from-right-4 duration-300">
+              {/* Panel Header */}
+              <div className="flex items-center justify-between px-4 h-10 shrink-0 border-b border-border bg-muted/20">
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('you_might_like')}</span>
+                  <button
+                    onClick={() => setShowRightPanel(false)}
+                    className="p-1 hover:bg-muted rounded-sm text-muted-foreground hover:text-foreground transition-colors"
+                    title="Close Sidebar"
+                  >
+                    <PanelRightClose size={16} />
+                  </button>
+              </div>
+              
+              {/* Panel Body */}
+              <div className="flex-1 min-h-0 relative">
+                  <ScrollArea className="h-full">
+                      <div className="p-4 space-y-6">
+                          {/* Placeholder for future widgets */}
+                          <div className="rounded border border-dashed border-border p-4 min-h-[100px] flex items-center justify-center text-muted-foreground text-xs bg-muted/5">
+                              <p>Recommended & Ads Space</p>
+                          </div>
 
-                        {/* Related Posts */}
-                        <div className="flex flex-col gap-4">
-                            {relatedPosts.map((p) => (
-                              <PostCard key={p.id} post={p} onClick={() => onPostClick(p)} />
-                            ))}
-                        </div>
-                    </div>
-                </ScrollArea>
-             </div>
-          </div>
+                          {/* Related Posts */}
+                          <div className="flex flex-col gap-4">
+                              {relatedPosts.map((p) => (
+                                <PostCard key={p.id} post={p} onClick={() => onPostClick(p)} />
+                              ))}
+                          </div>
+                      </div>
+                  </ScrollArea>
+              </div>
+            </div>
+          )}
 
         </div>
       </div>

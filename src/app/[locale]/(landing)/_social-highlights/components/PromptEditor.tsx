@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MarkdownIt from 'markdown-it';
-import { Copy, Check, Edit2, Eye, Languages } from 'lucide-react';
+import { Copy, Check, Edit2, Eye, Languages, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -15,6 +15,8 @@ interface PromptEditorProps {
   isJson?: boolean;
   onTranslate?: () => void;
   isTranslated?: boolean;
+  onToggleRightPanel?: () => void;
+  showRightPanel?: boolean;
 }
 
 // Initialize markdown-it
@@ -29,6 +31,8 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   isJson = false,
   onTranslate,
   isTranslated = false,
+  onToggleRightPanel,
+  showRightPanel = true,
 }) => {
   const t = useTranslations('social.landing');
   const [content, setContent] = useState(initialContent);
@@ -98,12 +102,12 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-muted/10 rounded-xl border border-border shadow-sm overflow-hidden">
+    <div className="flex flex-col h-full bg-background overflow-hidden">
         <Tabs defaultValue="preview" className="flex flex-col h-full">
             {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between px-4 h-14 shrink-0 border-b bg-muted/20 gap-4 sm:gap-0">
+            <div className="flex flex-col sm:flex-row items-center justify-between px-4 h-10 shrink-0 border-b bg-muted/20 gap-4 sm:gap-0">
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center h-full">
-                    <TabsList className="grid w-full sm:w-[240px] grid-cols-2 h-9 p-0.5">
+                    <TabsList className="grid w-full sm:w-[240px] grid-cols-2 h-8 p-0.5">
                         <TabsTrigger value="preview" className="flex items-center gap-2">
                             <Eye className="w-4 h-4" />
                             {t('preview_interaction') || 'Preview'}
@@ -139,6 +143,21 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                         {hasCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                         {t('copy_result') || 'Copy'}
                     </Button>
+
+                    {onToggleRightPanel && !showRightPanel && (
+                        <>
+                            <div className="hidden sm:block h-6 w-px bg-border mx-2"></div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={onToggleRightPanel}
+                                title="Open Sidebar"
+                                className="h-9 w-9"
+                            >
+                                <PanelRightOpen className="w-4 h-4 text-muted-foreground" />
+                            </Button>
+                        </>
+                    )}
                 </div>
             </div>
 
