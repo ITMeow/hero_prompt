@@ -70,10 +70,77 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   const [activeVariable, setActiveVariable] = useState<ActiveVariableState | null>(null);
   const [variableOptions, setVariableOptions] = useState<VariableOption[]>([]);
   const [isLoadingOptions, setIsLoadingOptions] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+
+  // Cache for variable options to enable instant loading
+  const variableCache = useRef<Record<string, VariableOption[]>>({});
+  // Cache for default values: maps variable ID (or category) to its default value
+  const defaultValuesCache = useRef<Record<string, string>>({});
 
   // Update content when initialContent changes (e.g., translation toggle)
   useEffect(() => {
     setContent(initialContent);
+    
+    // Pre-fetch variable options and extract default values
+    const preFetchVariables = async () => {
+        const variableRegex = /\{\{([^}]+)\}\}/g;
+        const matches = initialContent.matchAll(variableRegex);
+        const categoriesToFetch = new Set<string>();
+
+        for (const m of matches) {
+            const cleanContent = m[1].trim();
+            const parts = cleanContent.split('|');
+            let category = '';
+            let id = '';
+            let defaultValue = '';
+
+            if (parts.length === 3) {
+                 // Format: {{ id|category|defaultValue }}
+                 id = parts[0].trim();
+                 category = parts[1].trim();
+                 defaultValue = parts[2].trim();
+                 // Store default value using ID as key
+                 if (id && defaultValue) {
+                     defaultValuesCache.current[id] = defaultValue;
+                 }
+            } else if (parts.length === 2) {
+                 // Format: {{ category|defaultValue }}
+                 category = parts[0].trim();
+                 defaultValue = parts[1].trim();
+                 // Store default value using category as key
+                 if (category && defaultValue) {
+                     defaultValuesCache.current[category] = defaultValue;
+                 }
+            }
+
+            // Only fetch if valid category and not already cached
+            if (category && !variableCache.current[category]) {
+                categoriesToFetch.add(category);
+            }
+        }
+
+        if (categoriesToFetch.size > 0) {
+            try {
+                const params = new URLSearchParams();
+                params.set('categories', Array.from(categoriesToFetch).join(','));
+                
+                const res = await fetch(`/api/prompt/variables?${params.toString()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    // data format: { [categoryName]: { category: {...}, keywords: [...] } }
+                    Object.keys(data).forEach(key => {
+                        if (data[key] && data[key].keywords) {
+                            variableCache.current[key] = data[key].keywords;
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Failed to pre-fetch variables", e);
+            }
+        }
+    };
+
+    preFetchVariables();
   }, [initialContent]);
 
   // Click outside to close dropdown
@@ -108,6 +175,13 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
+  }, [activeVariable]);
+
+  // Reset search value when dropdown opens or closes
+  useEffect(() => {
+    if (!activeVariable) {
+      setSearchValue('');
+    }
   }, [activeVariable]);
 
   const handleCopy = async () => {
@@ -176,20 +250,53 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
           rect,
         });
 
+        // Helper function to add default value to options
+        const addDefaultValueToOptions = (options: VariableOption[]): VariableOption[] => {
+          const defaultKey = id || category;
+          const defaultValue = defaultValuesCache.current[defaultKey];
+
+          if (defaultValue) {
+            const defaultOption: VariableOption = {
+              id: '__default__',
+              cn: defaultValue,
+              en: defaultValue,
+            };
+            // Prepend default option to the list
+            return [defaultOption, ...options];
+          }
+
+          return options;
+        };
+
+        // Check cache first
+        if (variableCache.current[category]) {
+            const optionsWithDefault = addDefaultValueToOptions(variableCache.current[category]);
+            setVariableOptions(optionsWithDefault);
+            setIsLoadingOptions(false);
+            return;
+        }
+
         setIsLoadingOptions(true);
         setVariableOptions([]); // Clear previous options
         try {
           const res = await fetch(`/api/prompt/variables?category=${encodeURIComponent(category)}`);
           if (res.ok) {
             const data = await res.json();
-            setVariableOptions(data.keywords || []);
+            const keywords = data.keywords || [];
+            // Update cache (without default value)
+            variableCache.current[category] = keywords;
+            // Set options with default value
+            const optionsWithDefault = addDefaultValueToOptions(keywords);
+            setVariableOptions(optionsWithDefault);
           } else {
             // It might be a regular variable not in our DB, just don't show options or show empty
-            setVariableOptions([]);
+            const optionsWithDefault = addDefaultValueToOptions([]);
+            setVariableOptions(optionsWithDefault);
           }
         } catch (error) {
           console.error("Error fetching variables:", error);
-          setVariableOptions([]);
+          const optionsWithDefault = addDefaultValueToOptions([]);
+          setVariableOptions(optionsWithDefault);
         } finally {
           setIsLoadingOptions(false);
         }
@@ -197,16 +304,54 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
     }
   };
 
-  const handleOptionSelect = (option: VariableOption) => {
+  const handleOptionSelect = async (option: VariableOption | string) => {
     if (!activeVariable) return;
 
-    const newValue = activeLanguage === 'zh-CN' ? option.cn : option.en;
+    // Handle both VariableOption objects and custom string values
+    let newValue: string;
+    let isCustomValue = false;
+
+    if (typeof option === 'string') {
+      // Custom value entered by user
+      newValue = option;
+      isCustomValue = true;
+    } else {
+      // Regular option from the list
+      newValue = activeLanguage === 'zh-CN' ? option.cn : option.en;
+    }
+
+    // If it's a custom value, add it to the front-end cache only (not database)
+    if (isCustomValue) {
+      // Generate a temporary ID for the custom keyword
+      const customKeyword: VariableOption = {
+        id: `custom_${Date.now()}`,
+        cn: newValue,
+        en: newValue,
+      };
+
+      // Update cache with the new keyword at the front
+      if (variableCache.current[activeVariable.category]) {
+        variableCache.current[activeVariable.category] = [
+          customKeyword,
+          ...variableCache.current[activeVariable.category],
+        ];
+      } else {
+        variableCache.current[activeVariable.category] = [customKeyword];
+      }
+
+      toast.success(
+        activeLanguage === 'zh-CN'
+          ? '已添加到备选项（临时）'
+          : 'Added to suggestions (temporary)'
+      );
+    }
     
     // Construct new tag strictly preserving the ID if it exists and is different from category
     // Format: {{ ID|Category|Value }}
     let newTag = '';
+    const hasExplicitId = activeVariable.id && activeVariable.id !== activeVariable.category;
     
-    if (activeVariable.id && activeVariable.id !== activeVariable.category) {
+    if (hasExplicitId) {
         // We have a specific ID (e.g. "4" from {{ 4|lighting|... }})
         newTag = `{{ ${activeVariable.id}|${activeVariable.category}|${newValue} }}`;
     } else {
@@ -214,18 +359,37 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
         newTag = `{{ ${activeVariable.category}|${newValue} }}`;
     }
 
-    // Replace the *specific* occurrence
+    // Replace occurrences
     let currentIndex = 0;
     // Regex must match exactly what we use in renderContent
     const regex = /\{\{([^}]+)\}\}/g;
     
     const newContent = content.replace(regex, (match) => {
-        // We need to count every match to find the correct index
-        if (currentIndex === activeVariable.index) {
-            currentIndex++;
+        const currentMatchIndex = currentIndex++;
+        
+        // If we have an explicit ID, we want to sync ALL tags with that ID
+        if (hasExplicitId) {
+             const cleanContent = match.slice(2, -2).trim(); // remove {{ }}
+             const parts = cleanContent.split('|');
+             let currentId = cleanContent;
+             
+             if (parts.length === 3) {
+                 currentId = parts[0].trim();
+             } else if (parts.length === 2) {
+                 // For {{ Category|Value }}, the ID is the Category
+                 currentId = parts[0].trim();
+             }
+             
+             if (currentId === activeVariable.id) {
+                 return newTag;
+             }
+             return match;
+        }
+
+        // If no explicit ID, only replace the specific clicked instance
+        if (currentMatchIndex === activeVariable.index) {
             return newTag;
         }
-        currentIndex++;
         return match;
     });
 
@@ -406,9 +570,11 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
             }}
           >
              <Command className="rounded-xl border shadow-2xl !bg-white dark:!bg-popover overflow-hidden">
-                <CommandInput 
+                <CommandInput
                     className="h-12 !bg-white dark:!bg-popover"
-                    placeholder={activeLanguage === 'zh-CN' ? '搜索...' : 'Search...'} 
+                    placeholder={activeLanguage === 'zh-CN' ? '搜索或输入自定义值...' : 'Search or enter custom value...'}
+                    value={searchValue}
+                    onValueChange={setSearchValue}
                 />
                 <CommandList className="h-[320px] max-h-[320px]">
                     <CommandEmpty>
@@ -417,22 +583,52 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                                 <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
                             </div>
                         ) : (
-                           "No options found." 
+                           "No options found."
                         )}
                     </CommandEmpty>
-                    
+
+                    {/* Custom Value Input - Show when user has typed something */}
+                    {searchValue.trim() && !isLoadingOptions && (
+                        <CommandGroup heading={activeLanguage === 'zh-CN' ? '自定义' : 'Custom'}>
+                            <CommandItem
+                                onSelect={() => handleOptionSelect(searchValue.trim())}
+                                className="cursor-pointer"
+                            >
+                                <Sparkles className="mr-2 h-5 w-5 text-amber-500" />
+                                <span className="font-medium">
+                                    {activeLanguage === 'zh-CN' ? '使用自定义值: ' : 'Use custom value: '}
+                                </span>
+                                <span className="text-muted-foreground ml-1">"{searchValue.trim()}"</span>
+                            </CommandItem>
+                        </CommandGroup>
+                    )}
+
                     {!isLoadingOptions && variableOptions.length > 0 && (
                         <CommandGroup heading={activeLanguage === 'zh-CN' ? '建议' : 'Suggestions'}>
-                            {variableOptions.map((option) => (
-                                <CommandItem
-                                    key={option.id}
-                                    onSelect={() => handleOptionSelect(option)}
-                                    className="cursor-pointer"
-                                >
-                                    <Sparkles className="mr-2 h-5 w-5 text-muted-foreground" />
-                                    <span>{activeLanguage === 'zh-CN' ? option.cn : option.en}</span>
-                                </CommandItem>
-                            ))}
+                            {variableOptions.map((option) => {
+                                const isDefault = option.id === '__default__';
+                                return (
+                                    <CommandItem
+                                        key={option.id}
+                                        onSelect={() => handleOptionSelect(option)}
+                                        className="cursor-pointer"
+                                    >
+                                        {isDefault ? (
+                                            <div className="mr-2 h-5 w-5 flex items-center justify-center">
+                                                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                            </div>
+                                        ) : (
+                                            <Sparkles className="mr-2 h-5 w-5 text-muted-foreground" />
+                                        )}
+                                        {isDefault && (
+                                            <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded mr-2">
+                                                {activeLanguage === 'zh-CN' ? '默认' : 'Default'}
+                                            </span>
+                                        )}
+                                        <span>{activeLanguage === 'zh-CN' ? option.cn : option.en}</span>
+                                    </CommandItem>
+                                );
+                            })}
                         </CommandGroup>
                     )}
                 </CommandList>
