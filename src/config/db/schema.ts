@@ -6,6 +6,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uuid,
 } from 'drizzle-orm/pg-core';
 
 export const user = pgTable(
@@ -627,5 +628,51 @@ export const landingPost = pgTable(
   (table) => [
     index('idx_landing_post_created_at').on(table.createdAt),
     index('idx_landing_post_platform').on(table.platform),
+  ]
+);
+
+export const promptVariableCategories = pgTable(
+  'prompt_variable_categories',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    categoryEn: text('category_en').notNull().unique(),
+    categoryCn: text('category_cn').notNull(),
+    description: text('description'),
+    priority: integer('priority').default(0),
+    isActive: boolean('is_active').default(true),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+    parentTag: text('parent_tag'),
+  },
+  (table) => [
+    index('idx_variable_categories_parent_tag').on(table.parentTag),
+    index('idx_variable_categories_en').on(table.categoryEn),
+    index('idx_variable_categories_active').on(table.isActive),
+  ]
+);
+
+export const promptVariableKeywords = pgTable(
+  'prompt_variable_keywords',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    categoryId: uuid('category_id')
+      .notNull()
+      .references(() => promptVariableCategories.id, { onDelete: 'cascade' }),
+    keywordCn: text('keyword_cn').notNull(),
+    keywordEn: text('keyword_en').notNull(),
+    priority: integer('priority').default(0),
+    isActive: boolean('is_active').default(true),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_variable_keywords_category').on(table.categoryId),
+    index('idx_variable_keywords_cn').on(table.keywordCn),
+    index('idx_variable_keywords_en').on(table.keywordEn),
+    index('idx_variable_keywords_active').on(table.isActive),
   ]
 );

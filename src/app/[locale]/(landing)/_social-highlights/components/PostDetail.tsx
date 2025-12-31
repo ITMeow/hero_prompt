@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/core/i18n/navigation';
 import {
   ArrowLeft,
   Heart,
@@ -57,7 +57,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
   const handleTryThis = () => {
     // Save to sessionStorage to avoid URL length limits
     sessionStorage.setItem('ai_generator_prompt', currentContent || '');
-    router.push(`/${locale}/ai-image-generator`);
+    router.push('/ai-image-generator');
   };
 
   // Basic detection if content is JSON
@@ -245,6 +245,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                 isTranslated={isTranslated}
                 showRightPanel={showRightPanel}
                 onToggleRightPanel={() => setShowRightPanel(!showRightPanel)}
+                activeLanguage={isTranslated ? translatedLanguage : currentLanguage}
              />
           </div>
 

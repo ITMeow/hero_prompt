@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import Link from 'next/link';
+import { Link } from '@/core/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import NProgress from 'nprogress';
 import { PostCard } from './components/PostCard';

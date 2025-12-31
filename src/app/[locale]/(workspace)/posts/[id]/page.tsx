@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useRouter } from '@/core/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import NProgress from 'nprogress';
 import { PostDetail } from '@/app/[locale]/(landing)/_social-highlights/components/PostDetail';

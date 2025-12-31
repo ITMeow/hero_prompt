@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MarkdownIt from 'markdown-it';
-import { Copy, Check, Edit2, Eye, Languages, PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { Copy, Check, Edit2, Eye, Languages, PanelRightClose, PanelRightOpen, Loader2, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -8,6 +8,15 @@ import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/components/ui/button';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { Textarea } from '@/shared/components/ui/textarea';
+import { Kbd } from '@/shared/components/ui/kbd';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/shared/components/ui/command';
 
 interface PromptEditorProps {
   initialContent: string;
@@ -16,6 +25,21 @@ interface PromptEditorProps {
   isTranslated?: boolean;
   onToggleRightPanel?: () => void;
   showRightPanel?: boolean;
+  activeLanguage?: 'en' | 'zh-CN';
+}
+
+interface VariableOption {
+  id: string;
+  cn: string;
+  en: string;
+}
+
+interface ActiveVariableState {
+  index: number;
+  category: string;
+  id?: string; // The ID part of the variable (e.g. "4" in {{ 4|lighting|... }})
+  originalText: string;
+  rect: DOMRect;
 }
 
 // Initialize markdown-it
@@ -32,18 +56,59 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   isTranslated = false,
   onToggleRightPanel,
   showRightPanel = true,
+  activeLanguage = 'en',
 }) => {
   const t = useTranslations('social.landing');
   const [content, setContent] = useState(initialContent);
   const [hasCopied, setHasCopied] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [mode, setMode] = useState<'preview' | 'edit'>('preview');
+
+  // Interactive Variable State
+  const [activeVariable, setActiveVariable] = useState<ActiveVariableState | null>(null);
+  const [variableOptions, setVariableOptions] = useState<VariableOption[]>([]);
+  const [isLoadingOptions, setIsLoadingOptions] = useState(false);
 
   // Update content when initialContent changes (e.g., translation toggle)
   useEffect(() => {
     setContent(initialContent);
   }, [initialContent]);
+
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setActiveVariable(null);
+      }
+    };
+
+    if (activeVariable) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeVariable]);
+
+  // Handle Escape key to close dropdown
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setActiveVariable(null);
+      }
+    };
+
+    if (activeVariable) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeVariable]);
 
   const handleCopy = async () => {
     try {
@@ -83,6 +148,89 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
       console.error('Failed to copy:', err);
       toast.error('Failed to copy');
     }
+  };
+
+  const handleVariableClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+    if (mode === 'edit') return;
+
+    const target = e.target as HTMLElement;
+    const variableSpan = target.closest('span[data-variable-category]');
+
+    if (variableSpan) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const category = variableSpan.getAttribute('data-variable-category');
+      const id = variableSpan.getAttribute('data-variable-id') || undefined;
+      const index = parseInt(variableSpan.getAttribute('data-variable-index') || '0', 10);
+      const originalText = variableSpan.getAttribute('data-variable-original');
+
+      if (category && originalText) {
+        const rect = variableSpan.getBoundingClientRect();
+
+        setActiveVariable({
+          index,
+          category,
+          id,
+          originalText,
+          rect,
+        });
+
+        setIsLoadingOptions(true);
+        setVariableOptions([]); // Clear previous options
+        try {
+          const res = await fetch(`/api/prompt/variables?category=${encodeURIComponent(category)}`);
+          if (res.ok) {
+            const data = await res.json();
+            setVariableOptions(data.keywords || []);
+          } else {
+            // It might be a regular variable not in our DB, just don't show options or show empty
+            setVariableOptions([]);
+          }
+        } catch (error) {
+          console.error("Error fetching variables:", error);
+          setVariableOptions([]);
+        } finally {
+          setIsLoadingOptions(false);
+        }
+      }
+    }
+  };
+
+  const handleOptionSelect = (option: VariableOption) => {
+    if (!activeVariable) return;
+
+    const newValue = activeLanguage === 'zh-CN' ? option.cn : option.en;
+    
+    // Construct new tag strictly preserving the ID if it exists and is different from category
+    // Format: {{ ID|Category|Value }}
+    let newTag = '';
+    
+    if (activeVariable.id && activeVariable.id !== activeVariable.category) {
+        // We have a specific ID (e.g. "4" from {{ 4|lighting|... }})
+        newTag = `{{ ${activeVariable.id}|${activeVariable.category}|${newValue} }}`;
+    } else {
+        // No distinct ID, fall back to simple format {{ Category|Value }}
+        newTag = `{{ ${activeVariable.category}|${newValue} }}`;
+    }
+
+    // Replace the *specific* occurrence
+    let currentIndex = 0;
+    // Regex must match exactly what we use in renderContent
+    const regex = /\{\{([^}]+)\}\}/g;
+    
+    const newContent = content.replace(regex, (match) => {
+        // We need to count every match to find the correct index
+        if (currentIndex === activeVariable.index) {
+            currentIndex++;
+            return newTag;
+        }
+        currentIndex++;
+        return match;
+    });
+
+    setContent(newContent);
+    setActiveVariable(null);
   };
 
   // Function to render content with variable highlighting
@@ -171,9 +319,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
     const uniqueIds = new Set<string>();
     
     // First pass: Find all unique IDs
-    let match;
     // We use a new RegExp with global flag to iterate
-    const scannerRegex = new RegExp(variableRegex);
     let scanContent = displayContent;
     
     // Simple matchAll extraction
@@ -196,33 +342,46 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
         idToColorMap.set(id, colors[index % colors.length]);
     });
 
+    let variableMatchIndex = 0;
+
     const processedText = displayContent.replace(variableRegex, (match, variableName) => {
+        const currentMatchIndex = variableMatchIndex++;
         // Check for new format: {{ RelationID|Key|Value }}
         const cleanVariableName = variableName.trim();
         const parts = cleanVariableName.split('|');
         let relationId = cleanVariableName;
+        let searchCategory = cleanVariableName;
         let displayName = cleanVariableName;
         let isFormatted = false;
 
         if (parts.length === 3) {
             relationId = parts[0].trim();
-            // key = parts[1].trim(); // Unused for display/color
+            searchCategory = parts[1].trim();
             displayName = parts[2].trim();
             isFormatted = true;
+        } else if (parts.length === 2) {
+             relationId = parts[0].trim();
+             searchCategory = parts[0].trim();
+             displayName = parts[1].trim();
+             isFormatted = true;
         }
 
         // Retrieve the pre-assigned unique color
         const colorClass = idToColorMap.get(relationId) || colors[0];
         
+        // Data attributes for interaction - use searchCategory for the API lookup
+        // Added data-variable-id to persist the ID part
+        const dataAttrs = `data-variable-index="${currentMatchIndex}" data-variable-id="${relationId}" data-variable-category="${searchCategory}" data-variable-original="${match.replace(/"/g, '&quot;')}"`;
+
         // Render the badge with ID if formatted, otherwise standard pill
         if (isFormatted) {
-            return `<span class="inline-flex items-center rounded-md px-1.5 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105 shadow-sm" style="vertical-align: baseline;">
+            return `<span ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-md px-1.5 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105 shadow-sm" style="vertical-align: baseline;">
                 <span class="bg-white/20 text-white/90 px-1 rounded-sm text-[10px] mr-1.5 min-w-[1.2em] text-center font-mono leading-tight flex items-center justify-center h-4">${relationId}</span>
                 <span class="truncate max-w-[300px]">${displayName}</span>
             </span>`;
         } else {
              // Fallback for non-formatted variables (legacy support)
-            return `<span class="inline-flex items-center rounded-full px-3 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105" style="vertical-align: baseline;">${displayName}</span>`;
+            return `<span ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-full px-3 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105" style="vertical-align: baseline;">${displayName}</span>`;
         }
     });
 
@@ -235,7 +394,63 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-background overflow-hidden">
+    <div className="flex flex-col h-full bg-background overflow-hidden relative">
+        {/* Dropdown Menu */}
+        {activeVariable && (
+          <div 
+            ref={dropdownRef}
+            className="fixed z-50 w-[400px] animate-in fade-in zoom-in-95 duration-200"
+            style={{
+              top: Math.min(activeVariable.rect.bottom + 8, window.innerHeight - 380),
+              left: Math.max(8, Math.min(activeVariable.rect.left, window.innerWidth - 408)),
+            }}
+          >
+             <Command className="rounded-xl border shadow-2xl !bg-white dark:!bg-popover overflow-hidden">
+                <CommandInput 
+                    className="h-12 !bg-white dark:!bg-popover"
+                    placeholder={activeLanguage === 'zh-CN' ? '搜索...' : 'Search...'} 
+                />
+                <CommandList className="h-[320px] max-h-[320px]">
+                    <CommandEmpty>
+                        {isLoadingOptions ? (
+                            <div className="flex items-center justify-center p-4">
+                                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                            </div>
+                        ) : (
+                           "No options found." 
+                        )}
+                    </CommandEmpty>
+                    
+                    {!isLoadingOptions && variableOptions.length > 0 && (
+                        <CommandGroup heading={activeLanguage === 'zh-CN' ? '建议' : 'Suggestions'}>
+                            {variableOptions.map((option) => (
+                                <CommandItem
+                                    key={option.id}
+                                    onSelect={() => handleOptionSelect(option)}
+                                    className="cursor-pointer"
+                                >
+                                    <Sparkles className="mr-2 h-5 w-5 text-muted-foreground" />
+                                    <span>{activeLanguage === 'zh-CN' ? option.cn : option.en}</span>
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    )}
+                </CommandList>
+                
+                <div className="flex h-12 items-center justify-end border-t px-3 !bg-white dark:!bg-popover">
+                  <button
+                    className="flex items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
+                    onClick={() => setActiveVariable(null)}
+                    type="button"
+                  >
+                    <span>{activeLanguage === 'zh-CN' ? '关闭' : 'Close'}</span>
+                    <Kbd className="ml-1">Esc</Kbd>
+                  </button>
+                </div>
+             </Command>
+          </div>
+        )}
+
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row items-center justify-between px-4 h-10 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 gap-4 sm:gap-0 z-10">
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center h-full">
@@ -329,6 +544,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                             ">
                                 <div 
                                     ref={contentRef}
+                                    onClick={handleVariableClick}
                                     className="
                                         prose prose-lg prose-slate dark:prose-invert max-w-none 
                                         prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-slate-100
