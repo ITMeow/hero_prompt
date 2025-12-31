@@ -85,16 +85,19 @@ export const PostDetail: React.FC<PostDetailProps> = ({
           {/* Left Column - Panel */}
           <div className="lg:col-span-3 flex flex-col h-full bg-background border-r border-border overflow-hidden">
             {/* Panel Header */}
-            <div className="flex items-center px-4 h-10 shrink-0 border-b border-border bg-muted/20">
-               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('back_to_gallery')}</span>
-               <div className="ml-auto flex items-center">
-                  <button
-                    onClick={onBack}
-                    className="p-1 hover:bg-muted rounded-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <ArrowLeft size={14} />
-                  </button>
-               </div>
+            <div className="flex items-center px-4 h-10 shrink-0 border-b border-border bg-muted/20 gap-3">
+               <button
+                 onClick={onBack}
+                 className="p-1 hover:bg-muted rounded-sm text-muted-foreground hover:text-foreground transition-colors"
+               >
+                 <ArrowLeft size={14} />
+               </button>
+               <button 
+                 onClick={onBack}
+                 className="text-xs font-medium text-muted-foreground hover:text-foreground uppercase tracking-wider transition-colors"
+               >
+                 {t('back_to_gallery')}
+               </button>
             </div>
             
             {/* Panel Body */}
