@@ -47,7 +47,35 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(content);
+      // Logic to strip variables and return clean text
+      let textToCopy = content;
+
+      // 1. If JSON, try to format it first (matching render behavior)
+      if (isJson) {
+        try {
+          const jsonObj = JSON.parse(textToCopy);
+          textToCopy = JSON.stringify(jsonObj, null, 2);
+        } catch (e) {
+          // Fallback to raw text if parse fails
+        }
+      }
+
+      // 2. Replace variables {{ ... }} with their display values
+      const variableRegex = /\{\{([^}]+)\}\}/g;
+      textToCopy = textToCopy.replace(variableRegex, (match, variableName) => {
+          const cleanVariableName = variableName.trim();
+          const parts = cleanVariableName.split('|');
+          
+          if (parts.length === 3) {
+              // Format: {{ RelationID|Key|Value }} -> Return Value
+              return parts[2].trim();
+          }
+          
+          // Format: {{ Variable }} -> Return Variable
+          return cleanVariableName;
+      });
+
+      await navigator.clipboard.writeText(textToCopy);
       setHasCopied(true);
       toast.success(t('copied') || 'Copied to clipboard');
       setTimeout(() => setHasCopied(false), 2000);
