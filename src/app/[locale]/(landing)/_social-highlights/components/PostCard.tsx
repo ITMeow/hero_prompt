@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import moment from 'moment';
 import { SocialPost } from '../lib/types';
+import { processPromptContent } from '../lib/utils';
 import { cn } from '@/shared/lib/utils';
 import { Badge } from '@/shared/components/ui/badge';
 
@@ -42,15 +43,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
     e.preventDefault();
     e.stopPropagation();
     
-    const textToCopy = post.prompt || post.description || '';
+    const rawText = post.prompt || post.description || '';
+    const processedText = processPromptContent(rawText);
     
-    // Copy to clipboard
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(textToCopy).catch(err => console.error('Failed to copy:', err));
-    }
-    
-    // Navigate with prompt
-    router.push(`/${locale}/ai-image-generator?prompt=${encodeURIComponent(textToCopy)}`);
+    // Save to sessionStorage to avoid URL length limits
+    sessionStorage.setItem('ai_generator_prompt', processedText);
+    router.push(`/${locale}/ai-image-generator`);
   };
 
   return (
@@ -94,13 +92,13 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
             </h3>
           </div>
           
-          {/* "Try this" Button - Moved above title */}
-          <div className="absolute bottom-20 left-0 right-0 px-6 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out z-20 flex justify-center">
+          {/* "Try this" Button - Top Right */}
+          <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out">
             <button 
               onClick={handleTryThis}
-              className="w-full bg-white/90 hover:bg-white backdrop-blur-md text-gray-900 py-3 rounded-full font-semibold text-sm flex items-center justify-center gap-2 shadow-lg border border-white/50 transform hover:scale-[1.02] transition-all"
+              className="bg-white/90 hover:bg-white backdrop-blur-md text-gray-900 px-3 py-1.5 rounded-full font-medium text-xs flex items-center gap-1.5 shadow-sm border border-white/50 hover:shadow-md transition-all"
             >
-              <Sparkles size={16} className="text-primary" />
+              <Sparkles size={14} className="text-primary" />
               <span>{t('try_this')}</span>
             </button>
           </div>

@@ -23,6 +23,7 @@ import {
 import { SocialPost } from '../lib/types';
 import { PostCard } from './PostCard';
 import { PromptEditor } from './PromptEditor';
+import { isJsonContent, getFixedContent, processPromptContent } from '../lib/utils';
 
 interface PostDetailProps {
   post: SocialPost;
@@ -55,169 +56,15 @@ export const PostDetail: React.FC<PostDetailProps> = ({
     ? post.i18nContent[translatedLanguage].prompt
     : post.prompt || post.description;
 
-  // Basic detection if content is JSON
-  const isJsonContent = (text: string | null | undefined): boolean => {
-    if (!text) return false;
-    const trimmed = text.trim();
-
-    // CRITICAL: Check if it starts with {{ (variable syntax, not JSON)
-    if (trimmed.startsWith('{{')) {
-      return false;
-    }
-
-    // Check if it looks like JSON (starts with { or [)
-    if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
-      return false;
-    }
-
-    // Try to parse as-is first
-    try {
-      const variableRegex = /\{\{([^}]+)\}\}/g;
-      const textWithPlaceholders = trimmed.replace(variableRegex, 'null');
-      JSON.parse(textWithPlaceholders);
-      return true;
-    } catch (e) {
-      // Try to auto-fix common issues
-      const variableRegex = /\{\{([^}]+)\}\}/g;
-      let fixed = trimmed;
-
-      // Step 1: Clean up trailing garbage after valid JSON
-      // Find where the JSON actually ends by matching balanced braces
-      let textForCounting = trimmed.replace(variableRegex, '');
-
-      const openBraces = (textForCounting.match(/\{/g) || []).length;
-      const closeBraces = (textForCounting.match(/\}/g) || []).length;
-      const openBrackets = (textForCounting.match(/\</g) || []).length;
-      const closeBrackets = (textForCounting.match(/\>/g) || []).length;
-
-      // Step 2: If braces are balanced, try to remove trailing garbage
-      if (openBraces === closeBraces && openBrackets === closeBrackets) {
-        // Find the position of the last valid JSON character (} or ])
-        let lastValidPos = -1;
-        if (trimmed.startsWith('{')) {
-          lastValidPos = trimmed.lastIndexOf('}');
-        } else if (trimmed.startsWith('[')) {
-          lastValidPos = trimmed.lastIndexOf(']');
-        }
-
-        if (lastValidPos !== -1 && lastValidPos < trimmed.length - 1) {
-          fixed = trimmed.substring(0, lastValidPos + 1);
-        }
-      } else {
-        // Step 3: Add missing braces if needed
-        if (openBraces > closeBraces) {
-          const missing = openBraces - closeBraces;
-          fixed = fixed + '\n' + '}'.repeat(missing);
-        }
-        if (openBrackets > closeBrackets) {
-          const missing = openBrackets - closeBrackets;
-          fixed = fixed + ']'.repeat(missing);
-        }
-      }
-
-      // Try parsing the fixed version
-      try {
-        const fixedWithPlaceholders = fixed.replace(variableRegex, 'null');
-        JSON.parse(fixedWithPlaceholders);
-        return true;
-      } catch (e2) {
-        return false;
-      }
-    }
-  };
-
-  // Auto-fix JSON if needed (same logic as isJsonContent but returns the fixed content)
-  const getFixedContent = (text: string): string => {
-    if (!isJsonContent(text)) return text;
-
-    const trimmed = text.trim();
-
-    // Try to parse as-is
-    try {
-      const variableRegex = /\{\{([^}]+)\}\}/g;
-      const textWithPlaceholders = trimmed.replace(variableRegex, 'null');
-      JSON.parse(textWithPlaceholders);
-      return trimmed; // Valid, no fix needed
-    } catch (e) {
-      // Need to fix
-      const variableRegex = /\{\{([^}]+)\}\}/g;
-      let fixed = trimmed;
-
-      const textForCounting = trimmed.replace(variableRegex, '');
-      const openBraces = (textForCounting.match(/\{/g) || []).length;
-      const closeBraces = (textForCounting.match(/\}/g) || []).length;
-      const openBrackets = (textForCounting.match(/\</g) || []).length;
-      const closeBrackets = (textForCounting.match(/\>/g) || []).length;
-
-      // If braces are balanced, remove trailing garbage
-      if (openBraces === closeBraces && openBrackets === closeBrackets) {
-        let lastValidPos = -1;
-        if (trimmed.startsWith('{')) {
-          lastValidPos = trimmed.lastIndexOf('}');
-        } else if (trimmed.startsWith('[')) {
-          lastValidPos = trimmed.lastIndexOf(']');
-        }
-
-        if (lastValidPos !== -1 && lastValidPos < trimmed.length - 1) {
-          fixed = trimmed.substring(0, lastValidPos + 1);
-        }
-      } else {
-        // Add missing braces
-        if (openBraces > closeBraces) {
-          const missing = openBraces - closeBraces;
-          fixed = trimmed + '\n' + '}'.repeat(missing);
-        }
-        if (openBrackets > closeBrackets) {
-          const missing = openBrackets - closeBrackets;
-          fixed = fixed + ']'.repeat(missing);
-        }
-      }
-
-      // Verify the fix works
-      try {
-        const fixedWithPlaceholders = fixed.replace(variableRegex, 'null');
-        JSON.parse(fixedWithPlaceholders);
-        return fixed;
-      } catch (e2) {
-        return trimmed;
-      }
-    }
-  };
-
   const fixedContent = getFixedContent(currentContent || '');
 
   const handleTryThis = () => {
-    // Logic to strip variables and return clean text
-    let textToProcess = currentPromptContent || fixedContent;
-    const isJson = isJsonContent(currentContent);
-
-    // 1. If JSON, try to format it first (matching render behavior)
-    if (isJson) {
-      try {
-        const jsonObj = JSON.parse(textToProcess);
-        textToProcess = JSON.stringify(jsonObj, null, 2);
-      } catch (e) {
-        // Fallback to raw text if parse fails
-      }
-    }
-
-    // 2. Replace variables {{ ... }} with their display values
-    const variableRegex = /\{\{([^}]+)\}\}/g;
-    textToProcess = textToProcess.replace(variableRegex, (match, variableName) => {
-        const cleanVariableName = variableName.trim();
-        const parts = cleanVariableName.split('|');
-        
-        if (parts.length === 3) {
-            // Format: {{ RelationID|Key|Value }} -> Return Value
-            return parts[2].trim();
-        }
-        
-        // Format: {{ Variable }} -> Return Variable
-        return cleanVariableName;
-    });
+    // Use the current edited content if available, otherwise use the fixed content from the post
+    const textToProcess = currentPromptContent || fixedContent;
+    const processedText = processPromptContent(textToProcess);
 
     // Save to sessionStorage to avoid URL length limits
-    sessionStorage.setItem('ai_generator_prompt', textToProcess);
+    sessionStorage.setItem('ai_generator_prompt', processedText);
     router.push('/ai-image-generator');
   };
 
