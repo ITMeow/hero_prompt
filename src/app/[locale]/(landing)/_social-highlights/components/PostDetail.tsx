@@ -54,25 +54,160 @@ export const PostDetail: React.FC<PostDetailProps> = ({
     ? post.i18nContent[translatedLanguage].prompt
     : post.prompt || post.description;
 
-  const handleTryThis = () => {
-    // Save to sessionStorage to avoid URL length limits
-    sessionStorage.setItem('ai_generator_prompt', currentContent || '');
-    router.push('/ai-image-generator');
-  };
-
   // Basic detection if content is JSON
   const isJsonContent = (text: string | null | undefined): boolean => {
     if (!text) return false;
-    try {
-        const trimmed = text.trim();
-        if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
-             JSON.parse(trimmed);
-             return true;
-        }
-    } catch (e) {
-        return false;
+    const trimmed = text.trim();
+    console.log('🔎 [isJsonContent] Checking text:', trimmed.substring(0, 100));
+    console.log('🔎 [isJsonContent] Starts with {?', trimmed.startsWith('{'));
+    console.log('🔎 [isJsonContent] Ends with }?', trimmed.endsWith('}'));
+    console.log('🔎 [isJsonContent] Last 50 chars:', trimmed.slice(-50));
+
+    // Check if it looks like JSON (starts with { or [)
+    if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
+      console.log('⚠️  [isJsonContent] Not JSON format (doesn\'t start with { or [)');
+      return false;
     }
-    return false;
+
+    // Try to parse as-is first
+    try {
+      const variableRegex = /\{\{([^}]+)\}\}/g;
+      const textWithPlaceholders = trimmed.replace(variableRegex, 'null');
+      console.log('🔎 [isJsonContent] After placeholder replacement (first 200):', textWithPlaceholders.substring(0, 200));
+      console.log('🔎 [isJsonContent] After placeholder replacement (last 100):', textWithPlaceholders.slice(-100));
+      JSON.parse(textWithPlaceholders);
+      console.log('✅ [isJsonContent] Valid JSON detected!');
+      return true;
+    } catch (e) {
+      console.log('⚠️  [isJsonContent] First parse attempt failed:', (e as Error).message);
+
+      // Try to auto-fix common issues
+      const variableRegex = /\{\{([^}]+)\}\}/g;
+      let fixed = trimmed;
+
+      // Step 1: Clean up trailing garbage after valid JSON
+      // Find where the JSON actually ends by matching balanced braces
+      let textForCounting = trimmed.replace(variableRegex, '');
+
+      const openBraces = (textForCounting.match(/\{/g) || []).length;
+      const closeBraces = (textForCounting.match(/\}/g) || []).length;
+      const openBrackets = (textForCounting.match(/\[/g) || []).length;
+      const closeBrackets = (textForCounting.match(/\]/g) || []).length;
+
+      console.log('🔎 [isJsonContent] Brace count:', { openBraces, closeBraces, openBrackets, closeBrackets });
+
+      // Step 2: If braces are balanced, try to remove trailing garbage
+      if (openBraces === closeBraces && openBrackets === closeBrackets) {
+        // Find the position of the last valid JSON character (} or ])
+        let lastValidPos = -1;
+        if (trimmed.startsWith('{')) {
+          lastValidPos = trimmed.lastIndexOf('}');
+        } else if (trimmed.startsWith('[')) {
+          lastValidPos = trimmed.lastIndexOf(']');
+        }
+
+        if (lastValidPos !== -1 && lastValidPos < trimmed.length - 1) {
+          const afterJson = trimmed.substring(lastValidPos + 1);
+          console.log('🔧 [isJsonContent] Found trailing garbage:', afterJson);
+          fixed = trimmed.substring(0, lastValidPos + 1);
+          console.log('🔧 [isJsonContent] Removed trailing garbage');
+        }
+      } else {
+        // Step 3: Add missing braces if needed
+        if (openBraces > closeBraces) {
+          const missing = openBraces - closeBraces;
+          fixed = fixed + '\n' + '}'.repeat(missing);
+          console.log('🔧 [isJsonContent] Added', missing, 'closing braces');
+        }
+        if (openBrackets > closeBrackets) {
+          const missing = openBrackets - closeBrackets;
+          fixed = fixed + ']'.repeat(missing);
+          console.log('🔧 [isJsonContent] Added', missing, 'closing brackets');
+        }
+      }
+
+      // Try parsing the fixed version
+      try {
+        const fixedWithPlaceholders = fixed.replace(variableRegex, 'null');
+        JSON.parse(fixedWithPlaceholders);
+        console.log('✅ [isJsonContent] Valid JSON after auto-fix!');
+        return true;
+      } catch (e2) {
+        console.error('❌ [isJsonContent] JSON parse failed even after auto-fix:', (e2 as Error).message);
+        return false;
+      }
+    }
+  };
+
+  // Auto-fix JSON if needed (same logic as isJsonContent but returns the fixed content)
+  const getFixedContent = (text: string): string => {
+    if (!isJsonContent(text)) return text;
+
+    const trimmed = text.trim();
+
+    // Try to parse as-is
+    try {
+      const variableRegex = /\{\{([^}]+)\}\}/g;
+      const textWithPlaceholders = trimmed.replace(variableRegex, 'null');
+      JSON.parse(textWithPlaceholders);
+      return trimmed; // Valid, no fix needed
+    } catch (e) {
+      // Need to fix
+      const variableRegex = /\{\{([^}]+)\}\}/g;
+      let fixed = trimmed;
+
+      const textForCounting = trimmed.replace(variableRegex, '');
+      const openBraces = (textForCounting.match(/\{/g) || []).length;
+      const closeBraces = (textForCounting.match(/\}/g) || []).length;
+      const openBrackets = (textForCounting.match(/\[/g) || []).length;
+      const closeBrackets = (textForCounting.match(/\]/g) || []).length;
+
+      // If braces are balanced, remove trailing garbage
+      if (openBraces === closeBraces && openBrackets === closeBrackets) {
+        let lastValidPos = -1;
+        if (trimmed.startsWith('{')) {
+          lastValidPos = trimmed.lastIndexOf('}');
+        } else if (trimmed.startsWith('[')) {
+          lastValidPos = trimmed.lastIndexOf(']');
+        }
+
+        if (lastValidPos !== -1 && lastValidPos < trimmed.length - 1) {
+          fixed = trimmed.substring(0, lastValidPos + 1);
+          console.log('🔧 [getFixedContent] Removed trailing garbage');
+        }
+      } else {
+        // Add missing braces
+        if (openBraces > closeBraces) {
+          const missing = openBraces - closeBraces;
+          fixed = trimmed + '\n' + '}'.repeat(missing);
+          console.log('🔧 [getFixedContent] Added', missing, 'closing braces');
+        }
+        if (openBrackets > closeBrackets) {
+          const missing = openBrackets - closeBrackets;
+          fixed = fixed + ']'.repeat(missing);
+          console.log('🔧 [getFixedContent] Added', missing, 'closing brackets');
+        }
+      }
+
+      // Verify the fix works
+      try {
+        const fixedWithPlaceholders = fixed.replace(variableRegex, 'null');
+        JSON.parse(fixedWithPlaceholders);
+        console.log('✅ [getFixedContent] Successfully fixed JSON');
+        return fixed;
+      } catch (e2) {
+        console.log('⚠️  [getFixedContent] Could not fix JSON, using original');
+        return trimmed;
+      }
+    }
+  };
+
+  const fixedContent = getFixedContent(currentContent || '');
+
+  const handleTryThis = () => {
+    // Save to sessionStorage to avoid URL length limits
+    sessionStorage.setItem('ai_generator_prompt', fixedContent);
+    router.push('/ai-image-generator');
   };
 
   return (
@@ -238,8 +373,8 @@ export const PostDetail: React.FC<PostDetailProps> = ({
 
           {/* Middle Column - Prompt Editor */}
           <div className={`${showRightPanel ? 'lg:col-span-6' : 'lg:col-span-9'} flex flex-col h-full lg:overflow-hidden bg-background transition-all duration-300`}>
-             <PromptEditor 
-                initialContent={currentContent || ''} 
+             <PromptEditor
+                initialContent={fixedContent}
                 isJson={isJsonContent(currentContent)}
                 onTranslate={() => setIsTranslated(!isTranslated)}
                 isTranslated={isTranslated}

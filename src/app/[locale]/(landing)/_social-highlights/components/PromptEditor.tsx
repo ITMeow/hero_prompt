@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MarkdownIt from 'markdown-it';
-import { Copy, Check, Edit2, Eye, Languages, PanelRightClose, PanelRightOpen, Loader2, Sparkles } from 'lucide-react';
+import { Copy, Check, Edit2, Eye, Languages, PanelRightClose, PanelRightOpen, Loader2, Sparkles, Variable } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { cn } from '@/shared/lib/utils';
+import { getCaretCoordinates } from '@/shared/lib/textarea-utils';
 import { Button } from '@/shared/components/ui/button';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { Textarea } from '@/shared/components/ui/textarea';
@@ -49,6 +50,25 @@ const md = new MarkdownIt({
   linkify: true,
 });
 
+const jsonSyntaxHighlight = (json: string) => {
+  const safeJson = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return safeJson.replace(/("(\\.|[^"\\])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
+    let cls = 'text-amber-600 dark:text-amber-400';
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) {
+        cls = 'text-sky-600 dark:text-sky-400 font-bold';
+      } else {
+        cls = 'text-emerald-600 dark:text-emerald-400';
+      }
+    } else if (/true|false/.test(match)) {
+      cls = 'text-blue-600 dark:text-blue-400 font-bold';
+    } else if (/null/.test(match)) {
+      cls = 'text-slate-500 italic';
+    }
+    return `<span class="${cls}">${match}</span>`;
+  });
+};
+
 export const PromptEditor: React.FC<PromptEditorProps> = ({
   initialContent,
   isJson = false,
@@ -63,6 +83,30 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   const [hasCopied, setHasCopied] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const lineNumbersRef = useRef<HTMLDivElement>(null);
+  const highlighterRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
+    const { scrollTop, scrollLeft } = e.currentTarget;
+    if (lineNumbersRef.current) {
+        lineNumbersRef.current.scrollTop = scrollTop;
+    }
+    if (highlighterRef.current) {
+        highlighterRef.current.scrollTop = scrollTop;
+        highlighterRef.current.scrollLeft = scrollLeft;
+    }
+    setSelectionMenu(null);
+  };
+  
+  const renderHighlightedEditor = (text: string) => {
+     const parts = text.split(/(\{\{[^}]+\}\})/g);
+     return parts.map((part, i) => {
+         if (part.startsWith('{{') && part.endsWith('}}')) {
+             return <span key={i} className="text-blue-600 dark:text-blue-400 font-bold">{part}</span>;
+         }
+         return <span key={i}>{part}</span>;
+     });
+  };
 
   const [mode, setMode] = useState<'preview' | 'edit'>('preview');
 
@@ -72,15 +116,237 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   const [isLoadingOptions, setIsLoadingOptions] = useState(false);
   const [searchValue, setSearchValue] = useState('');
 
+  // Selection Menu State
+  const [selectionMenu, setSelectionMenu] = useState<{ top: number; left: number; text: string; start: number; end: number } | null>(null);
+  const [aiSuggestions, setAiSuggestions] = useState<string[] | null>(null);
+  const [isClassifying, setIsClassifying] = useState(false);
+  
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleTextareaSelect = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+
+    // Reset AI state when selection changes
+    setAiSuggestions(null);
+    setIsClassifying(false);
+
+    if (start === end) {
+      setSelectionMenu(null);
+      return;
+    }
+
+    const text = el.value.substring(start, end);
+    if (!text.trim()) {
+        setSelectionMenu(null);
+        return;
+    }
+
+    // Calculate coordinates for the END of the selection (approximate)
+    const coords = getCaretCoordinates(el, end);
+    
+    // Calculate position relative to the viewport
+    const rect = el.getBoundingClientRect();
+    const top = rect.top - el.scrollTop + coords.top;
+    const left = rect.left - el.scrollLeft + coords.left;
+
+    setSelectionMenu({
+      top,
+      left,
+      text,
+      start,
+      end
+    });
+  };
+
+  const handleFetchAiSuggestions = async () => {
+      if (!selectionMenu) return;
+      
+      setIsClassifying(true);
+      
+      try {
+          // 1. Check intelligent dictionary first
+          const dictCategory = keywordToCategoryMap.current.get(selectionMenu.text.toLowerCase().trim());
+          const initialSuggestions = dictCategory ? [dictCategory] : [];
+          
+          // 2. Call LLM API
+          const res = await fetch('/api/ai/classify-variable', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: selectionMenu.text })
+          });
+          
+          let suggestions: string[] = [];
+          if (res.ok) {
+              const data = await res.json();
+              suggestions = Array.from(new Set([...initialSuggestions, ...(data.categories || [])]));
+          } else {
+              suggestions = initialSuggestions.length ? initialSuggestions : ['Style', 'Subject', 'Lighting'];
+          }
+
+          // Open Command Menu for Category Selection
+          const options: VariableOption[] = suggestions.slice(0, 8).map((s: string) => ({
+              id: s,
+              cn: s,
+              en: s
+          }));
+          
+          setVariableOptions(options);
+          
+          // Switch to Active Variable Mode (Create Mode)
+          setActiveVariable({
+              index: -1,
+              category: activeLanguage === 'zh-CN' ? '选择分类' : 'Select Category',
+              id: 'temp_new', // Flag for Create Mode
+              originalText: selectionMenu.text,
+              rect: {
+                  top: selectionMenu.top,
+                  left: selectionMenu.left,
+                  bottom: selectionMenu.top + 20,
+                  right: selectionMenu.left + 200,
+                  width: 200,
+                  height: 20,
+                  x: selectionMenu.left,
+                  y: selectionMenu.top,
+                  toJSON: () => {}
+              }
+          });
+          
+          setSelectionMenu(null); // Close the small menu
+
+      } catch (e) {
+          console.error("AI Classification failed", e);
+          toast.error("Classification failed");
+      } finally {
+          setIsClassifying(false);
+      }
+  };
+
+  // Removed handleApplyVariable as it's now integrated into handleOptionSelect
+
   // Cache for variable options to enable instant loading
   const variableCache = useRef<Record<string, VariableOption[]>>({});
   // Cache for default values: maps variable ID (or category) to its default value
   const defaultValuesCache = useRef<Record<string, string>>({});
+  
+  // Reverse lookup map for intelligent categorization: Keyword (lowercase) -> Category
+  const keywordToCategoryMap = useRef<Map<string, string>>(new Map());
+
+  // Common categories to pre-load for intelligent matching
+  const COMMON_CATEGORIES = [
+    'Lighting', 'Style', 'Camera', 'Color', 'Material', 
+    'Mood', 'Composition', 'Artist', 'Environment', 'Subject'
+  ];
+
+  // Pre-load common categories for intelligent matching
+  useEffect(() => {
+    const fetchCommonCategories = async () => {
+        try {
+            const params = new URLSearchParams();
+            params.set('categories', COMMON_CATEGORIES.join(','));
+            
+            const res = await fetch(`/api/prompt/variables?${params.toString()}`);
+            if (res.ok) {
+                const data = await res.json();
+                // data format: { [categoryName]: { category: {...}, keywords: [...] } }
+                
+                Object.keys(data).forEach(catKey => {
+                    const categoryData = data[catKey];
+                    if (categoryData && categoryData.keywords) {
+                        // Store in variable cache as well to avoid re-fetching
+                        if (!variableCache.current[catKey]) {
+                            variableCache.current[catKey] = categoryData.keywords;
+                        }
+
+                        // Build reverse index
+                        categoryData.keywords.forEach((kw: any) => {
+                            if (kw.en) keywordToCategoryMap.current.set(kw.en.toLowerCase(), catKey);
+                            if (kw.cn) keywordToCategoryMap.current.set(kw.cn.toLowerCase(), catKey);
+                        });
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Failed to pre-fetch common categories", e);
+        }
+    };
+    
+    fetchCommonCategories();
+  }, []);
 
   // Update content when initialContent changes (e.g., translation toggle)
   useEffect(() => {
-    setContent(initialContent);
-    
+    // Auto-fix incomplete JSON if needed
+    let contentToSet = initialContent;
+
+    if (isJson && initialContent) {
+      const trimmed = initialContent.trim();
+      // Try to detect and fix incomplete JSON
+      if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+        try {
+          const variableRegex = /\{\{([^}]+)\}\}/g;
+          const textWithPlaceholders = trimmed.replace(variableRegex, 'null');
+          JSON.parse(textWithPlaceholders);
+          // Valid JSON, no fix needed
+        } catch (e) {
+          // Invalid JSON, try to fix
+          console.log('🔧 [PromptEditor] Attempting to fix incomplete JSON...');
+          const variableRegex = /\{\{([^}]+)\}\}/g;
+          let fixed = trimmed;
+
+          const textForCounting = trimmed.replace(variableRegex, '');
+          const openBraces = (textForCounting.match(/\{/g) || []).length;
+          const closeBraces = (textForCounting.match(/\}/g) || []).length;
+          const openBrackets = (textForCounting.match(/\[/g) || []).length;
+          const closeBrackets = (textForCounting.match(/\]/g) || []).length;
+
+          // If braces are balanced, try to remove trailing garbage
+          if (openBraces === closeBraces && openBrackets === closeBrackets) {
+            let lastValidPos = -1;
+            if (trimmed.startsWith('{')) {
+              lastValidPos = trimmed.lastIndexOf('}');
+            } else if (trimmed.startsWith('[')) {
+              lastValidPos = trimmed.lastIndexOf(']');
+            }
+
+            if (lastValidPos !== -1 && lastValidPos < trimmed.length - 1) {
+              const afterJson = trimmed.substring(lastValidPos + 1);
+              console.log('🔧 [PromptEditor] Found trailing garbage:', afterJson);
+              fixed = trimmed.substring(0, lastValidPos + 1);
+              console.log('🔧 [PromptEditor] Removed trailing garbage');
+            }
+          } else {
+            // Add missing braces if needed
+            if (openBraces > closeBraces) {
+              const missing = openBraces - closeBraces;
+              fixed = trimmed + '\n' + '}'.repeat(missing);
+              console.log('🔧 [PromptEditor] Added', missing, 'closing braces');
+            }
+            if (openBrackets > closeBrackets) {
+              const missing = openBrackets - closeBrackets;
+              fixed = fixed + ']'.repeat(missing);
+              console.log('🔧 [PromptEditor] Added', missing, 'closing brackets');
+            }
+          }
+
+          // Verify the fix works
+          try {
+            const fixedWithPlaceholders = fixed.replace(variableRegex, 'null');
+            JSON.parse(fixedWithPlaceholders);
+            contentToSet = fixed;
+            console.log('✅ [PromptEditor] Successfully fixed incomplete JSON');
+          } catch (e2) {
+            console.log('⚠️  [PromptEditor] Could not fix JSON, using original content');
+          }
+        }
+      }
+    }
+
+    setContent(contentToSet);
+
     // Pre-fetch variable options and extract default values
     const preFetchVariables = async () => {
         const variableRegex = /\{\{([^}]+)\}\}/g;
@@ -276,6 +542,40 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
             return;
         }
 
+        // Optimization: Only fetch from API if category is likely to exist in DB
+        // If it's a user-generated custom category (not in common list and not mapped), skip fetch
+        // We check if the category matches any of our known valid categories.
+        // Since we don't have the full list of ALL valid categories from DB on client perfectly sync'd, 
+        // we can use a heuristic: if it was mapped from a keyword, it's likely valid.
+        // But for "new variables" created by user, category is often just the text itself.
+        
+        // Strategy: 
+        // 1. Always fetch if it's one of the COMMON_CATEGORIES (we know these exist).
+        // 2. Otherwise, optimistic fetch, but handle empty gracefully. 
+        // 3. IMPROVEMENT: If we want to strictly avoid 404/empty fetches for "Chicken", we can't easily know 
+        //    if "Chicken" is a category in DB without asking. 
+        //    However, user feedback says "don't request for 'item_layout_pixar'".
+        //    So we will only fetch if the category seems to be a "System Category".
+        //    For now, let's just make the fetch lazy or skippable if we are sure.
+        
+        // Actually, the user's issue is specific: "new variable" clicks triggering fetch.
+        // Let's rely on the fact that if it's not in variableCache (which is pre-filled with common ones),
+        // and not in COMMON_CATEGORIES, we might want to skip or debounce.
+        // But to be safe and responsive, let's just use the API but ensure backend handles it fast?
+        // No, user wants to avoid the request.
+        
+        // Let's use the known maps.
+        const isKnownCategory = COMMON_CATEGORIES.some(c => c.toLowerCase() === category.toLowerCase()) || 
+                                Array.from(keywordToCategoryMap.current.values()).includes(category);
+
+        if (!isKnownCategory) {
+             // Treat as custom category with no suggestions
+             const optionsWithDefault = addDefaultValueToOptions([]);
+             setVariableOptions(optionsWithDefault);
+             setIsLoadingOptions(false);
+             return;
+        }
+
         setIsLoadingOptions(true);
         setVariableOptions([]); // Clear previous options
         try {
@@ -319,6 +619,45 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
       // Regular option from the list
       newValue = activeLanguage === 'zh-CN' ? option.cn : option.en;
     }
+
+    // --- NEW: Handle "Create Mode" (triggered from AI suggestion) ---
+    if (activeVariable.id === 'temp_new') {
+        // We are creating a new variable, not replacing an existing value.
+        // The "newValue" here is actually the selected CATEGORY.
+        const category = newValue;
+        const text = activeVariable.originalText; // This was stored when we switched mode
+        
+        // Use the same smart replace logic as handleApplyVariable
+        // 1. Calculate Next ID
+        const variableRegex = /\{\{\s*(\d+)\|/g;
+        let maxId = 0;
+        const matches = content.matchAll(variableRegex);
+        for (const m of matches) {
+            const id = parseInt(m[1], 10);
+            if (!isNaN(id) && id > maxId) maxId = id;
+        }
+        const newId = maxId + 1;
+
+        // 2. Prepare Tag
+        const escapedText = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const newTag = `{{ ${newId}|${category}|${text} }}`;
+
+        // 3. Global Replace
+        const tagSplitRegex = /(\{\{[^}]+\}\})/g;
+        const parts = content.split(tagSplitRegex);
+        
+        const newContent = parts.map(part => {
+            if (part.trim().startsWith('{{') && part.trim().endsWith('}}')) {
+                return part;
+            }
+            return part.replace(new RegExp(escapedText, 'g'), newTag);
+        }).join('');
+        
+        setContent(newContent);
+        setActiveVariable(null);
+        return;
+    }
+    // ---------------------------------------------------------------
 
     // If it's a custom value, add it to the front-end cache only (not database)
     if (isCustomValue) {
@@ -401,17 +740,123 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   const renderContent = (text: string) => {
     if (!text) return '';
 
+    console.log('🔍 [renderContent] isJson:', isJson);
+    console.log('🔍 [renderContent] text length:', text.length);
+    console.log('🔍 [renderContent] text preview:', text.substring(0, 200));
+
     // If JSON, try to format it
     let displayContent = text;
     if (isJson) {
+      console.log('✅ [JSON Mode] Entering JSON rendering path');
       try {
-        const jsonObj = JSON.parse(text);
-        displayContent = JSON.stringify(jsonObj, null, 2);
+        // Extract variables and replace with unique markers that won't be escaped
+        const variableRegex = /\{\{([^}]+)\}\}/g;
+        const variables: Array<{ marker: string; original: string }> = [];
+        let variableIndex = 0;
+
+        const textWithMarkers = text.replace(variableRegex, (match) => {
+          // Use a unique marker format: __VAR_INDEX_N__
+          const marker = `__VAR_INDEX_${variableIndex}__`;
+          variables.push({ marker, original: match });
+          console.log(`📌 [Variable ${variableIndex}] Extracted:`, match, '→', marker);
+          variableIndex++;
+          // IMPORTANT: Don't add quotes! The variable is already inside a JSON string value
+          // Example: "genre": "{{1|type|value}}" → "genre": "__VAR_INDEX_0__"
+          return marker;  // NOT `"${marker}"` !
+        });
+
+        console.log('📝 [Step 1] Variables found:', variables.length);
+        console.log('📝 [Step 1] Text with markers preview:', textWithMarkers.substring(0, 300));
+
+        // Parse and format JSON
+        const jsonObj = JSON.parse(textWithMarkers);
+        let formattedJson = JSON.stringify(jsonObj, null, 2);
+
+        console.log('📝 [Step 2] JSON formatted (first 500 chars):');
+        console.log(formattedJson.substring(0, 500));
+
+        // Apply syntax highlighting to JSON (markers are now inside strings)
+        let highlightedJson = jsonSyntaxHighlight(formattedJson);
+
+        console.log('📝 [Step 3] After syntax highlight (first 500 chars):');
+        console.log(highlightedJson.substring(0, 500));
+
+        // Now replace markers with variable HTML tags
+        // CRITICAL: Markers are inside syntax-highlighted spans, we need to break out of them
+        // Pattern: <span class="text-emerald-600">"{marker}"</span>
+        // We need to close the span, insert our HTML, then reopen it
+        variables.forEach(({ marker, original }, index) => {
+          console.log(`🔄 [Replace ${index}] Looking for marker:`, marker);
+          // Generate HTML for this variable
+          const cleanContent = original.slice(2, -2).trim(); // Remove {{ }}
+          const parts = cleanContent.split('|');
+          let relationId = cleanContent;
+          let searchCategory = cleanContent;
+          let displayName = cleanContent;
+
+          if (parts.length === 3) {
+            relationId = parts[0].trim();
+            searchCategory = parts[1].trim();
+            displayName = parts[2].trim();
+          } else if (parts.length === 2) {
+            relationId = parts[0].trim();
+            searchCategory = parts[0].trim();
+            displayName = parts[1].trim();
+          }
+
+          // Get color
+          const colors = [
+            'bg-red-600 text-white', 'bg-blue-600 text-white', 'bg-emerald-600 text-white',
+            'bg-orange-500 text-white', 'bg-purple-600 text-white', 'bg-cyan-600 text-white',
+            'bg-rose-600 text-white', 'bg-lime-600 text-white', 'bg-indigo-600 text-white',
+            'bg-amber-600 text-white', 'bg-teal-600 text-white', 'bg-fuchsia-600 text-white',
+            'bg-sky-600 text-white', 'bg-violet-600 text-white', 'bg-yellow-600 text-white',
+            'bg-slate-600 text-white', 'bg-pink-500 text-white', 'bg-green-600 text-white'
+          ];
+          const colorClass = colors[index % colors.length];
+
+          const dataAttrs = `data-variable-index="${index}" data-variable-id="${relationId}" data-variable-category="${searchCategory}" data-variable-original="${original.replace(/"/g, '&quot;')}"`;
+
+          const htmlTag = `<span ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-md px-1.5 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105 shadow-sm" style="vertical-align: baseline;"><span class="bg-white/20 text-white/90 px-1 rounded-sm text-[10px] mr-1.5 min-w-[1.2em] text-center font-mono leading-tight flex items-center justify-center h-4">${relationId}</span><span class="truncate max-w-[300px]">${displayName}</span></span>`;
+
+          // Find and replace the marker within highlighted spans
+          // The marker appears as plain text inside a syntax-highlighted span
+          // We need to use a replace function to handle the context
+          const escapedMarker = marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+          // Replace the marker with a temporary unique placeholder that won't conflict with HTML
+          const tempPlaceholder = `___TEMP_VAR_${index}___`;
+          highlightedJson = highlightedJson.replace(new RegExp(escapedMarker, 'g'), tempPlaceholder);
+
+          // Now replace the placeholder with proper HTML structure
+          // We need to break out of any enclosing span tags
+          highlightedJson = highlightedJson.replace(
+            new RegExp(tempPlaceholder, 'g'),
+            `</span>${htmlTag}<span class="text-emerald-600 dark:text-emerald-400">`
+          );
+
+          console.log(`✅ [Replace ${index}] Replacement complete`);
+        });
+
+        console.log('📝 [Step 4] Final result (first 500 chars):');
+        console.log(highlightedJson.substring(0, 500));
+
+        // For JSON mode, return directly without further processing
+        // to avoid double-processing variables in data-variable-original attributes
+        console.log('📦 [Final Return] Returning JSON with <pre> tag, length:', highlightedJson.length);
+        console.log('📦 [Final Return] Preview:', highlightedJson.substring(0, 200));
+        return `<pre class="font-mono text-sm bg-transparent border-0 p-0 text-slate-700 dark:text-slate-300 leading-relaxed" style="white-space: pre; overflow-x: auto;">${highlightedJson}</pre>`;
       } catch (e) {
         // Fallback to raw text if parse fails
+        console.error('❌ [JSON Error] JSON parse failed:', e);
+        displayContent = text;
       }
+    } else {
+      console.log('⚠️  [Markdown Mode] Not JSON, using Markdown rendering');
+      displayContent = text;
     }
 
+    // For Markdown mode, continue with variable processing
     const variableRegex = /\{\{([^}]+)\}\}/g;
     
     // Massive library of 50 distinct solid/high-saturation Pantone-like colors
@@ -538,22 +983,25 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
         const dataAttrs = `data-variable-index="${currentMatchIndex}" data-variable-id="${relationId}" data-variable-category="${searchCategory}" data-variable-original="${match.replace(/"/g, '&quot;')}"`;
 
         // Render the badge with ID if formatted, otherwise standard pill
+        // Use md.renderInline to support markdown syntax within the variable value (e.g. **bold**)
+        const renderedDisplayName = md.renderInline(displayName);
+
         if (isFormatted) {
-            return `<span ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-md px-1.5 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105 shadow-sm" style="vertical-align: baseline;">
-                <span class="bg-white/20 text-white/90 px-1 rounded-sm text-[10px] mr-1.5 min-w-[1.2em] text-center font-mono leading-tight flex items-center justify-center h-4">${relationId}</span>
-                <span class="truncate max-w-[300px]">${displayName}</span>
-            </span>`;
+            return `<span ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-md px-1.5 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105 shadow-sm" style="vertical-align: baseline;"><span class="bg-white/20 text-white/90 px-1 rounded-sm text-[10px] mr-1.5 min-w-[1.2em] text-center font-mono leading-tight flex items-center justify-center h-4">${relationId}</span><span class="truncate max-w-[300px]">${renderedDisplayName}</span></span>`;
         } else {
              // Fallback for non-formatted variables (legacy support)
-            return `<span ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-full px-3 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105" style="vertical-align: baseline;">${displayName}</span>`;
+            return `<span ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-full px-3 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105" style="vertical-align: baseline;">${renderedDisplayName}</span>`;
         }
     });
 
     if (isJson) {
-        return `<pre class="whitespace-pre-wrap font-mono text-sm bg-transparent border-0 p-0 text-slate-700 dark:text-slate-300">${processedText}</pre>`;
+        console.log('📦 [Final Return] Returning JSON with <pre> tag, length:', processedText.length);
+        console.log('📦 [Final Return] Preview:', processedText.substring(0, 200));
+        return `<pre class="font-mono text-sm bg-transparent border-0 p-0 text-slate-700 dark:text-slate-300 leading-relaxed" style="white-space: pre; overflow-x: auto;">${processedText}</pre>`;
     }
 
     // For Markdown:
+    console.log('📦 [Final Return] Returning Markdown rendering');
     return md.render(processedText);
   };
 
@@ -738,16 +1186,18 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                                 p-8 sm:p-12
                                 min-h-[60vh]
                             ">
-                                <div 
+                                <div
                                     ref={contentRef}
                                     onClick={handleVariableClick}
                                     className="
-                                        prose prose-lg prose-slate dark:prose-invert max-w-none 
+                                        prose prose-lg prose-slate dark:prose-invert max-w-none
                                         prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-slate-100
-                                        prose-p:leading-[2] prose-p:text-slate-600 dark:prose-p:text-slate-300
+                                        [&_p]:leading-[2.7] prose-p:text-slate-600 dark:prose-p:text-slate-300
+                                        [&_li]:leading-[2.7]
                                         prose-strong:text-slate-900 dark:prose-strong:text-slate-100 prose-strong:font-bold
                                         prose-li:text-slate-600 dark:prose-li:text-slate-300
                                         marker:text-slate-400
+                                        [&_pre]:!whitespace-pre [&_pre]:!overflow-x-auto [&_pre]:!p-0 [&_pre]:!m-0
                                     "
                                     dangerouslySetInnerHTML={{ __html: renderContent(content) }}
                                 />
@@ -756,12 +1206,76 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                     </div>
                 </ScrollArea>
             ) : (
-                <Textarea 
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    className="flex-1 w-full h-full resize-none border-0 rounded-none p-8 font-mono text-sm focus-visible:ring-0 leading-relaxed bg-transparent"
-                    placeholder="Enter your prompt here..."
-                />
+                <div className="relative flex flex-1 h-full overflow-hidden">
+                    {/* Line Numbers */}
+                    <div
+                        ref={lineNumbersRef}
+                        className="w-12 bg-muted/10 border-r border-border/50 text-right pr-3 pt-8 font-mono text-sm text-muted-foreground/50 select-none overflow-hidden"
+                        style={{ lineHeight: '1.5' }}
+                    >
+                        {Array.from({ length: content.split('\n').length }).map((_, i) => (
+                             <div key={i} style={{ lineHeight: '1.5' }}>{i + 1}</div>
+                        ))}
+                    </div>
+
+                    <div className="relative flex-1 h-full">
+                        {/* Highlighter Overlay */}
+                        <div
+                            ref={highlighterRef}
+                            aria-hidden="true"
+                            className="absolute inset-0 w-full h-full p-8 font-mono text-sm whitespace-pre break-words pointer-events-none overflow-hidden z-0 bg-transparent text-foreground"
+                            style={{ lineHeight: '1.5' }}
+                        >
+                            {renderHighlightedEditor(content)}
+                        </div>
+
+                        {/* Actual Textarea */}
+                        <Textarea
+                            ref={textareaRef}
+                            value={content}
+                            onChange={(e) => {
+                                setContent(e.target.value);
+                                setSelectionMenu(null);
+                            }}
+                            onSelect={handleTextareaSelect}
+                            onScroll={handleScroll}
+                            className="absolute inset-0 w-full h-full p-8 font-mono text-sm !bg-transparent text-transparent caret-black dark:caret-white resize-none focus:outline-none focus:ring-0 z-10 border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 whitespace-pre overflow-auto"
+                            style={{ lineHeight: '1.5' }}
+                            placeholder="Enter your prompt here..."
+                            spellCheck="false"
+                        />
+                    </div>
+
+                    {selectionMenu && (
+                        <div 
+                            className="fixed z-50 animate-in fade-in zoom-in-95 duration-200"
+                            style={{
+                                top: Math.max(10, selectionMenu.top - 40),
+                                left: Math.min(window.innerWidth - 140, selectionMenu.left),
+                            }}
+                        >
+                            <div className="bg-popover text-popover-foreground shadow-xl rounded-lg border p-1.5 flex flex-col gap-1 min-w-[140px]">
+                                
+                                {!isClassifying && (
+                                    <button
+                                        onClick={handleFetchAiSuggestions}
+                                        className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium hover:bg-muted rounded-md transition-colors w-full whitespace-nowrap"
+                                    >
+                                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                                        <span>{activeLanguage === 'zh-CN' ? '智能变量化' : 'AI Variabilize'}</span>
+                                    </button>
+                                )}
+
+                                {isClassifying && (
+                                    <div className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground w-full justify-center whitespace-nowrap">
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                        <span>{activeLanguage === 'zh-CN' ? '分析中...' : 'Analyzing...'}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
             )}
         </div>
     </div>
