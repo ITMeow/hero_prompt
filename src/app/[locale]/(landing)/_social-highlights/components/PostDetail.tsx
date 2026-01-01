@@ -58,14 +58,14 @@ export const PostDetail: React.FC<PostDetailProps> = ({
   const isJsonContent = (text: string | null | undefined): boolean => {
     if (!text) return false;
     const trimmed = text.trim();
-    console.log('🔎 [isJsonContent] Checking text:', trimmed.substring(0, 100));
-    console.log('🔎 [isJsonContent] Starts with {?', trimmed.startsWith('{'));
-    console.log('🔎 [isJsonContent] Ends with }?', trimmed.endsWith('}'));
-    console.log('🔎 [isJsonContent] Last 50 chars:', trimmed.slice(-50));
+
+    // CRITICAL: Check if it starts with {{ (variable syntax, not JSON)
+    if (trimmed.startsWith('{{')) {
+      return false;
+    }
 
     // Check if it looks like JSON (starts with { or [)
     if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
-      console.log('⚠️  [isJsonContent] Not JSON format (doesn\'t start with { or [)');
       return false;
     }
 
@@ -73,14 +73,9 @@ export const PostDetail: React.FC<PostDetailProps> = ({
     try {
       const variableRegex = /\{\{([^}]+)\}\}/g;
       const textWithPlaceholders = trimmed.replace(variableRegex, 'null');
-      console.log('🔎 [isJsonContent] After placeholder replacement (first 200):', textWithPlaceholders.substring(0, 200));
-      console.log('🔎 [isJsonContent] After placeholder replacement (last 100):', textWithPlaceholders.slice(-100));
       JSON.parse(textWithPlaceholders);
-      console.log('✅ [isJsonContent] Valid JSON detected!');
       return true;
     } catch (e) {
-      console.log('⚠️  [isJsonContent] First parse attempt failed:', (e as Error).message);
-
       // Try to auto-fix common issues
       const variableRegex = /\{\{([^}]+)\}\}/g;
       let fixed = trimmed;
@@ -94,8 +89,6 @@ export const PostDetail: React.FC<PostDetailProps> = ({
       const openBrackets = (textForCounting.match(/\[/g) || []).length;
       const closeBrackets = (textForCounting.match(/\]/g) || []).length;
 
-      console.log('🔎 [isJsonContent] Brace count:', { openBraces, closeBraces, openBrackets, closeBrackets });
-
       // Step 2: If braces are balanced, try to remove trailing garbage
       if (openBraces === closeBraces && openBrackets === closeBrackets) {
         // Find the position of the last valid JSON character (} or ])
@@ -107,22 +100,17 @@ export const PostDetail: React.FC<PostDetailProps> = ({
         }
 
         if (lastValidPos !== -1 && lastValidPos < trimmed.length - 1) {
-          const afterJson = trimmed.substring(lastValidPos + 1);
-          console.log('🔧 [isJsonContent] Found trailing garbage:', afterJson);
           fixed = trimmed.substring(0, lastValidPos + 1);
-          console.log('🔧 [isJsonContent] Removed trailing garbage');
         }
       } else {
         // Step 3: Add missing braces if needed
         if (openBraces > closeBraces) {
           const missing = openBraces - closeBraces;
           fixed = fixed + '\n' + '}'.repeat(missing);
-          console.log('🔧 [isJsonContent] Added', missing, 'closing braces');
         }
         if (openBrackets > closeBrackets) {
           const missing = openBrackets - closeBrackets;
           fixed = fixed + ']'.repeat(missing);
-          console.log('🔧 [isJsonContent] Added', missing, 'closing brackets');
         }
       }
 
@@ -130,10 +118,8 @@ export const PostDetail: React.FC<PostDetailProps> = ({
       try {
         const fixedWithPlaceholders = fixed.replace(variableRegex, 'null');
         JSON.parse(fixedWithPlaceholders);
-        console.log('✅ [isJsonContent] Valid JSON after auto-fix!');
         return true;
       } catch (e2) {
-        console.error('❌ [isJsonContent] JSON parse failed even after auto-fix:', (e2 as Error).message);
         return false;
       }
     }
@@ -173,19 +159,16 @@ export const PostDetail: React.FC<PostDetailProps> = ({
 
         if (lastValidPos !== -1 && lastValidPos < trimmed.length - 1) {
           fixed = trimmed.substring(0, lastValidPos + 1);
-          console.log('🔧 [getFixedContent] Removed trailing garbage');
         }
       } else {
         // Add missing braces
         if (openBraces > closeBraces) {
           const missing = openBraces - closeBraces;
           fixed = trimmed + '\n' + '}'.repeat(missing);
-          console.log('🔧 [getFixedContent] Added', missing, 'closing braces');
         }
         if (openBrackets > closeBrackets) {
           const missing = openBrackets - closeBrackets;
           fixed = fixed + ']'.repeat(missing);
-          console.log('🔧 [getFixedContent] Added', missing, 'closing brackets');
         }
       }
 
@@ -193,10 +176,8 @@ export const PostDetail: React.FC<PostDetailProps> = ({
       try {
         const fixedWithPlaceholders = fixed.replace(variableRegex, 'null');
         JSON.parse(fixedWithPlaceholders);
-        console.log('✅ [getFixedContent] Successfully fixed JSON');
         return fixed;
       } catch (e2) {
-        console.log('⚠️  [getFixedContent] Could not fix JSON, using original');
         return trimmed;
       }
     }

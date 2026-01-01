@@ -218,7 +218,6 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
           setSelectionMenu(null); // Close the small menu
 
       } catch (e) {
-          console.error("AI Classification failed", e);
           toast.error("Classification failed");
       } finally {
           setIsClassifying(false);
@@ -270,10 +269,10 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                 });
             }
         } catch (e) {
-            console.error("Failed to pre-fetch common categories", e);
+            // Silent fail
         }
     };
-    
+
     fetchCommonCategories();
   }, []);
 
@@ -293,7 +292,6 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
           // Valid JSON, no fix needed
         } catch (e) {
           // Invalid JSON, try to fix
-          console.log('🔧 [PromptEditor] Attempting to fix incomplete JSON...');
           const variableRegex = /\{\{([^}]+)\}\}/g;
           let fixed = trimmed;
 
@@ -313,22 +311,17 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
             }
 
             if (lastValidPos !== -1 && lastValidPos < trimmed.length - 1) {
-              const afterJson = trimmed.substring(lastValidPos + 1);
-              console.log('🔧 [PromptEditor] Found trailing garbage:', afterJson);
               fixed = trimmed.substring(0, lastValidPos + 1);
-              console.log('🔧 [PromptEditor] Removed trailing garbage');
             }
           } else {
             // Add missing braces if needed
             if (openBraces > closeBraces) {
               const missing = openBraces - closeBraces;
               fixed = trimmed + '\n' + '}'.repeat(missing);
-              console.log('🔧 [PromptEditor] Added', missing, 'closing braces');
             }
             if (openBrackets > closeBrackets) {
               const missing = openBrackets - closeBrackets;
               fixed = fixed + ']'.repeat(missing);
-              console.log('🔧 [PromptEditor] Added', missing, 'closing brackets');
             }
           }
 
@@ -337,9 +330,8 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
             const fixedWithPlaceholders = fixed.replace(variableRegex, 'null');
             JSON.parse(fixedWithPlaceholders);
             contentToSet = fixed;
-            console.log('✅ [PromptEditor] Successfully fixed incomplete JSON');
           } catch (e2) {
-            console.log('⚠️  [PromptEditor] Could not fix JSON, using original content');
+            // Could not fix, use original
           }
         }
       }
@@ -401,7 +393,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                     });
                 }
             } catch (e) {
-                console.error("Failed to pre-fetch variables", e);
+                // Silent fail
             }
         }
     };
@@ -485,7 +477,6 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
       toast.success(t('copied') || 'Copied to clipboard');
       setTimeout(() => setHasCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
       toast.error('Failed to copy');
     }
   };
@@ -594,7 +585,6 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
             setVariableOptions(optionsWithDefault);
           }
         } catch (error) {
-          console.error("Error fetching variables:", error);
           const optionsWithDefault = addDefaultValueToOptions([]);
           setVariableOptions(optionsWithDefault);
         } finally {
@@ -740,14 +730,9 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   const renderContent = (text: string) => {
     if (!text) return '';
 
-    console.log('🔍 [renderContent] isJson:', isJson);
-    console.log('🔍 [renderContent] text length:', text.length);
-    console.log('🔍 [renderContent] text preview:', text.substring(0, 200));
-
     // If JSON, try to format it
     let displayContent = text;
     if (isJson) {
-      console.log('✅ [JSON Mode] Entering JSON rendering path');
       try {
         // Extract variables and replace with unique markers that won't be escaped
         const variableRegex = /\{\{([^}]+)\}\}/g;
@@ -758,35 +743,24 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
           // Use a unique marker format: __VAR_INDEX_N__
           const marker = `__VAR_INDEX_${variableIndex}__`;
           variables.push({ marker, original: match });
-          console.log(`📌 [Variable ${variableIndex}] Extracted:`, match, '→', marker);
           variableIndex++;
           // IMPORTANT: Don't add quotes! The variable is already inside a JSON string value
           // Example: "genre": "{{1|type|value}}" → "genre": "__VAR_INDEX_0__"
           return marker;  // NOT `"${marker}"` !
         });
 
-        console.log('📝 [Step 1] Variables found:', variables.length);
-        console.log('📝 [Step 1] Text with markers preview:', textWithMarkers.substring(0, 300));
-
         // Parse and format JSON
         const jsonObj = JSON.parse(textWithMarkers);
         let formattedJson = JSON.stringify(jsonObj, null, 2);
 
-        console.log('📝 [Step 2] JSON formatted (first 500 chars):');
-        console.log(formattedJson.substring(0, 500));
-
         // Apply syntax highlighting to JSON (markers are now inside strings)
         let highlightedJson = jsonSyntaxHighlight(formattedJson);
-
-        console.log('📝 [Step 3] After syntax highlight (first 500 chars):');
-        console.log(highlightedJson.substring(0, 500));
 
         // Now replace markers with variable HTML tags
         // CRITICAL: Markers are inside syntax-highlighted spans, we need to break out of them
         // Pattern: <span class="text-emerald-600">"{marker}"</span>
         // We need to close the span, insert our HTML, then reopen it
         variables.forEach(({ marker, original }, index) => {
-          console.log(`🔄 [Replace ${index}] Looking for marker:`, marker);
           // Generate HTML for this variable
           const cleanContent = original.slice(2, -2).trim(); // Remove {{ }}
           const parts = cleanContent.split('|');
@@ -834,25 +808,16 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
             new RegExp(tempPlaceholder, 'g'),
             `</span>${htmlTag}<span class="text-emerald-600 dark:text-emerald-400">`
           );
-
-          console.log(`✅ [Replace ${index}] Replacement complete`);
         });
-
-        console.log('📝 [Step 4] Final result (first 500 chars):');
-        console.log(highlightedJson.substring(0, 500));
 
         // For JSON mode, return directly without further processing
         // to avoid double-processing variables in data-variable-original attributes
-        console.log('📦 [Final Return] Returning JSON with <pre> tag, length:', highlightedJson.length);
-        console.log('📦 [Final Return] Preview:', highlightedJson.substring(0, 200));
         return `<pre class="font-mono text-sm bg-transparent border-0 p-0 text-slate-700 dark:text-slate-300 leading-relaxed" style="white-space: pre; overflow-x: auto;">${highlightedJson}</pre>`;
       } catch (e) {
         // Fallback to raw text if parse fails
-        console.error('❌ [JSON Error] JSON parse failed:', e);
         displayContent = text;
       }
     } else {
-      console.log('⚠️  [Markdown Mode] Not JSON, using Markdown rendering');
       displayContent = text;
     }
 
@@ -995,13 +960,10 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
     });
 
     if (isJson) {
-        console.log('📦 [Final Return] Returning JSON with <pre> tag, length:', processedText.length);
-        console.log('📦 [Final Return] Preview:', processedText.substring(0, 200));
         return `<pre class="font-mono text-sm bg-transparent border-0 p-0 text-slate-700 dark:text-slate-300 leading-relaxed" style="white-space: pre; overflow-x: auto;">${processedText}</pre>`;
     }
 
     // For Markdown:
-    console.log('📦 [Final Return] Returning Markdown rendering');
     return md.render(processedText);
   };
 
