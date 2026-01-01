@@ -43,6 +43,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isTranslated, setIsTranslated] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(true);
+  const [currentPromptContent, setCurrentPromptContent] = useState('');
 
   // Determine current language
   const currentLanguage: Language = locale === 'en' ? 'en' : 'zh-CN';
@@ -86,8 +87,8 @@ export const PostDetail: React.FC<PostDetailProps> = ({
 
       const openBraces = (textForCounting.match(/\{/g) || []).length;
       const closeBraces = (textForCounting.match(/\}/g) || []).length;
-      const openBrackets = (textForCounting.match(/\[/g) || []).length;
-      const closeBrackets = (textForCounting.match(/\]/g) || []).length;
+      const openBrackets = (textForCounting.match(/\</g) || []).length;
+      const closeBrackets = (textForCounting.match(/\>/g) || []).length;
 
       // Step 2: If braces are balanced, try to remove trailing garbage
       if (openBraces === closeBraces && openBrackets === closeBrackets) {
@@ -145,8 +146,8 @@ export const PostDetail: React.FC<PostDetailProps> = ({
       const textForCounting = trimmed.replace(variableRegex, '');
       const openBraces = (textForCounting.match(/\{/g) || []).length;
       const closeBraces = (textForCounting.match(/\}/g) || []).length;
-      const openBrackets = (textForCounting.match(/\[/g) || []).length;
-      const closeBrackets = (textForCounting.match(/\]/g) || []).length;
+      const openBrackets = (textForCounting.match(/\</g) || []).length;
+      const closeBrackets = (textForCounting.match(/\>/g) || []).length;
 
       // If braces are balanced, remove trailing garbage
       if (openBraces === closeBraces && openBrackets === closeBrackets) {
@@ -186,8 +187,37 @@ export const PostDetail: React.FC<PostDetailProps> = ({
   const fixedContent = getFixedContent(currentContent || '');
 
   const handleTryThis = () => {
+    // Logic to strip variables and return clean text
+    let textToProcess = currentPromptContent || fixedContent;
+    const isJson = isJsonContent(currentContent);
+
+    // 1. If JSON, try to format it first (matching render behavior)
+    if (isJson) {
+      try {
+        const jsonObj = JSON.parse(textToProcess);
+        textToProcess = JSON.stringify(jsonObj, null, 2);
+      } catch (e) {
+        // Fallback to raw text if parse fails
+      }
+    }
+
+    // 2. Replace variables {{ ... }} with their display values
+    const variableRegex = /\{\{([^}]+)\}\}/g;
+    textToProcess = textToProcess.replace(variableRegex, (match, variableName) => {
+        const cleanVariableName = variableName.trim();
+        const parts = cleanVariableName.split('|');
+        
+        if (parts.length === 3) {
+            // Format: {{ RelationID|Key|Value }} -> Return Value
+            return parts[2].trim();
+        }
+        
+        // Format: {{ Variable }} -> Return Variable
+        return cleanVariableName;
+    });
+
     // Save to sessionStorage to avoid URL length limits
-    sessionStorage.setItem('ai_generator_prompt', fixedContent);
+    sessionStorage.setItem('ai_generator_prompt', textToProcess);
     router.push('/ai-image-generator');
   };
 
@@ -244,6 +274,32 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                         </div>
                       </button>
                     </section>
+
+                    {/* Reference Images - Moved here */}
+                    {post.referenceImageUrl && (
+                      <div className="mt-2">
+                        <p className="text-muted-foreground mb-2 text-xs font-medium uppercase tracking-wider">
+                          {t('reference_images')}
+                        </p>
+                        <div className="grid grid-cols-4 gap-2">
+                          {post.referenceImageUrl.split(',').map((url, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setSelectedImage(url.trim())}
+                              className="aspect-square border-border hover:ring-primary dark:bg-muted relative cursor-pointer overflow-hidden rounded border bg-gray-100 transition-all hover:ring-2"
+                            >
+                              <img
+                                alt={`Reference ${index + 1}`}
+                                loading="lazy"
+                                decoding="async"
+                                className="absolute inset-0 h-full w-full object-cover"
+                                src={url.trim()}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Title */}
                     <h1 className="dark:text-foreground text-lg leading-tight font-bold text-slate-900 text-left">
@@ -322,31 +378,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                       </button>
                     </div>
 
-                    {/* Reference Images */}
-                    {post.referenceImageUrl && (
-                      <div className="mt-2">
-                        <p className="text-muted-foreground mb-2 text-xs font-medium uppercase tracking-wider">
-                          {t('reference_images')}
-                        </p>
-                        <div className="grid grid-cols-4 gap-2">
-                          {post.referenceImageUrl.split(',').map((url, index) => (
-                            <button
-                              key={index}
-                              onClick={() => setSelectedImage(url.trim())}
-                              className="aspect-square border-border hover:ring-primary dark:bg-muted relative cursor-pointer overflow-hidden rounded border bg-gray-100 transition-all hover:ring-2"
-                            >
-                              <img
-                                alt={`Reference ${index + 1}`}
-                                loading="lazy"
-                                decoding="async"
-                                className="absolute inset-0 h-full w-full object-cover"
-                                src={url.trim()}
-                              />
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    {/* Reference Images was here - Moved up */}
                   </div>
                </ScrollArea>
             </div>
@@ -362,6 +394,7 @@ export const PostDetail: React.FC<PostDetailProps> = ({
                 showRightPanel={showRightPanel}
                 onToggleRightPanel={() => setShowRightPanel(!showRightPanel)}
                 activeLanguage={isTranslated ? translatedLanguage : currentLanguage}
+                onChange={setCurrentPromptContent}
              />
           </div>
 

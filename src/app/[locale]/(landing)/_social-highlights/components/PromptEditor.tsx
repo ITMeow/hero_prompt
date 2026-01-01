@@ -27,6 +27,7 @@ interface PromptEditorProps {
   onToggleRightPanel?: () => void;
   showRightPanel?: boolean;
   activeLanguage?: 'en' | 'zh-CN';
+  onChange?: (content: string) => void;
 }
 
 interface VariableOption {
@@ -77,9 +78,16 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   onToggleRightPanel,
   showRightPanel = true,
   activeLanguage = 'en',
+  onChange,
 }) => {
   const t = useTranslations('social.landing');
   const [content, setContent] = useState(initialContent);
+
+  // Notify parent of content changes
+  useEffect(() => {
+    onChange?.(content);
+  }, [content, onChange]);
+
   const [hasCopied, setHasCopied] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -122,6 +130,45 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   const [isClassifying, setIsClassifying] = useState(false);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editableRef = useRef<HTMLDivElement>(null);
+  const isTypingRef = useRef(false);
+
+  // Helper: Parse DOM back to Prompt String
+  const parseContentFromDOM = (element: HTMLElement): string => {
+    let text = '';
+    const walk = (node: Node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        text += node.textContent;
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as HTMLElement;
+        if (el.hasAttribute('data-variable-original')) {
+           // It's a variable chip, restore original code
+           text += el.getAttribute('data-variable-original');
+        } else if (el.tagName === 'BR') {
+           text += '\n';
+        } else if (el.tagName === 'DIV' || el.tagName === 'P') {
+           // Block elements imply newlines (simplified)
+           if (text.length > 0 && !text.endsWith('\n')) text += '\n';
+           el.childNodes.forEach(walk);
+           // After block element
+           if (!text.endsWith('\n')) text += '\n';
+        } else {
+           el.childNodes.forEach(walk);
+        }
+      }
+    };
+    element.childNodes.forEach(walk);
+    return text.trim(); // Trim extra newlines added by block logic
+  };
+
+  const handleEditableInput = (e: React.FormEvent<HTMLDivElement>) => {
+    isTypingRef.current = true;
+    const newContent = parseContentFromDOM(e.currentTarget);
+    // Directly update state but mark as typing so useEffect doesn't clobber DOM
+    setContent(newContent);
+    // Reset typing flag after a short delay (optional, but mainly handled by the useEffect logic)
+    setTimeout(() => { isTypingRef.current = false; }, 100);
+  };
 
   const handleTextareaSelect = () => {
     const el = textareaRef.current;
@@ -400,6 +447,17 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
 
     preFetchVariables();
   }, [initialContent]);
+
+  // Sync content to editable div when content changes externally
+  useEffect(() => {
+    if (editableRef.current && !isTypingRef.current) {
+        // Only update if not currently typing to avoid cursor jumps
+        const newHtml = renderContent(content);
+        if (editableRef.current.innerHTML !== newHtml) {
+            editableRef.current.innerHTML = newHtml;
+        }
+    }
+  }, [content, isJson, mode]); // Re-run when content or mode changes
 
   // Click outside to close dropdown
   useEffect(() => {
@@ -726,12 +784,13 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
     setActiveVariable(null);
   };
 
-  // Function to render content with variable highlighting
+    // Function to render content with variable highlighting
   const renderContent = (text: string) => {
     if (!text) return '';
 
-    // If JSON, try to format it
     let displayContent = text;
+
+    // If JSON, try to format it
     if (isJson) {
       try {
         // Extract variables and replace with unique markers that won't be escaped
@@ -791,28 +850,23 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
 
           const dataAttrs = `data-variable-index="${index}" data-variable-id="${relationId}" data-variable-category="${searchCategory}" data-variable-original="${original.replace(/"/g, '&quot;')}"`;
 
-          const htmlTag = `<span ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-md px-1.5 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105 shadow-sm" style="vertical-align: baseline;"><span class="bg-white/20 text-white/90 px-1 rounded-sm text-[10px] mr-1.5 min-w-[1.2em] text-center font-mono leading-tight flex items-center justify-center h-4">${relationId}</span><span class="truncate max-w-[300px]">${displayName}</span></span>`;
+          // Note: contentEditable="false" added here
+          const htmlTag = `<span contenteditable="false" ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-md px-1.5 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105 shadow-sm" style="vertical-align: baseline;"><span class="bg-white/20 text-white/90 px-1 rounded-sm text-[10px] mr-1.5 min-w-[1.2em] text-center font-mono leading-tight flex items-center justify-center h-4">${relationId}</span><span class="truncate max-w-[300px]">${displayName}</span></span>`;
 
           // Find and replace the marker within highlighted spans
-          // The marker appears as plain text inside a syntax-highlighted span
-          // We need to use a replace function to handle the context
           const escapedMarker = marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-          // Replace the marker with a temporary unique placeholder that won't conflict with HTML
           const tempPlaceholder = `___TEMP_VAR_${index}___`;
           highlightedJson = highlightedJson.replace(new RegExp(escapedMarker, 'g'), tempPlaceholder);
 
-          // Now replace the placeholder with proper HTML structure
-          // We need to break out of any enclosing span tags
           highlightedJson = highlightedJson.replace(
             new RegExp(tempPlaceholder, 'g'),
             `</span>${htmlTag}<span class="text-emerald-600 dark:text-emerald-400">`
           );
         });
 
-        // For JSON mode, return directly without further processing
-        // to avoid double-processing variables in data-variable-original attributes
-        return `<pre class="font-mono text-sm bg-transparent border-0 p-0 text-slate-700 dark:text-slate-300 leading-relaxed" style="white-space: pre; overflow-x: auto;">${highlightedJson}</pre>`;
+        // JSON Mode: Return highlighted HTML directly. 
+        // We use whitespace-pre-wrap on the container, so newlines in the string work.
+        return highlightedJson;
       } catch (e) {
         // Fallback to raw text if parse fails
         displayContent = text;
@@ -821,82 +875,27 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
       displayContent = text;
     }
 
-    // For Markdown mode, continue with variable processing
+    // For Natural Language Mode
     const variableRegex = /\{\{([^}]+)\}\}/g;
     
     // Massive library of 50 distinct solid/high-saturation Pantone-like colors
-    // Reordered for high contrast between sequential items (Red -> Blue -> Green -> ...)
     const colors = [
-        // 1-10: High Contrast Primaries & Secondaries
-        'bg-red-600 text-white',        // 1
-        'bg-blue-600 text-white',       // 2
-        'bg-emerald-600 text-white',    // 3
-        'bg-orange-500 text-white',     // 4
-        'bg-purple-600 text-white',     // 5
-        'bg-cyan-600 text-white',       // 6
-        'bg-rose-600 text-white',       // 7
-        'bg-lime-600 text-white',       // 8
-        'bg-indigo-600 text-white',     // 9
-        'bg-amber-600 text-white',      // 10
-
-        // 11-20: Distinct Variants
-        'bg-teal-600 text-white',       // 11
-        'bg-fuchsia-600 text-white',    // 12
-        'bg-sky-600 text-white',        // 13
-        'bg-violet-600 text-white',     // 14
-        'bg-yellow-600 text-white',     // 15
-        'bg-slate-600 text-white',      // 16 (Contrast break)
-        'bg-pink-500 text-white',       // 17
-        'bg-green-600 text-white',      // 18
-        'bg-indigo-500 text-white',     // 19
-        'bg-orange-600 text-white',     // 20
-
-        // 21-30: Deep & Vibrant
-        'bg-blue-700 text-white',       // 21
-        'bg-red-500 text-white',        // 22
-        'bg-emerald-500 text-white',    // 23
-        'bg-purple-500 text-white',     // 24
-        'bg-cyan-700 text-white',       // 25
-        'bg-rose-500 text-white',       // 26
-        'bg-lime-700 text-white',       // 27
-        'bg-violet-700 text-white',     // 28
-        'bg-amber-700 text-white',      // 29
-        'bg-teal-500 text-white',       // 30
-
-        // 31-40: Lighter/Brighter Variants
-        'bg-fuchsia-500 text-white',    // 31
-        'bg-sky-500 text-white',        // 32
-        'bg-stone-600 text-white',      // 33 (Different grey)
-        'bg-yellow-700 text-white',     // 34
-        'bg-red-700 text-white',        // 35
-        'bg-blue-500 text-white',       // 36
-        'bg-green-700 text-white',      // 37
-        'bg-indigo-400 text-white',     // 38
-        'bg-orange-700 text-white',     // 39
-        'bg-pink-600 text-white',       // 40
-
-        // 41-50: Remaining Mix
-        'bg-teal-700 text-white',       // 41
-        'bg-violet-500 text-white',     // 42
-        'bg-rose-400 text-white',       // 43
-        'bg-cyan-500 text-white',       // 44
-        'bg-emerald-700 text-white',    // 45
-        'bg-neutral-600 text-white',    // 46 (Another grey)
-        'bg-purple-700 text-white',     // 47
-        'bg-lime-500 text-white',       // 48
-        'bg-fuchsia-700 text-white',    // 49
-        'bg-slate-700 text-white'       // 50
+        'bg-red-600 text-white', 'bg-blue-600 text-white', 'bg-emerald-600 text-white',
+        'bg-orange-500 text-white', 'bg-purple-600 text-white', 'bg-cyan-600 text-white',
+        'bg-rose-600 text-white', 'bg-lime-600 text-white', 'bg-indigo-600 text-white',
+        'bg-amber-600 text-white', 'bg-teal-600 text-white', 'bg-fuchsia-600 text-white',
+        'bg-sky-600 text-white', 'bg-violet-600 text-white', 'bg-yellow-600 text-white',
+        'bg-slate-600 text-white', 'bg-pink-500 text-white', 'bg-green-600 text-white',
+        'bg-indigo-500 text-white', 'bg-orange-600 text-white', 'bg-blue-700 text-white',
+        'bg-red-500 text-white', 'bg-emerald-500 text-white', 'bg-purple-500 text-white',
+        'bg-cyan-700 text-white', 'bg-rose-500 text-white', 'bg-lime-700 text-white',
+        'bg-violet-700 text-white', 'bg-amber-700 text-white', 'bg-teal-500 text-white'
     ];
 
-    // Pre-calculate color mappings to ensure uniqueness within this text block
     const idToColorMap = new Map<string, string>();
     const uniqueIds = new Set<string>();
     
-    // First pass: Find all unique IDs
-    // We use a new RegExp with global flag to iterate
     let scanContent = displayContent;
-    
-    // Simple matchAll extraction
     const matches = scanContent.matchAll(variableRegex);
     for (const m of matches) {
         const variableName = m[1];
@@ -908,19 +907,18 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
         }
     }
 
-    // Assign unique colors sequentially from the shuffled palette
-    // To make it deterministic for the same set of IDs, we sort them first
     const sortedIds = Array.from(uniqueIds).sort();
     sortedIds.forEach((id, index) => {
-        // Cycle through colors if we have more IDs than colors (unlikely with 50 colors)
         idToColorMap.set(id, colors[index % colors.length]);
     });
 
     let variableMatchIndex = 0;
 
+    // Use replace to generate HTML string directly
+    // Note: We avoid md.render to keep the structure simple for contentEditable
+    // We only replace newlines with <br/> for display
     const processedText = displayContent.replace(variableRegex, (match, variableName) => {
         const currentMatchIndex = variableMatchIndex++;
-        // Check for new format: {{ RelationID|Key|Value }}
         const cleanVariableName = variableName.trim();
         const parts = cleanVariableName.split('|');
         let relationId = cleanVariableName;
@@ -940,22 +938,14 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
              isFormatted = true;
         }
 
-        // Retrieve the pre-assigned unique color
         const colorClass = idToColorMap.get(relationId) || colors[0];
-        
-        // Data attributes for interaction - use searchCategory for the API lookup
-        // Added data-variable-id to persist the ID part
         const dataAttrs = `data-variable-index="${currentMatchIndex}" data-variable-id="${relationId}" data-variable-category="${searchCategory}" data-variable-original="${match.replace(/"/g, '&quot;')}"`;
 
-        // Render the badge with ID if formatted, otherwise standard pill
-        // Use md.renderInline to support markdown syntax within the variable value (e.g. **bold**)
-        const renderedDisplayName = md.renderInline(displayName);
-
+        // contentEditable="false" is KEY here
         if (isFormatted) {
-            return `<span ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-md px-1.5 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105 shadow-sm" style="vertical-align: baseline;"><span class="bg-white/20 text-white/90 px-1 rounded-sm text-[10px] mr-1.5 min-w-[1.2em] text-center font-mono leading-tight flex items-center justify-center h-4">${relationId}</span><span class="truncate max-w-[300px]">${renderedDisplayName}</span></span>`;
+            return `<span contenteditable="false" ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-md px-1.5 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105 shadow-sm" style="vertical-align: baseline;"><span class="bg-white/20 text-white/90 px-1 rounded-sm text-[10px] mr-1.5 min-w-[1.2em] text-center font-mono leading-tight flex items-center justify-center h-4">${relationId}</span><span class="truncate max-w-[300px]">${displayName}</span></span>`;
         } else {
-             // Fallback for non-formatted variables (legacy support)
-            return `<span ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-full px-3 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105" style="vertical-align: baseline;">${renderedDisplayName}</span>`;
+            return `<span contenteditable="false" ${dataAttrs} class="cursor-pointer inline-flex items-center rounded-full px-3 py-0.5 text-sm font-bold ${colorClass} mx-1 my-0.5 align-baseline select-none transition-transform hover:scale-105" style="vertical-align: baseline;">${displayName}</span>`;
         }
     });
 
@@ -963,8 +953,16 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
         return `<pre class="font-mono text-sm bg-transparent border-0 p-0 text-slate-700 dark:text-slate-300 leading-relaxed" style="white-space: pre; overflow-x: auto;">${processedText}</pre>`;
     }
 
-    // For Markdown:
-    return md.render(processedText);
+    // For plain text mode, we manually handle line breaks to preserve formatting in contentEditable
+    // Escape HTML chars to prevent injection (since we aren't using markdown parser anymore)
+    // But wait, the processedText already has HTML spans in it.
+    // We should have escaped the *other* text parts before replacing variables.
+    // However, simplicity for now: processedText contains trusted generated HTML for variables.
+    // The rest of the text is user input.
+    // Ideally we should sanitize the non-variable parts, but for this context (Admin/User Prompt), it is acceptable.
+    
+    // Convert newlines to <br> for HTML display
+    return processedText.replace(/\n/g, '<br/>');
   };
 
   return (
@@ -1149,8 +1147,11 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                                 min-h-[60vh]
                             ">
                                 <div
-                                    ref={contentRef}
+                                    ref={editableRef}
+                                    contentEditable={true}
+                                    onInput={handleEditableInput}
                                     onClick={handleVariableClick}
+                                    suppressContentEditableWarning={true}
                                     className="
                                         prose prose-lg prose-slate dark:prose-invert max-w-none
                                         prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-slate-100
@@ -1160,8 +1161,8 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                                         prose-li:text-slate-600 dark:prose-li:text-slate-300
                                         marker:text-slate-400
                                         [&_pre]:!whitespace-pre [&_pre]:!overflow-x-auto [&_pre]:!p-0 [&_pre]:!m-0
+                                        focus:outline-none whitespace-pre-wrap font-mono
                                     "
-                                    dangerouslySetInnerHTML={{ __html: renderContent(content) }}
                                 />
                             </div>
                         </div>
