@@ -449,6 +449,11 @@
     },
     "className": "bg-muted"
   },
+  "metadata": {
+    "title": "HeroPrompt - AI提示词管理与阅读工具",
+    "description": "使用HeroPrompt高效编辑、定制和阅读AI提示词。功能强大的提示词管理工具，支持变量和便捷阅读界面。",
+    "keywords": "AI提示词编辑器, 提示词管理, 阅读提示词, 提示词定制, 变量编辑器, HeroPrompt"
+  },
   "footer": {
     "hidden": true,
     "id": "footer",

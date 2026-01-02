@@ -59,6 +59,7 @@ export interface SocialPost {
   model?: string; // e.g. Nano Banana Pro
   aspectRatio?: string; // e.g. 3:4
   createdAt: number;
+  updatedAt?: number;
   // Keep original i18n content for language switching
   i18nContent?: I18nContent;
 }

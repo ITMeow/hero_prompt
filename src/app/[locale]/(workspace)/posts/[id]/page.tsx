@@ -1,79 +1,36 @@
-'use client';
+import { setRequestLocale } from 'next-intl/server';
+import { getMetadata } from '@/shared/lib/seo';
+import { PostPageClient } from './PostPageClient';
 
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { useRouter } from '@/core/i18n/navigation';
-import { useTranslations, useLocale } from 'next-intl';
-import NProgress from 'nprogress';
-import { PostDetail } from '@/app/[locale]/(landing)/_social-highlights/components/PostDetail';
-import { SocialPost } from '@/app/[locale]/(landing)/_social-highlights/lib/types';
-import { mapDbPostToSocialPost } from '@/app/[locale]/(landing)/_social-highlights/lib/utils';
-import { Loader2 } from 'lucide-react';
-import type { Language } from '@/shared/lib/tagTranslator';
+// Revalidate in seconds (1 hour)
+export const revalidate = 3600;
 
-export default function PostPage() {
-  const t = useTranslations('social.landing');
-  const locale = useLocale();
-  const params = useParams();
-  const router = useRouter();
-  const id = params?.id as string;
-  const [post, setPost] = useState<SocialPost | null>(null);
-  const [relatedPosts, setRelatedPosts] = useState<SocialPost[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Determine current language for data mapping
-  const language: Language = locale === 'en' ? 'en' : 'zh-CN';
-
-  useEffect(() => {
-    if (id) {
-      loadPost(id);
-    }
-  }, [id]);
-
-  const loadPost = async (postId: string) => {
-    try {
-      NProgress.start();
-      setLoading(true);
-      const res = await fetch(`/api/posts/${postId}`);
-      if (res.ok) {
-        const data = await res.json();
-        // Pass language to mapDbPostToSocialPost for proper content extraction
-        setPost(mapDbPostToSocialPost(data.post, language));
-        setRelatedPosts(data.relatedPosts.map((dbPost: any) => mapDbPostToSocialPost(dbPost, language)));
-      } else {
-        setPost(null);
-      }
-    } catch (e) {
-      console.error(e);
-      setPost(null);
-    } finally {
-      setLoading(false);
-      NProgress.done();
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F0F2F5] dark:bg-background pt-24 font-[family-name:var(--font-manrope)]">
-        <Loader2 className="animate-spin text-gray-400" />
-      </div>
-    );
-  }
-
-  if (!post) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F0F2F5] dark:bg-background pt-24 font-[family-name:var(--font-manrope)]">
-        <p>{t('post_not_found')}</p>
-      </div>
-    );
-  }
-
-  return (
-    <PostDetail 
-      post={post}
-      relatedPosts={relatedPosts}
-      onBack={() => router.push('/')}
-      onPostClick={(p) => router.push(`/posts/${p.id}`)}
-    />
-  );
+// Generate dynamic metadata for each post
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}) {
+  const { locale, id } = await params;
+  const metadataGenerator = getMetadata({
+    title: `Prompt #${id} - Hero Prompt`,
+    description: `View and customize AI prompt #${id} on Hero Prompt`,
+    canonicalUrl: `/posts/${id}`,
+  });
+  return metadataGenerator({ params: Promise.resolve({ locale }) });
 }
+
+// Server Component Wrapper
+async function PostPageContent({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
+  return <PostPageClient params={params} />;
+}
+
+// Export the server component as default
+export default PostPageContent;

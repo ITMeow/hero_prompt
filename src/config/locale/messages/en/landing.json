@@ -449,6 +449,11 @@
     },
     "className": "bg-muted"
   },
+  "metadata": {
+    "title": "HeroPrompt - AI Prompt Management & Reader",
+    "description": "Efficiently edit, customize and read AI prompts with HeroPrompt. Powerful prompt management tool with variable support and easy reading interface.",
+    "keywords": "AI prompt editor, prompt management, read prompts, prompt customization, variable editor, HeroPrompt"
+  },
   "footer": {
     "hidden": true,
     "id": "footer",

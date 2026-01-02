@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { useRouter } from '@/core/i18n/navigation';
 import {

@@ -201,6 +201,9 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
       />
 
       <main className="px-4 md:px-8 w-full mx-auto pb-12">
+        <h1 className="sr-only">
+          Hero Prompt - AI Prompt Management Tool
+        </h1>
         <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
           {t('trending_prompts')}
         </h2>

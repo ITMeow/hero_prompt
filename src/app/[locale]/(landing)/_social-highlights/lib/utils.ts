@@ -58,6 +58,7 @@ export const mapDbPostToSocialPost = (
     model: dbPost.model,
     tags: tags,
     createdAt: new Date(dbPost.createdAt).getTime(),
+    updatedAt: dbPost.updatedAt ? new Date(dbPost.updatedAt).getTime() : undefined,
     i18nContent, // Keep original for language switching
     stats: {
       likes: dbPost.likes.toString(),
