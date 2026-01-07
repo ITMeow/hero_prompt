@@ -294,7 +294,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
                <div className="text-center py-20 text-gray-500">{t('post_not_found') || 'No posts found.'}</div>
             ) : (
               /* Responsive Grid Layout */
-              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 min-[1800px]:grid-cols-7 min-[2000px]:grid-cols-8 gap-4 md:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 min-[1800px]:grid-cols-7 min-[2000px]:grid-cols-8 gap-4 md:gap-6">
                 {posts.map((post) => (
                   <Link
                     key={post.id}

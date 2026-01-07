@@ -1056,7 +1056,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
         )}
 
         {/* Toolbar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between px-4 h-10 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 gap-4 sm:gap-0 z-10">
+        <div className="flex flex-col sm:flex-row items-center justify-between px-4 h-auto sm:h-10 py-2 sm:py-0 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 gap-4 sm:gap-0 z-10">
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center h-full">
                 
                 {/* Custom Segmented Control - Minimalist */}
@@ -1117,13 +1117,13 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
 
                 {onToggleRightPanel && !showRightPanel && (
                     <>
-                        <div className="hidden sm:block h-4 w-px bg-border/60 mx-2"></div>
+                        <div className="hidden xl:block h-4 w-px bg-border/60 mx-2"></div>
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={onToggleRightPanel}
                             title="Open Sidebar"
-                            className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                            className="hidden xl:inline-flex h-7 w-7 text-muted-foreground hover:text-foreground"
                         >
                             <PanelRightOpen className="w-4 h-4" />
                         </Button>
