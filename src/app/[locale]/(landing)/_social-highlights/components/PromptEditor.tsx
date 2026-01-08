@@ -28,6 +28,7 @@ interface PromptEditorProps {
   showRightPanel?: boolean;
   activeLanguage?: 'en' | 'zh-CN';
   onChange?: (content: string) => void;
+  onTryItNow?: () => void;
 }
 
 interface VariableOption {
@@ -79,6 +80,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   showRightPanel = true,
   activeLanguage = 'en',
   onChange,
+  onTryItNow,
 }) => {
   const t = useTranslations('social.landing');
   const [content, setContent] = useState(initialContent);
@@ -1136,7 +1138,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
         <div className="flex-1 relative min-h-[500px] bg-slate-100/60 dark:bg-black/40">
             {mode === 'preview' ? (
                 <ScrollArea className="flex-1 h-full w-full">
-                    <div className="flex flex-col items-center min-h-full p-4 sm:p-8">
+                    <div className="flex flex-col items-center min-h-full p-4 sm:p-8 pb-24">
                         <div className="w-full max-w-3xl animate-in fade-in zoom-in-95 duration-300">
                             {/* The Card - No Border, Just Surface */}
                             <div className="
@@ -1173,7 +1175,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                     {/* Line Numbers */}
                     <div
                         ref={lineNumbersRef}
-                        className="w-12 bg-muted/10 border-r border-border/50 text-right pr-3 pt-8 font-mono text-sm text-muted-foreground/50 select-none overflow-hidden"
+                        className="w-12 bg-muted/10 border-r border-border/50 text-right pr-3 pt-8 font-mono text-sm text-muted-foreground/50 select-none overflow-hidden pb-24"
                         style={{ lineHeight: '1.5' }}
                     >
                         {Array.from({ length: content.split('\n').length }).map((_, i) => (
@@ -1186,7 +1188,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                         <div
                             ref={highlighterRef}
                             aria-hidden="true"
-                            className="absolute inset-0 w-full h-full p-8 font-mono text-sm whitespace-pre break-words pointer-events-none overflow-hidden z-0 bg-transparent text-foreground"
+                            className="absolute inset-0 w-full h-full p-8 font-mono text-sm whitespace-pre break-words pointer-events-none overflow-hidden z-0 bg-transparent text-foreground pb-24"
                             style={{ lineHeight: '1.5' }}
                         >
                             {renderHighlightedEditor(content)}
@@ -1202,7 +1204,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                             }}
                             onSelect={handleTextareaSelect}
                             onScroll={handleScroll}
-                            className="absolute inset-0 w-full h-full p-8 font-mono text-sm !bg-transparent text-transparent caret-black dark:caret-white resize-none focus:outline-none focus:ring-0 z-10 border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 whitespace-pre overflow-auto"
+                            className="absolute inset-0 w-full h-full p-8 font-mono text-sm !bg-transparent text-transparent caret-black dark:caret-white resize-none focus:outline-none focus:ring-0 z-10 border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 whitespace-pre overflow-auto pb-24"
                             style={{ lineHeight: '1.5' }}
                             placeholder="Enter your prompt here..."
                             spellCheck="false"
@@ -1238,6 +1240,20 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
                             </div>
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* Floating Try It Now Button */}
+            {onTryItNow && (
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 animate-in slide-in-from-bottom-4 duration-500">
+                    <Button 
+                        size="lg" 
+                        onClick={onTryItNow}
+                        className="shadow-2xl hover:shadow-primary/20 hover:scale-105 transition-all rounded-full w-[320px] h-12 text-sm font-bold bg-gradient-to-r from-primary to-primary/80"
+                    >
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        {t('try_this') || 'Try it now'}
+                    </Button>
                 </div>
             )}
         </div>

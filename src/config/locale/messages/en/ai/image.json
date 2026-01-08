@@ -24,7 +24,8 @@
       "reference_image": "Reference Image",
       "reference_image_placeholder": "Upload reference images, support multiple images",
       "some_images_failed_to_upload": "Some images failed to upload, please delete them and re-upload",
-      "prompt_too_long": "Prompt is too long, please delete some content"
+      "prompt_too_long": "Prompt is too long, please delete some content",
+      "aspect_ratio": "Aspect Ratio"
     },
     "generate": "Generate Images",
     "checking_account": "Checking Account...",
@@ -38,6 +39,11 @@
     "generated_images": "Image Preview",
     "ready_to_generate": "Ready to Generate",
     "ready_for_generating": "Ready for Generating",
-    "no_images_generated": "No Images Generated"
+    "no_images_generated": "No Images Generated",
+    "subtitle": "Create stunning visuals with AI",
+    "mode_label": "Generation Mode",
+    "creating_magic": "Creating Magic...",
+    "ready_to_create": "Ready to Create",
+    "ready_to_create_desc": "Enter a detailed prompt on the sidebar and watch your imagination come to life."
   }
 }

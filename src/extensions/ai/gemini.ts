@@ -89,7 +89,11 @@ export class GeminiProvider implements AIProvider {
       }
     }
 
-    const { image_input, ...generationConfig } = options || {};
+    const { image_input, aspect_ratio, ...generationConfig } = options || {};
+
+    if (aspect_ratio && requestParts.length > 0 && requestParts[0].text) {
+      requestParts[0].text = `${requestParts[0].text} --aspect ${aspect_ratio}`;
+    }
 
     const payload = {
       contents: [

@@ -24,7 +24,8 @@
       "reference_image": "参考图片",
       "reference_image_placeholder": "上传参考图片，支持多张",
       "some_images_failed_to_upload": "一些图片上传失败，请删除它们并重新上传",
-      "prompt_too_long": "提示词太长，请删除一些内容"
+      "prompt_too_long": "提示词太长，请删除一些内容",
+      "aspect_ratio": "图片比例"
     },
     "generate": "生成图片",
     "checking_account": "检查账户...",
@@ -38,6 +39,11 @@
     "generated_images": "图片预览",
     "ready_to_generate": "准备生成",
     "no_images_generated": "没有生成图片",
-    "ready_for_generating": "准备生成"
+    "ready_for_generating": "准备生成",
+    "subtitle": "使用 AI 创建令人惊叹的视觉效果",
+    "mode_label": "生成模式",
+    "creating_magic": "正在施展魔法...",
+    "ready_to_create": "准备创作",
+    "ready_to_create_desc": "在侧边栏输入详细的提示词，看着你的想象力变为现实。"
   }
 }
