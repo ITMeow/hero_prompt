@@ -9,8 +9,9 @@ export async function getPosts(options: {
   offset?: number;
   q?: string;
   tags?: string[];
+  skipCount?: boolean;
 }) {
-  const { page = 1, limit = 15, q = '', tags = [] } = options;
+  const { page = 1, limit = 15, q = '', tags = [], skipCount = false } = options;
   const offset = options.offset !== undefined ? options.offset : (page - 1) * limit;
 
   let whereClause = undefined;
@@ -62,21 +63,30 @@ export async function getPosts(options: {
       whereClause = conditions.reduce((acc, condition) => sql`${acc} AND ${condition}`);
     }
 
-    // Get total count
-    const totalResult = await db()
-      .select({ count: sql<number>`count(*)` })
-      .from(landingPost)
-      .where(whereClause);
-    
-    const total = Number(totalResult[0]?.count || 0);
-
-    const posts = await db()
+    const postsQuery = db()
       .select()
       .from(landingPost)
       .where(whereClause)
       .orderBy(desc(landingPost.createdAt))
       .limit(limit)
       .offset(offset);
+
+    if (skipCount) {
+      const posts = await postsQuery;
+      return { posts, total: -1 };
+    }
+
+    const countQuery = db()
+      .select({ count: sql<number>`count(*)` })
+      .from(landingPost)
+      .where(whereClause);
+    
+    const [posts, totalResult] = await Promise.all([
+      postsQuery,
+      countQuery
+    ]);
+
+    const total = Number(totalResult[0]?.count || 0);
 
     return { posts, total };
 }

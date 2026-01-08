@@ -67,18 +67,25 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
         setLoadingMore(true);
       }
 
-      const limit = isLoadMore ? 12 : 30;
+      const limit = 50;
       const tagsParam = Array.from(tags).join(',');
-      const res = await fetch(`/api/posts?offset=${offset}&limit=${limit}&q=${encodeURIComponent(query)}&tags=${encodeURIComponent(tagsParam)}`);
+      const skipCountParam = isLoadMore ? '&skipCount=true' : '';
+      const res = await fetch(`/api/posts?offset=${offset}&limit=${limit}&q=${encodeURIComponent(query)}&tags=${encodeURIComponent(tagsParam)}${skipCountParam}`);
       
       if (res.ok) {
         const data = await res.json();
         const mappedPosts = data.posts.map((dbPost: any) => mapDbPostToSocialPost(dbPost, language));
         
-        setTotalPosts(data.total);
+        if (data.total !== -1) {
+          setTotalPosts(data.total);
+        }
 
         if (isLoadMore) {
-          setPosts(prev => [...prev, ...mappedPosts]);
+          setPosts(prev => {
+            const existingIds = new Set(prev.map(p => p.id));
+            const newPosts = mappedPosts.filter((p: SocialPost) => !existingIds.has(p.id));
+            return [...prev, ...newPosts];
+          });
         } else {
           setPosts(mappedPosts);
         }
@@ -137,8 +144,8 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
       const clientHeight = window.innerHeight || document.documentElement.clientHeight;
       const scrollHeight = document.documentElement.scrollHeight;
 
-      // Trigger when within 300px of bottom
-      if (scrollHeight - scrollTop - clientHeight < 300) {
+      // Trigger when within 1200px of bottom (approx 2-3 cards height for smooth preloading)
+      if (scrollHeight - scrollTop - clientHeight < 1200) {
         if (hasMore && !loadingMore) {
           handleLoadMore();
         }

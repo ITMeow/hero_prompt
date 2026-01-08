@@ -13,6 +13,7 @@ export async function GET(request: Request) {
     const offset = offsetParam ? parseInt(offsetParam) : undefined;
     const q = searchParams.get('q') || '';
     const tagKeysParam = searchParams.get('tags') || '';
+    const skipCount = searchParams.get('skipCount') === 'true';
     
     // Handle multiple tags
     const tags = tagKeysParam.split(',').filter(k => k && k !== 'all');
@@ -22,7 +23,8 @@ export async function GET(request: Request) {
       limit,
       offset,
       q,
-      tags
+      tags,
+      skipCount
     });
 
     return NextResponse.json(result);

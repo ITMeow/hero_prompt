@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Heart, Sparkles, ArrowRight } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -20,8 +21,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
   const locale = useLocale();
   const router = useRouter();
   const [imgSrc, setImgSrc] = useState(post.imageUrl);
-  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isNew, setIsNew] = useState(false);
+  const [isUnoptimized, setIsUnoptimized] = useState(false);
 
   // Check if post is new (created today) - Client side only to prevent hydration mismatch
   useEffect(() => {
@@ -31,13 +33,18 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
   // Update image source if post changes
   useEffect(() => {
     setImgSrc(post.imageUrl);
-    setHasError(false);
+    setIsLoading(true); // Reset loading state when image changes
+    setIsUnoptimized(false); // Reset optimization state
   }, [post.imageUrl]);
 
   const handleImgError = () => {
-    if (!hasError) {
+    if (!isUnoptimized) {
+      // First try: Disable optimization to fetch directly from browser
+      // This helps when Next.js server cannot reach the image (e.g. firewalls/VPN) but user can
+      setIsUnoptimized(true);
+    } else {
+      // Second try: Fallback to placeholder if direct fetch also fails
       setImgSrc('/imgs/bg/tree.jpg');
-      setHasError(true);
     }
   };
 
@@ -67,12 +74,19 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
       {/* Image Container */}
       <div className="relative w-full aspect-square overflow-hidden bg-gray-50 dark:bg-muted">
         <div className="relative w-full h-full">
-          <img 
+          <Image
             src={imgSrc} 
-            alt={post.title} 
+            alt={post.title}
+            fill
+            unoptimized={isUnoptimized}
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, (max-width: 1536px) 25vw, 16vw"
+            className={cn(
+              "object-cover transition-all duration-700 ease-out",
+              "group-hover:scale-105",
+              isLoading ? "scale-110 blur-xl grayscale" : "scale-100 blur-0 grayscale-0"
+            )}
+            onLoad={() => setIsLoading(false)}
             onError={handleImgError}
-            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-            style={{ display: 'block' }}
           />
           
           {/* New Badge */}

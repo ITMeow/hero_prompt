@@ -23,7 +23,7 @@ export default async function LandingPage({
   // Fetch initial posts (SSR)
   const { posts: initialPosts, total: initialTotal } = await getPosts({
     page: 1,
-    limit: 30, // Match the client limit
+    limit: 50, // Match the client limit
     q: '',
     tags: []
   });
