@@ -23,7 +23,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
   const [imgSrc, setImgSrc] = useState(post.imageUrl);
   const [isLoading, setIsLoading] = useState(true);
   const [isNew, setIsNew] = useState(false);
-  const [isUnoptimized, setIsUnoptimized] = useState(false);
+  const [isUnoptimized, setIsUnoptimized] = useState(() => 
+    post.imageUrl?.includes('twimg.com')
+  );
 
   // Check if post is new (created today) - Client side only to prevent hydration mismatch
   useEffect(() => {
@@ -34,7 +36,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
   useEffect(() => {
     setImgSrc(post.imageUrl);
     setIsLoading(true); // Reset loading state when image changes
-    setIsUnoptimized(false); // Reset optimization state
+    setIsUnoptimized(post.imageUrl?.includes('twimg.com')); // Check optimization state
   }, [post.imageUrl]);
 
   const handleImgError = () => {

@@ -315,6 +315,13 @@ export function Header({ header }: { header: HeaderType }) {
 
                   {header.show_theme ? <ThemeToggler /> : null}
                   {header.show_locale ? <LocaleSelector /> : null}
+                  <Link
+                    href="https://x.com/CyberChou666"
+                    target="_blank"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <SmartIcon name="RiTwitterXFill" className="size-5" />
+                  </Link>
                   <div className="flex-1 md:hidden"></div>
                   {header.show_sign ? (
                     <SignUser userNav={header.user_nav} />
