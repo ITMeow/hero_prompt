@@ -234,12 +234,12 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
                 )}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
               <DialogHeader>
                 <DialogTitle>{t('select_tags') || 'Select Tags'}</DialogTitle>
               </DialogHeader>
               
-              <div className="py-4 space-y-8">
+              <div className="flex-1 overflow-y-auto py-4 space-y-8 min-h-0">
                 {categories.map((cat) => (
                   <div key={cat.id} className="space-y-3">
                     <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
