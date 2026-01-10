@@ -54,6 +54,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   const [loading, setLoading] = useState(initialPosts.length === 0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   
   // Filter & Sort State
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
@@ -121,17 +122,14 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
 
   // Initial fetch and Search/Tag/Sort change
   useEffect(() => {
-    const timer = setTimeout(() => {
-      // Skip initial fetch if we already have SSR data and matching default state
-      if (isFirstRender.current) {
-        isFirstRender.current = false;
-        // If initial load has data and we are in default state (no search, no tags, new sort), skip fetch
-        if (initialPosts.length > 0 && searchQuery === '' && activeTags.size === 0 && sortBy === 'new') return;
-      }
-      
-      fetchPosts(0, searchQuery, activeTags, sortBy, false);
-    }, 500);
-    return () => clearTimeout(timer);
+    // Skip initial fetch if we already have SSR data and matching default state
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      // If initial load has data and we are in default state (no search, no tags, new sort), skip fetch
+      if (initialPosts.length > 0 && searchQuery === '' && activeTags.size === 0 && sortBy === 'new') return;
+    }
+    
+    fetchPosts(0, searchQuery, activeTags, sortBy, false);
   }, [searchQuery, activeTags, sortBy, fetchPosts, initialPosts.length]);
 
   const handleLoadMore = useCallback(() => {
@@ -204,14 +202,19 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
     });
   };
 
-  const SidebarContent = () => (
+  const renderSidebarContent = () => (
     <div className="flex flex-col gap-6 h-full">
       {/* Search Input */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
         <Input 
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              setSearchQuery(searchInput);
+            }
+          }}
           placeholder={t('search_placeholder') || "Search prompts..."}
           className="pl-9 bg-white dark:bg-muted/50 border-gray-200 dark:border-border"
         />
@@ -310,14 +313,14 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
                 <SheetHeader className="mb-4">
                   <SheetTitle>{t('filters') || 'Filters'}</SheetTitle>
                 </SheetHeader>
-                <SidebarContent />
+                {renderSidebarContent()}
               </SheetContent>
             </Sheet>
           </div>
 
           {/* Desktop Sidebar */}
           <aside className="hidden md:block w-64 shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-hidden">
-             <SidebarContent />
+             {renderSidebarContent()}
           </aside>
 
           {/* Main Content */}
@@ -330,7 +333,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
                   <div className="text-center py-20 text-gray-500">{t('post_not_found') || 'No posts found.'}</div>
                 ) : (
                   /* Responsive Grid Layout */
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[2000px]:grid-cols-6 gap-4 md:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[2000px]:grid-cols-6 gap-[2px]">
                     {posts.map((post) => (
                       <Link
                         key={post.id}
