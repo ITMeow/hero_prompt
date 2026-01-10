@@ -1,34 +1,42 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from '@/core/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import NProgress from 'nprogress';
 import { PostCard } from './components/PostCard';
-import { Header } from './components/Header';
 import { SocialPost } from './lib/types';
 import { mapDbPostToSocialPost } from './lib/utils';
 import type { Language } from '@/shared/lib/tagTranslator';
 import { Button } from '@/shared/components/ui/button';
-import { Loader2 } from 'lucide-react';
-
-import predefinedTags from '@/config/predefined_tags.json';
+import { Input } from '@/shared/components/ui/input';
 import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger,
-  DialogFooter,
-  DialogClose 
-} from '@/shared/components/ui/dialog';
+  Loader2, 
+  Search, 
+  Flame, 
+  Trophy, 
+  Clock, 
+  Filter, 
+  X,
+  Menu
+} from 'lucide-react';
+import { cn } from '@/shared/lib/utils';
+import predefinedTags from '@/config/predefined_tags.json';
 import { Badge } from '@/shared/components/ui/badge';
-import { Filter } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/shared/components/ui/sheet";
 
 interface LandingClientProps {
   initialPosts?: any[];
   initialTotal?: number;
 }
+
+type SortOption = 'new' | 'hot' | 'top';
 
 export default function LandingClient({ initialPosts = [], initialTotal = 0 }: LandingClientProps) {
   const t = useTranslations('social.landing');
@@ -47,10 +55,9 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   const [loadingMore, setLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Multi-select tags state
+  // Filter & Sort State
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
-  const [tempTags, setTempTags] = useState<Set<string>>(new Set());
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>('new');
 
   const [totalPosts, setTotalPosts] = useState(initialTotal);
   const [hasMore, setHasMore] = useState(initialPosts.length > 0 ? initialPosts.length < initialTotal : true);
@@ -58,7 +65,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   // Track if it's the first render to avoid double fetching
   const isFirstRender = React.useRef(true);
 
-  const fetchPosts = useCallback(async (offset: number, query: string, tags: Set<string>, isLoadMore: boolean = false) => {
+  const fetchPosts = useCallback(async (offset: number, query: string, tags: Set<string>, sort: SortOption, isLoadMore: boolean = false) => {
     try {
       if (!isLoadMore) {
         setLoading(true);
@@ -70,7 +77,9 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
       const limit = 50;
       const tagsParam = Array.from(tags).join(',');
       const skipCountParam = isLoadMore ? '&skipCount=true' : '';
-      const res = await fetch(`/api/posts?offset=${offset}&limit=${limit}&q=${encodeURIComponent(query)}&tags=${encodeURIComponent(tagsParam)}${skipCountParam}`);
+      const sortParam = `&sort=${sort}`;
+      
+      const res = await fetch(`/api/posts?offset=${offset}&limit=${limit}&q=${encodeURIComponent(query)}&tags=${encodeURIComponent(tagsParam)}${sortParam}${skipCountParam}`);
       
       if (res.ok) {
         const data = await res.json();
@@ -96,8 +105,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
           setHasMore(true);
         }
       } else {
-        const errorData = await res.json().catch(() => ({}));
-        console.error('Failed to fetch posts', res.status, res.statusText, errorData);
+        console.error('Failed to fetch posts', res.status);
       }
     } catch (err) {
       console.error(err);
@@ -111,40 +119,49 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
     }
   }, [language]);
 
-  // Initial fetch and Search/Tag change
+  // Initial fetch and Search/Tag/Sort change
   useEffect(() => {
-    // Debounce search
     const timer = setTimeout(() => {
-      // Skip initial fetch if we already have SSR data and no filters are applied
+      // Skip initial fetch if we already have SSR data and matching default state
       if (isFirstRender.current) {
         isFirstRender.current = false;
-        if (initialPosts.length > 0) return;
+        // If initial load has data and we are in default state (no search, no tags, new sort), skip fetch
+        if (initialPosts.length > 0 && searchQuery === '' && activeTags.size === 0 && sortBy === 'new') return;
       }
       
-      fetchPosts(0, searchQuery, activeTags, false);
+      fetchPosts(0, searchQuery, activeTags, sortBy, false);
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchQuery, activeTags, fetchPosts, initialPosts.length]);
+  }, [searchQuery, activeTags, sortBy, fetchPosts, initialPosts.length]);
 
   const handleLoadMore = useCallback(() => {
     const offset = posts.length;
-    fetchPosts(offset, searchQuery, activeTags, true);
-  }, [posts.length, searchQuery, activeTags, fetchPosts]);
+    fetchPosts(offset, searchQuery, activeTags, sortBy, true);
+  }, [posts.length, searchQuery, activeTags, sortBy, fetchPosts]);
 
-  // Use refs to access latest state in scroll handler
+  const handlePostClick = useCallback(async (postId: string) => {
+    try {
+      await fetch('/api/posts/view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId }),
+      });
+    } catch (err) {
+      console.error('Failed to increment view count', err);
+    }
+  }, []);
+
+  // Scroll handling
   const stateRef = React.useRef({ hasMore, loadingMore });
   stateRef.current = { hasMore, loadingMore };
 
   useEffect(() => {
     const handleScroll = () => {
       const { hasMore, loadingMore } = stateRef.current;
-      
-      // Calculate scroll position
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const clientHeight = window.innerHeight || document.documentElement.clientHeight;
       const scrollHeight = document.documentElement.scrollHeight;
 
-      // Trigger when within 1200px of bottom (approx 2-3 cards height for smooth preloading)
       if (scrollHeight - scrollTop - clientHeight < 1200) {
         if (hasMore && !loadingMore) {
           handleLoadMore();
@@ -152,7 +169,6 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
       }
     };
 
-    // Throttle scroll event slightly to improve performance
     let timeoutId: NodeJS.Timeout | null = null;
     const throttledScroll = () => {
       if (timeoutId) return;
@@ -177,160 +193,175 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   ];
 
   const handleTagToggle = (tagKey: string) => {
-    const newTags = new Set(tempTags);
-    if (newTags.has(tagKey)) {
-      newTags.delete(tagKey);
-    } else {
-      newTags.add(tagKey);
-    }
-    setTempTags(newTags);
+    setActiveTags(prev => {
+      const newTags = new Set(prev);
+      if (newTags.has(tagKey)) {
+        newTags.delete(tagKey);
+      } else {
+        newTags.add(tagKey);
+      }
+      return newTags;
+    });
   };
 
-  const handleOpenFilter = () => {
-    setTempTags(new Set(activeTags));
-    setIsFilterOpen(true);
-  };
+  const SidebarContent = () => (
+    <div className="flex flex-col gap-6 h-full">
+      {/* Search Input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+        <Input 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={t('search_placeholder') || "Search prompts..."}
+          className="pl-9 bg-white dark:bg-muted/50 border-gray-200 dark:border-border"
+        />
+      </div>
 
-  const handleApplyFilter = () => {
-    setActiveTags(new Set(tempTags));
-    setIsFilterOpen(false);
-  };
+      {/* Sort Menu */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-2">
+          {t('sort_by') || 'Sort By'}
+        </h3>
+        <nav className="flex flex-col space-y-1">
+          <Button 
+            variant={sortBy === 'hot' ? 'secondary' : 'ghost'} 
+            className={cn("justify-start", sortBy === 'hot' && "bg-gray-100 dark:bg-muted font-semibold")}
+            onClick={() => setSortBy('hot')}
+          >
+            <Flame className={cn("mr-2 h-4 w-4", sortBy === 'hot' ? "text-orange-500" : "text-gray-500")} />
+            {t('sort_hot') || 'Hot'}
+          </Button>
+          <Button 
+            variant={sortBy === 'top' ? 'secondary' : 'ghost'} 
+            className={cn("justify-start", sortBy === 'top' && "bg-gray-100 dark:bg-muted font-semibold")}
+            onClick={() => setSortBy('top')}
+          >
+            <Trophy className={cn("mr-2 h-4 w-4", sortBy === 'top' ? "text-yellow-500" : "text-gray-500")} />
+            {t('sort_top') || 'Top'}
+          </Button>
+          <Button 
+            variant={sortBy === 'new' ? 'secondary' : 'ghost'} 
+            className={cn("justify-start", sortBy === 'new' && "bg-gray-100 dark:bg-muted font-semibold")}
+            onClick={() => setSortBy('new')}
+          >
+            <Clock className={cn("mr-2 h-4 w-4", sortBy === 'new' ? "text-blue-500" : "text-gray-500")} />
+            {t('sort_new') || 'New'}
+          </Button>
+        </nav>
+      </div>
 
-  const handleResetFilter = () => {
-    setTempTags(new Set());
-  };
+      {/* Filter Categories */}
+      <div className="flex-1 overflow-y-auto pr-2 space-y-6">
+        {categories.map((cat) => (
+          <div key={cat.id} className="space-y-3">
+            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-2">
+              {cat.label}
+            </h3>
+            <div className="flex flex-col space-y-1">
+              {cat.tags.map((tag: any) => {
+                const isSelected = activeTags.has(tag.key);
+                return (
+                  <Button
+                    key={tag.key}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleTagToggle(tag.key)}
+                    className={cn(
+                      "justify-start h-auto py-2 px-2 text-sm font-normal", 
+                      isSelected ? "bg-primary/10 text-primary font-medium hover:bg-primary/15" : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-muted/50"
+                    )}
+                  >
+                    <div className={cn("w-4 h-4 mr-2 rounded border flex items-center justify-center transition-colors", isSelected ? "bg-primary border-primary" : "border-gray-300 dark:border-gray-600")}>
+                      {isSelected && <span className="w-2 h-2 bg-white rounded-full" />}
+                    </div>
+                    {isZh ? tag.cn : tag.en}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#F0F2F5] dark:bg-background font-[family-name:var(--font-manrope)] pt-20">
-      <Header
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
-
-      <main className="px-4 md:px-8 w-full mx-auto pb-12">
-        <h1 className="sr-only">
-          Hero Prompt - AI Prompt Management Tool
-        </h1>
-        <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-          {t('trending_prompts')}
-        </h2>
-        {/* Filter Section */}
-        <div className="flex flex-row justify-between items-center mb-8 gap-4">
+      <div className="max-w-[1920px] mx-auto px-4 md:px-8 pb-12">
+        <div className="flex flex-col md:flex-row gap-8 items-start">
           
-          <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                variant="outline" 
-                onClick={handleOpenFilter}
-                suppressHydrationWarning
-                className="rounded-full px-6 h-10 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2"
-              >
-                <Filter className="w-4 h-4" />
-                {t('filter_button') || 'Filter'}
-                {activeTags.size > 0 && (
-                  <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1.5 rounded-full flex items-center justify-center text-xs">
-                    {activeTags.size}
-                  </Badge>
-                )}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
-              <DialogHeader>
-                <DialogTitle>{t('select_tags') || 'Select Tags'}</DialogTitle>
-              </DialogHeader>
-              
-              <div className="flex-1 overflow-y-auto py-4 space-y-8 min-h-0">
-                {categories.map((cat) => (
-                  <div key={cat.id} className="space-y-3">
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
-                      {cat.label}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {cat.tags.map((tag: any) => {
-                        const isSelected = tempTags.has(tag.key);
-                        return (
-                          <button
-                            key={tag.key}
-                            onClick={() => handleTagToggle(tag.key)}
-                            className={`px-3 py-1.5 rounded-lg text-sm transition-all duration-200 border ${
-                              isSelected
-                                ? 'bg-primary text-primary-foreground border-primary font-medium'
-                                : 'bg-white dark:bg-secondary/30 border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:border-primary/50 hover:text-primary'
-                            }`}
-                          >
-                            {isZh ? tag.cn : tag.en}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <DialogFooter className="flex gap-2 sm:justify-between items-center">
-                 <Button 
-                   variant="ghost" 
-                   onClick={handleResetFilter}
-                   className="text-gray-500 hover:text-gray-900"
-                 >
-                   {t('reset') || 'Reset'}
-                 </Button>
-                 <div className="flex gap-2">
-                   <DialogClose asChild>
-                     <Button variant="outline">{t('cancel') || 'Cancel'}</Button>
-                   </DialogClose>
-                   <Button onClick={handleApplyFilter}>
-                     {t('apply') || 'Apply'}
-                   </Button>
-                 </div>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          {/* Results Count */}
-          <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-             {t('total_results', { count: totalPosts }) || `Total ${totalPosts} results`}
+          {/* Mobile Filter Sheet */}
+          <div className="md:hidden w-full sticky top-20 z-30 bg-[#F0F2F5] dark:bg-background py-2">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="w-full justify-between">
+                  <span className="flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    {t('filter_button') || 'Filter'}
+                  </span>
+                  {(activeTags.size > 0 || sortBy !== 'new' || searchQuery) && (
+                    <Badge variant="secondary" className="h-5 px-1.5 rounded-full text-xs">
+                       Changed
+                    </Badge>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+                <SheetHeader className="mb-4">
+                  <SheetTitle>{t('filters') || 'Filters'}</SheetTitle>
+                </SheetHeader>
+                <SidebarContent />
+              </SheetContent>
+            </Sheet>
           </div>
-        </div>
 
-        {loading ? (
-           <div className="flex justify-center py-20">{t('loading')}</div>
-        ) : (
-          <>
-            {posts.length === 0 ? (
-               <div className="text-center py-20 text-gray-500">{t('post_not_found') || 'No posts found.'}</div>
+          {/* Desktop Sidebar */}
+          <aside className="hidden md:block w-64 shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-hidden">
+             <SidebarContent />
+          </aside>
+
+          {/* Main Content */}
+          <main className="flex-1 w-full min-w-0">
+            {loading ? (
+              <div className="flex justify-center py-20">{t('loading')}</div>
             ) : (
-              /* Responsive Grid Layout */
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 min-[1800px]:grid-cols-7 min-[2000px]:grid-cols-8 gap-4 md:gap-6">
-                {posts.map((post) => (
-                  <Link
-                    key={post.id}
-                    href={`/posts/${post.id}`}
-                    className="block group w-full h-full"
-                  >
-                    <PostCard post={post} />
-                  </Link>
-                ))}
-              </div>
-            )}
-
-            {/* Infinite Scroll Loader */}
-            {hasMore && (
-              <div className="flex justify-center mt-12 py-8 min-h-[100px] w-full items-center">
-                {loadingMore ? (
-                  <>
-                    <Loader2 className="mr-2 h-6 w-6 animate-spin text-gray-400" />
-                    <span className="text-gray-400">Loading...</span>
-                  </>
+              <>
+                {posts.length === 0 ? (
+                  <div className="text-center py-20 text-gray-500">{t('post_not_found') || 'No posts found.'}</div>
                 ) : (
-                  // Empty div that takes up space to ensure scrollbar exists if content is short
-                  <div className="h-4" />
+                  /* Responsive Grid Layout */
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[2000px]:grid-cols-6 gap-4 md:gap-6">
+                    {posts.map((post) => (
+                      <Link
+                        key={post.id}
+                        href={`/posts/${post.id}`}
+                        className="block group w-full h-full"
+                        onClick={() => handlePostClick(post.id)}
+                      >
+                        <PostCard post={post} />
+                      </Link>
+                    ))}
+                  </div>
                 )}
-              </div>
+
+                {/* Infinite Scroll Loader */}
+                {hasMore && (
+                  <div className="flex justify-center mt-12 py-8 min-h-[100px] w-full items-center">
+                    {loadingMore ? (
+                      <>
+                        <Loader2 className="mr-2 h-6 w-6 animate-spin text-gray-400" />
+                        <span className="text-gray-400">Loading...</span>
+                      </>
+                    ) : (
+                      <div className="h-4" />
+                    )}
+                  </div>
+                )}
+              </>
             )}
-          </>
-        )}
-      </main>
+          </main>
+        </div>
+      </div>
     </div>
   );
 }

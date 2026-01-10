@@ -14,6 +14,8 @@ export async function GET(request: Request) {
     const q = searchParams.get('q') || '';
     const tagKeysParam = searchParams.get('tags') || '';
     const skipCount = searchParams.get('skipCount') === 'true';
+    const sortParam = searchParams.get('sort');
+    const sort = (sortParam === 'hot' || sortParam === 'top' || sortParam === 'new') ? sortParam : 'new';
     
     // Handle multiple tags
     const tags = tagKeysParam.split(',').filter(k => k && k !== 'all');
@@ -24,7 +26,8 @@ export async function GET(request: Request) {
       offset,
       q,
       tags,
-      skipCount
+      skipCount,
+      sort
     });
 
     return NextResponse.json(result);

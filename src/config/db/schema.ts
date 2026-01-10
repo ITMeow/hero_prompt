@@ -593,7 +593,7 @@ export const socialPostLegacy = pgTable('social_post', {
 export const landingPost = pgTable(
   'landing_post',
   {
-    id: text('id').primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     i18nContent: jsonb('i18n_content').notNull().$type<{
       en: {
         title: string;
@@ -674,5 +674,21 @@ export const promptVariableKeywords = pgTable(
     index('idx_variable_keywords_cn').on(table.keywordCn),
     index('idx_variable_keywords_en').on(table.keywordEn),
     index('idx_variable_keywords_active').on(table.isActive),
+  ]
+);
+
+export const landingPostView = pgTable(
+  'landing_post_view',
+  {
+    postId: uuid('post_id')
+      .primaryKey()
+      .references(() => landingPost.id, { onDelete: 'cascade' }),
+    count: integer('count').default(0).notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_landing_post_view_count').on(table.count),
   ]
 );

@@ -74,7 +74,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onClick }) => {
       )}
     >
       {/* Image Container */}
-      <div className="relative w-full aspect-square overflow-hidden bg-gray-50 dark:bg-muted">
+      <div className="relative w-full aspect-[3/4] overflow-hidden bg-gray-50 dark:bg-muted">
         <div className="relative w-full h-full">
           <Image
             src={imgSrc} 

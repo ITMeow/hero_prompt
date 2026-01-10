@@ -1,6 +1,6 @@
 import { db } from '@/core/db';
-import { landingPost } from '@/config/db/schema';
-import { desc, sql } from 'drizzle-orm';
+import { landingPost, landingPostView } from '@/config/db/schema';
+import { desc, sql, eq, getTableColumns } from 'drizzle-orm';
 import predefinedTags from '@/config/predefined_tags.json';
 
 export async function getPosts(options: {
@@ -10,8 +10,9 @@ export async function getPosts(options: {
   q?: string;
   tags?: string[];
   skipCount?: boolean;
+  sort?: 'new' | 'hot' | 'top';
 }) {
-  const { page = 1, limit = 15, q = '', tags = [], skipCount = false } = options;
+  const { page = 1, limit = 15, q = '', tags = [], skipCount = false, sort = 'new' } = options;
   const offset = options.offset !== undefined ? options.offset : (page - 1) * limit;
 
   let whereClause = undefined;
@@ -63,11 +64,20 @@ export async function getPosts(options: {
       whereClause = conditions.reduce((acc, condition) => sql`${acc} AND ${condition}`);
     }
 
+    let orderByClause: any = desc(landingPost.createdAt);
+    if (sort === 'hot') {
+      // Sort by view count, defaulting to 0 if null
+      orderByClause = desc(sql`COALESCE(${landingPostView.count}, 0)`); 
+    } else if (sort === 'top') {
+      orderByClause = desc(landingPost.likes); 
+    }
+
     const postsQuery = db()
-      .select()
+      .select({ ...getTableColumns(landingPost) })
       .from(landingPost)
+      .leftJoin(landingPostView, eq(landingPost.id, landingPostView.postId))
       .where(whereClause)
-      .orderBy(desc(landingPost.createdAt))
+      .orderBy(orderByClause)
       .limit(limit)
       .offset(offset);
 

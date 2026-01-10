@@ -31,6 +31,13 @@ export function PostPageClient({
   useEffect(() => {
     if (id) {
       loadPost(id);
+      
+      // Increment view count
+      fetch('/api/posts/view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId: id }),
+      }).catch(console.error);
     }
   }, [id]);
 
