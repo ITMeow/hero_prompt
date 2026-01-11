@@ -327,6 +327,9 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
 
   // Update content when initialContent changes (e.g., translation toggle)
   useEffect(() => {
+    // Clear default values cache to prevent contamination from previous posts
+    defaultValuesCache.current = {};
+
     // Auto-fix incomplete JSON if needed
     let contentToSet = initialContent;
 
