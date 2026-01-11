@@ -811,13 +811,47 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
   const renderContent = (text: string) => {
     if (!text) return '';
 
+    // Massive library of 50 distinct solid/high-saturation Pantone-like colors
+    const colors = [
+        'bg-red-600 text-white', 'bg-blue-600 text-white', 'bg-emerald-600 text-white',
+        'bg-orange-500 text-white', 'bg-purple-600 text-white', 'bg-cyan-600 text-white',
+        'bg-rose-600 text-white', 'bg-lime-600 text-white', 'bg-indigo-600 text-white',
+        'bg-amber-600 text-white', 'bg-teal-600 text-white', 'bg-fuchsia-600 text-white',
+        'bg-sky-600 text-white', 'bg-violet-600 text-white', 'bg-yellow-600 text-white',
+        'bg-slate-600 text-white', 'bg-pink-500 text-white', 'bg-green-600 text-white',
+        'bg-indigo-500 text-white', 'bg-orange-600 text-white', 'bg-blue-700 text-white',
+        'bg-red-500 text-white', 'bg-emerald-500 text-white', 'bg-purple-500 text-white',
+        'bg-cyan-700 text-white', 'bg-rose-500 text-white', 'bg-lime-700 text-white',
+        'bg-violet-700 text-white', 'bg-amber-700 text-white', 'bg-teal-500 text-white'
+    ];
+
+    const idToColorMap = new Map<string, string>();
+    const uniqueIds = new Set<string>();
+    
+    // Pre-scan for IDs to ensure consistent coloring across JSON and Text modes
+    const variableRegex = /\{\{([^}]+)\}\}/g;
+    const allMatches = text.matchAll(variableRegex);
+    for (const m of allMatches) {
+        const clean = m[1].trim();
+        const parts = clean.split('|');
+        if (parts.length === 3) {
+            uniqueIds.add(parts[0].trim());
+        } else {
+            uniqueIds.add(clean.trim());
+        }
+    }
+
+    const sortedIds = Array.from(uniqueIds).sort();
+    sortedIds.forEach((id, index) => {
+        idToColorMap.set(id, colors[index % colors.length]);
+    });
+
     let displayContent = text;
 
     // If JSON, try to format it
     if (isJson) {
       try {
         // Extract variables and replace with unique markers that won't be escaped
-        const variableRegex = /\{\{([^}]+)\}\}/g;
         const variables: Array<{ marker: string; original: string }> = [];
         let variableIndex = 0;
 
@@ -860,16 +894,8 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
             displayName = parts[1].trim();
           }
 
-          // Get color
-          const colors = [
-            'bg-red-600 text-white', 'bg-blue-600 text-white', 'bg-emerald-600 text-white',
-            'bg-orange-500 text-white', 'bg-purple-600 text-white', 'bg-cyan-600 text-white',
-            'bg-rose-600 text-white', 'bg-lime-600 text-white', 'bg-indigo-600 text-white',
-            'bg-amber-600 text-white', 'bg-teal-600 text-white', 'bg-fuchsia-600 text-white',
-            'bg-sky-600 text-white', 'bg-violet-600 text-white', 'bg-yellow-600 text-white',
-            'bg-slate-600 text-white', 'bg-pink-500 text-white', 'bg-green-600 text-white'
-          ];
-          const colorClass = colors[index % colors.length];
+          // Get color from map
+          const colorClass = idToColorMap.get(relationId) || colors[index % colors.length];
 
           const dataAttrs = `data-variable-index="${index}" data-variable-id="${relationId}" data-variable-category="${searchCategory}" data-variable-original="${original.replace(/"/g, '&quot;')}"`;
 
@@ -899,42 +925,6 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
     }
 
     // For Natural Language Mode
-    const variableRegex = /\{\{([^}]+)\}\}/g;
-    
-    // Massive library of 50 distinct solid/high-saturation Pantone-like colors
-    const colors = [
-        'bg-red-600 text-white', 'bg-blue-600 text-white', 'bg-emerald-600 text-white',
-        'bg-orange-500 text-white', 'bg-purple-600 text-white', 'bg-cyan-600 text-white',
-        'bg-rose-600 text-white', 'bg-lime-600 text-white', 'bg-indigo-600 text-white',
-        'bg-amber-600 text-white', 'bg-teal-600 text-white', 'bg-fuchsia-600 text-white',
-        'bg-sky-600 text-white', 'bg-violet-600 text-white', 'bg-yellow-600 text-white',
-        'bg-slate-600 text-white', 'bg-pink-500 text-white', 'bg-green-600 text-white',
-        'bg-indigo-500 text-white', 'bg-orange-600 text-white', 'bg-blue-700 text-white',
-        'bg-red-500 text-white', 'bg-emerald-500 text-white', 'bg-purple-500 text-white',
-        'bg-cyan-700 text-white', 'bg-rose-500 text-white', 'bg-lime-700 text-white',
-        'bg-violet-700 text-white', 'bg-amber-700 text-white', 'bg-teal-500 text-white'
-    ];
-
-    const idToColorMap = new Map<string, string>();
-    const uniqueIds = new Set<string>();
-    
-    let scanContent = displayContent;
-    const matches = scanContent.matchAll(variableRegex);
-    for (const m of matches) {
-        const variableName = m[1];
-        const parts = variableName.trim().split('|');
-        if (parts.length === 3) {
-            uniqueIds.add(parts[0].trim());
-        } else {
-            uniqueIds.add(variableName.trim());
-        }
-    }
-
-    const sortedIds = Array.from(uniqueIds).sort();
-    sortedIds.forEach((id, index) => {
-        idToColorMap.set(id, colors[index % colors.length]);
-    });
-
     let variableMatchIndex = 0;
 
     // Use replace to generate HTML string directly
