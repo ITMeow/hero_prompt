@@ -69,7 +69,9 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   const fetchPosts = useCallback(async (offset: number, query: string, tags: Set<string>, sort: SortOption, isLoadMore: boolean = false) => {
     try {
       if (!isLoadMore) {
-        setLoading(true);
+        if (posts.length === 0) {
+          setLoading(true);
+        }
         NProgress.start();
       } else {
         setLoadingMore(true);
@@ -80,7 +82,9 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
       const skipCountParam = isLoadMore ? '&skipCount=true' : '';
       const sortParam = `&sort=${sort}`;
       
-      const res = await fetch(`/api/posts?offset=${offset}&limit=${limit}&q=${encodeURIComponent(query)}&tags=${encodeURIComponent(tagsParam)}${sortParam}${skipCountParam}`);
+      const res = await fetch(`/api/posts?offset=${offset}&limit=${limit}&q=${encodeURIComponent(query)}&tags=${encodeURIComponent(tagsParam)}${sortParam}${skipCountParam}`, {
+        cache: 'no-store'
+      });
       
       if (res.ok) {
         const data = await res.json();
@@ -118,19 +122,13 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
         setLoadingMore(false);
       }
     }
-  }, [language]);
+  }, [language, posts.length]);
 
   // Initial fetch and Search/Tag/Sort change
   useEffect(() => {
-    // Skip initial fetch if we already have SSR data and matching default state
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      // If initial load has data and we are in default state (no search, no tags, new sort), skip fetch
-      if (initialPosts.length > 0 && searchQuery === '' && activeTags.size === 0 && sortBy === 'new') return;
-    }
-    
+    // We always want to fetch on mount to ensure fresh data, especially for 'new' sort
     fetchPosts(0, searchQuery, activeTags, sortBy, false);
-  }, [searchQuery, activeTags, sortBy, fetchPosts, initialPosts.length]);
+  }, [searchQuery, activeTags, sortBy, fetchPosts]);
 
   const handleLoadMore = useCallback(() => {
     const offset = posts.length;
@@ -297,7 +295,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
           <div className="md:hidden w-full sticky top-20 z-30 bg-[#F0F2F5] dark:bg-background py-2">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
+                <Button variant="outline" className="w-full justify-between" suppressHydrationWarning>
                   <span className="flex items-center gap-2">
                     <Filter className="h-4 w-4" />
                     {t('filter_button') || 'Filter'}

@@ -4,6 +4,8 @@ import { landingPost } from '@/config/db/schema';
 import { nanoid } from 'nanoid';
 import { getPosts } from '@/shared/services/postService';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
