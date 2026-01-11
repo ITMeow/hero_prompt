@@ -572,8 +572,26 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
 
         // Helper function to add default value to options
         const addDefaultValueToOptions = (options: VariableOption[]): VariableOption[] => {
-          const defaultKey = id || category;
-          const defaultValue = defaultValuesCache.current[defaultKey];
+          // 1. Try to extract default value from the clicked variable's original text first
+          // This ensures that even if multiple variables share an ID (e.g. "1"), the clicked one's value is shown as default
+          let defaultValue = '';
+          if (originalText) {
+             const cleanContent = originalText.replace(/^\{\{|\}\}$/g, '').trim();
+             const parts = cleanContent.split('|');
+             if (parts.length === 3) {
+                 // {{ id|cat|value }} -> value is at index 2
+                 defaultValue = parts[2].trim();
+             } else if (parts.length === 2) {
+                 // {{ cat|value }} -> value is at index 1
+                 defaultValue = parts[1].trim();
+             }
+          }
+
+          // 2. Fallback to global cache if parsing failed (unlikely for valid variables)
+          if (!defaultValue) {
+             const defaultKey = id || category;
+             defaultValue = defaultValuesCache.current[defaultKey];
+          }
 
           if (defaultValue) {
             const defaultOption: VariableOption = {
