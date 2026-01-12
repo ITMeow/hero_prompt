@@ -7,6 +7,9 @@ import { eq, desc } from 'drizzle-orm';
 import { unstable_cache } from 'next/cache';
 import { mapDbPostToSocialPost } from '@/app/[locale]/(landing)/_social-highlights/lib/utils';
 import type { Language } from '@/shared/lib/tagTranslator';
+import { routing } from '@/core/i18n/config';
+
+export const dynamicParams = true;
 
 // 1. Generate Static Params for the top 50 newest posts
 // This ensures these pages are pre-built at deployment time (SSG)
@@ -18,9 +21,18 @@ export async function generateStaticParams() {
       .orderBy(desc(landingPost.createdAt))
       .limit(50);
     
-    return posts.map((post) => ({
-      id: post.id,
-    }));
+    // We must generate params for EACH locale
+    const params = [];
+    for (const post of posts) {
+      for (const locale of routing.locales) {
+        params.push({
+          id: post.id,
+          locale
+        });
+      }
+    }
+
+    return params;
   } catch (e) {
     console.error('Error generating static params:', e);
     return [];
