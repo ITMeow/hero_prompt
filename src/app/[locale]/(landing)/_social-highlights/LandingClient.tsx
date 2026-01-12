@@ -30,6 +30,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/shared/components/ui/sheet";
+import { postCache } from '@/shared/lib/postCache';
 
 interface LandingClientProps {
   initialPosts?: any[];
@@ -47,9 +48,12 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   const isZh = language === 'zh-CN';
 
   // Map initial posts to SocialPost format
-  const [posts, setPosts] = useState<SocialPost[]>(() => 
-    initialPosts.map((dbPost: any) => mapDbPostToSocialPost(dbPost, language))
-  );
+  const [posts, setPosts] = useState<SocialPost[]>(() => {
+    const mapped = initialPosts.map((dbPost: any) => mapDbPostToSocialPost(dbPost, language));
+    // Cache initial posts
+    postCache.setAll(mapped);
+    return mapped;
+  });
   
   const [loading, setLoading] = useState(initialPosts.length === 0);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -89,6 +93,9 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
       if (res.ok) {
         const data = await res.json();
         const mappedPosts = data.posts.map((dbPost: any) => mapDbPostToSocialPost(dbPost, language));
+        
+        // Cache fetched posts
+        postCache.setAll(mappedPosts);
         
         if (data.total !== -1) {
           setTotalPosts(data.total);

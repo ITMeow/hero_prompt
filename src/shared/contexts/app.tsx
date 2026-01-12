@@ -111,6 +111,15 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const showOneTap = async function (configs: Record<string, string>) {
+    // Add a delay to allow the page to settle and avoid FedCM errors (AbortError/NetworkError)
+    // that can occur during initial page load or if the browser is busy.
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Don't attempt to show if the page is hidden (e.g. background tab)
+    if (document.visibilityState !== 'visible') {
+      return;
+    }
+
     try {
       const authClient = getAuthClient(configs);
       await authClient.oneTap({

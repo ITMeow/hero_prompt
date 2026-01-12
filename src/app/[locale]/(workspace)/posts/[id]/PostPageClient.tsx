@@ -10,27 +10,44 @@ import { SocialPost } from '@/app/[locale]/(landing)/_social-highlights/lib/type
 import { mapDbPostToSocialPost } from '@/app/[locale]/(landing)/_social-highlights/lib/utils';
 import { Loader2 } from 'lucide-react';
 import type { Language } from '@/shared/lib/tagTranslator';
+import { postCache } from '@/shared/lib/postCache';
 
 export function PostPageClient({
   params,
+  initialPost = null,
+  initialRelatedPosts = []
 }: {
   params: Promise<{ locale: string; id: string }>;
+  initialPost?: SocialPost | null;
+  initialRelatedPosts?: SocialPost[];
 }) {
   const t = useTranslations('social.landing');
   const locale = useLocale();
   const urlParams = useParams();
   const router = useRouter();
   const id = urlParams?.id as string;
-  const [post, setPost] = useState<SocialPost | null>(null);
-  const [relatedPosts, setRelatedPosts] = useState<SocialPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  
+  // Initialize state with cache or server-provided props
+  const [post, setPost] = useState<SocialPost | null>(() => {
+    // 1. Client cache (fastest navigation)
+    const cached = postCache.get(id);
+    if (cached) return cached;
+    // 2. Server fetched data (SSR/SSG)
+    return initialPost;
+  });
+
+  const [relatedPosts, setRelatedPosts] = useState<SocialPost[]>(initialRelatedPosts);
+  const [loading, setLoading] = useState(!post);
 
   // Determine current language for data mapping
   const language: Language = locale === 'en' ? 'en' : 'zh-CN';
 
   useEffect(() => {
     if (id) {
-      loadPost(id);
+      // Even if we have data, we trigger a "soft" load to update stats (views/likes)
+      // and ensure consistency, but without blocking the UI.
+      const hasData = !!post;
+      loadPost(id, hasData);
       
       // Increment view count
       fetch('/api/posts/view', {
@@ -41,25 +58,38 @@ export function PostPageClient({
     }
   }, [id]);
 
-  const loadPost = async (postId: string) => {
+  const loadPost = async (postId: string, hasCachedData: boolean) => {
     try {
-      NProgress.start();
-      setLoading(true);
+      if (!hasCachedData) {
+        NProgress.start();
+        setLoading(true);
+      }
+      
       const res = await fetch(`/api/posts/${postId}`);
       if (res.ok) {
         const data = await res.json();
-        // Pass language to mapDbPostToSocialPost for proper content extraction
-        setPost(mapDbPostToSocialPost(data.post, language));
+        const mappedPost = mapDbPostToSocialPost(data.post, language);
+        
+        // Update cache with fresh data
+        postCache.set(mappedPost);
+        
+        setPost(mappedPost);
         setRelatedPosts(data.relatedPosts.map((dbPost: any) => mapDbPostToSocialPost(dbPost, language)));
       } else {
-        setPost(null);
+        if (!hasCachedData) {
+          setPost(null);
+        }
       }
     } catch (e) {
       console.error(e);
-      setPost(null);
+      if (!hasCachedData) {
+        setPost(null);
+      }
     } finally {
       setLoading(false);
-      NProgress.done();
+      if (!hasCachedData) {
+        NProgress.done();
+      }
     }
   };
 
