@@ -50,7 +50,7 @@
     "@hookform/resolvers": "^5.2.1",
     "@libsql/client": "^0.15.9",
     "@next/bundle-analyzer": "16.0.7",
-    "@next/third-parties": "16.0.7",
+    "@next/third-parties": "16.1.1",
     "@openrouter/ai-sdk-provider": "^1.2.0",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@paypal/paypal-server-sdk": "1.1.0",
@@ -105,7 +105,7 @@
     "moment": "^2.30.1",
     "motion": "^12.23.12",
     "nanoid": "^5.1.6",
-    "next": "16.0.7",
+    "next": "16.1.1",
     "next-intl": "^4.3.4",
     "next-mdx-remote": "^5.0.0",
     "next-themes": "^0.4.6",
@@ -113,9 +113,9 @@
     "nprogress": "^0.2.0",
     "overtype": "^1.2.6",
     "postgres": "^3.4.7",
-    "react": "19.2.1",
+    "react": "19.2.3",
     "react-copy-to-clipboard": "^5.1.0",
-    "react-dom": "19.2.1",
+    "react-dom": "19.2.3",
     "react-hook-form": "^7.62.0",
     "react-icons": "^5.5.0",
     "react-lazy-load-image-component": "^1.6.3",
@@ -148,15 +148,15 @@
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^20",
     "@types/pg": "^8.15.5",
-    "@types/react": "19.2.2",
+    "@types/react": "19.2.8",
     "@types/react-copy-to-clipboard": "^5.0.7",
-    "@types/react-dom": "19.2.2",
+    "@types/react-dom": "19.2.3",
     "@types/react-lazy-load-image-component": "^1.6.4",
     "autoprefixer": "^10.4.21",
     "babel-plugin-react-compiler": "^1.0.0",
     "drizzle-kit": "^0.31.4",
     "eslint": "^9.37.0",
-    "eslint-config-next": "16.0.7",
+    "eslint-config-next": "16.1.1",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.7.1",
@@ -169,8 +169,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "19.2.2",
-      "@types/react-dom": "19.2.2"
+      "@types/react": "19.2.8",
+      "@types/react-dom": "19.2.3"
     }
   }
 }
