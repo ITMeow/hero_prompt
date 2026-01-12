@@ -43,6 +43,7 @@ type SortOption = 'new' | 'hot' | 'top';
 export default function LandingClient({ initialPosts = [], initialTotal = 0 }: LandingClientProps) {
   const t = useTranslations('social.landing');
   const locale = useLocale();
+  const isFirstRender = React.useRef(true);
   
   // Determine current language for data mapping
   const language: Language = locale === 'en' ? 'en' : 'zh-CN';
