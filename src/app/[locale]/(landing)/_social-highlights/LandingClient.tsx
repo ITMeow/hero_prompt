@@ -31,6 +31,7 @@ import {
   SheetTrigger,
 } from "@/shared/components/ui/sheet";
 import { postCache } from '@/shared/lib/postCache';
+import { feedCache } from '@/shared/lib/feedCache';
 
 interface LandingClientProps {
   initialPosts?: any[];
@@ -47,28 +48,72 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   const language: Language = locale === 'en' ? 'en' : 'zh-CN';
   const isZh = language === 'zh-CN';
 
+  // Try to restore from feed cache
+  const cachedState = React.useMemo(() => feedCache.get(), []);
+
   // Map initial posts to SocialPost format
   const [posts, setPosts] = useState<SocialPost[]>(() => {
+    if (cachedState) return cachedState.posts;
+
     const mapped = initialPosts.map((dbPost: any) => mapDbPostToSocialPost(dbPost, language));
     // Cache initial posts
     postCache.setAll(mapped);
     return mapped;
   });
   
-  const [loading, setLoading] = useState(initialPosts.length === 0);
+  const [loading, setLoading] = useState(!cachedState && initialPosts.length === 0);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState(cachedState?.searchQuery || '');
+  const [searchInput, setSearchInput] = useState(cachedState?.searchQuery || '');
   
   // Filter & Sort State
-  const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
-  const [sortBy, setSortBy] = useState<SortOption>('new');
+  const [activeTags, setActiveTags] = useState<Set<string>>(cachedState?.activeTags || new Set());
+  const [sortBy, setSortBy] = useState<SortOption>(cachedState?.sortBy || 'new');
 
-  const [totalPosts, setTotalPosts] = useState(initialTotal);
-  const [hasMore, setHasMore] = useState(initialPosts.length > 0 ? initialPosts.length < initialTotal : true);
+  const [totalPosts, setTotalPosts] = useState(cachedState?.totalPosts ?? initialTotal);
+  const [hasMore, setHasMore] = useState(cachedState?.hasMore ?? (initialPosts.length > 0 ? initialPosts.length < initialTotal : true));
   
-  // Track if it's the first render to avoid double fetching
-  const isFirstRender = React.useRef(true);
+  // Track if we are navigating away explicitly (e.g. clicking a post)
+  // This prevents the unmount cleanup from overwriting the correct scroll position with 0
+  const isNavigatingRef = React.useRef(false);
+
+  // Restore scroll position
+  useEffect(() => {
+    if (cachedState) {
+      // Use requestAnimationFrame to scroll as soon as possible after layout
+      const restoreScroll = () => {
+        window.scrollTo({ top: cachedState.scrollPosition, behavior: 'instant' });
+      };
+      
+      requestAnimationFrame(restoreScroll);
+      
+      // Fallback: try again after a short delay to handle images/layout shifts
+      const timer = setTimeout(restoreScroll, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [cachedState]);
+
+  // Keep a ref of current state for unmount saving
+  const currentStateRef = React.useRef({ posts, totalPosts, hasMore, searchQuery, activeTags, sortBy });
+  useEffect(() => {
+    currentStateRef.current = { posts, totalPosts, hasMore, searchQuery, activeTags, sortBy };
+  }, [posts, totalPosts, hasMore, searchQuery, activeTags, sortBy]);
+
+  // Save state on unmount
+  useEffect(() => {
+    return () => {
+      // If we are navigating explicitly (e.g. clicked a post), the state was already saved correctly.
+      // We skip saving here to avoid race conditions where window.scrollY might be reset to 0 by Next.js
+      if (isNavigatingRef.current) return;
+
+      const scrollPosition = window.scrollY;
+      feedCache.set({
+        ...currentStateRef.current,
+        scrollPosition
+      });
+    };
+  }, []);
 
   const fetchPosts = useCallback(async (offset: number, query: string, tags: Set<string>, sort: SortOption, isLoadMore: boolean = false) => {
     try {
@@ -133,9 +178,27 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
 
   // Initial fetch and Search/Tag/Sort change
   useEffect(() => {
-    // We always want to fetch on mount to ensure fresh data, especially for 'new' sort
-    fetchPosts(0, searchQuery, activeTags, sortBy, false);
-  }, [searchQuery, activeTags, sortBy, fetchPosts]);
+    // Skip initial fetch if we restored from cache
+    if (isFirstRender.current) {
+      // If we have cachedState, we skip. But we need to ensure subsequent updates trigger fetch.
+      // The refs logic below handles this.
+      isFirstRender.current = false; 
+    }
+  }, []);
+
+  // Use a ref to track if we should fetch on filter changes
+  // We want to skip the very first run if we have cached state (because the state matches the cache)
+  const shouldFetchOnUpdate = React.useRef(!cachedState);
+  
+  useEffect(() => {
+    if (shouldFetchOnUpdate.current) {
+      fetchPosts(0, searchQuery, activeTags, sortBy, false);
+    } else {
+      // First run with cached state: skip fetch, but enable for next updates
+      shouldFetchOnUpdate.current = true;
+    }
+  }, [searchQuery, activeTags, sortBy, fetchPosts]); 
+
 
   const handleLoadMore = useCallback(() => {
     const offset = posts.length;
@@ -143,6 +206,16 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   }, [posts.length, searchQuery, activeTags, sortBy, fetchPosts]);
 
   const handlePostClick = useCallback(async (postId: string) => {
+    // Mark as navigating so unmount cleanup doesn't overwrite our scroll position
+    isNavigatingRef.current = true;
+
+    // Save state before navigation
+    const scrollPosition = window.scrollY;
+    feedCache.set({
+      ...currentStateRef.current,
+      scrollPosition
+    });
+    
     try {
       await fetch('/api/posts/view', {
         method: 'POST',
@@ -155,12 +228,12 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
   }, []);
 
   // Scroll handling
-  const stateRef = React.useRef({ hasMore, loadingMore });
-  stateRef.current = { hasMore, loadingMore };
+  const scrollStateRef = React.useRef({ hasMore, loadingMore });
+  scrollStateRef.current = { hasMore, loadingMore };
 
   useEffect(() => {
     const handleScroll = () => {
-      const { hasMore, loadingMore } = stateRef.current;
+      const { hasMore, loadingMore } = scrollStateRef.current;
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const clientHeight = window.innerHeight || document.documentElement.clientHeight;
       const scrollHeight = document.documentElement.scrollHeight;
