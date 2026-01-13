@@ -23,6 +23,7 @@ import {
 import { cn } from '@/shared/lib/utils';
 import predefinedTags from '@/config/predefined_tags.json';
 import { Badge } from '@/shared/components/ui/badge';
+import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import {
   Sheet,
   SheetContent,
@@ -41,6 +42,7 @@ interface LandingClientProps {
 type SortOption = 'new' | 'hot' | 'top';
 
 export default function LandingClient({ initialPosts = [], initialTotal = 0 }: LandingClientProps) {
+  // Force rebuild
   const t = useTranslations('social.landing');
   const locale = useLocale();
   const isFirstRender = React.useRef(true);
@@ -175,7 +177,7 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
         setLoadingMore(false);
       }
     }
-  }, [language, posts.length]);
+  }, [language]);
 
   // Initial fetch and Search/Tag/Sort change
   useEffect(() => {
@@ -333,44 +335,46 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
       </div>
 
       {/* Filter Categories */}
-      <div className="flex-1 overflow-y-auto pr-2 space-y-6">
-        {categories.map((cat) => (
-          <div key={cat.id} className="space-y-3">
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-2">
-              {cat.label}
-            </h3>
-            <div className="flex flex-col space-y-1">
-              {cat.tags.map((tag: any) => {
-                const isSelected = activeTags.has(tag.key);
-                return (
-                  <Button
-                    key={tag.key}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleTagToggle(tag.key)}
-                    className={cn(
-                      "justify-start h-auto py-2 px-2 text-sm font-normal", 
-                      isSelected ? "bg-primary/10 text-primary font-medium hover:bg-primary/15" : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-muted/50"
-                    )}
-                  >
-                    <div className={cn("w-4 h-4 mr-2 rounded border flex items-center justify-center transition-colors", isSelected ? "bg-primary border-primary" : "border-gray-300 dark:border-gray-600")}>
-                      {isSelected && <span className="w-2 h-2 bg-white rounded-full" />}
-                    </div>
-                    {isZh ? tag.cn : tag.en}
-                  </Button>
-                );
-              })}
+      <ScrollArea className="flex-1 pr-2">
+        <div className="space-y-6">
+          {categories.map((cat) => (
+            <div key={cat.id} className="space-y-3">
+              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-2">
+                {cat.label}
+              </h3>
+              <div className="flex flex-col space-y-1">
+                {cat.tags.map((tag: any) => {
+                  const isSelected = activeTags.has(tag.key);
+                  return (
+                    <Button
+                      key={tag.key}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleTagToggle(tag.key)}
+                      className={cn(
+                        "justify-start h-auto py-2 px-2 text-sm font-normal", 
+                        isSelected ? "bg-primary/10 text-primary font-medium hover:bg-primary/15" : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-muted/50"
+                      )}
+                    >
+                      <div className={cn("w-4 h-4 mr-2 rounded border flex items-center justify-center transition-colors", isSelected ? "bg-primary border-primary" : "border-gray-300 dark:border-gray-600")}>
+                        {isSelected && <span className="w-2 h-2 bg-white rounded-full" />}
+                      </div>
+                      {isZh ? tag.cn : tag.en}
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-[#F0F2F5] dark:bg-background font-[family-name:var(--font-manrope)] pt-20">
       <div className="max-w-[1920px] mx-auto px-4 md:px-8 pb-12">
-        <div className="flex flex-col md:flex-row gap-8 items-start">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-[2px] items-start">
           
           {/* Mobile Filter Sheet */}
           <div className="md:hidden w-full sticky top-20 z-30 bg-[#F0F2F5] dark:bg-background py-2">
@@ -398,12 +402,12 @@ export default function LandingClient({ initialPosts = [], initialTotal = 0 }: L
           </div>
 
           {/* Desktop Sidebar */}
-          <aside className="hidden md:block w-64 shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-hidden">
+          <aside className="hidden md:block w-64 shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-hidden px-2">
              {renderSidebarContent()}
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 w-full min-w-0">
+          <main className="flex-1 w-full min-w-0 px-2">
             {loading ? (
               <div className="flex justify-center py-20">{t('loading')}</div>
             ) : (
