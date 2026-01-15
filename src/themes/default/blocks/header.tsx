@@ -116,7 +116,7 @@ export function Header({ header }: { header: HeaderType }) {
 
             return (
               <NavigationMenuItem key={idx}>
-                <NavigationMenuTrigger className="flex flex-row items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+                <NavigationMenuTrigger className="text-muted-foreground hover:text-foreground flex flex-row items-center gap-2 text-sm font-medium">
                   {item.icon && (
                     <SmartIcon name={item.icon as string} className="h-4 w-4" />
                   )}
@@ -228,12 +228,17 @@ export function Header({ header }: { header: HeaderType }) {
     return (
       <li {...props}>
         <NavigationMenuLink asChild>
-          <Link href={href} className="grid grid-cols-[auto_1fr] gap-3.5 group/item">
-            <div className="bg-background ring-foreground/10 relative flex size-9 items-center justify-center rounded border border-transparent shadow shadow-sm ring-1 group-hover/item:text-primary transition-colors">
+          <Link
+            href={href}
+            className="group/item grid grid-cols-[auto_1fr] gap-3.5"
+          >
+            <div className="bg-background ring-foreground/10 group-hover/item:text-primary relative flex size-9 items-center justify-center rounded border border-transparent shadow shadow-sm ring-1 transition-colors">
               {children}
             </div>
             <div className="space-y-0.5">
-              <div className="text-foreground text-sm font-medium group-hover/item:text-primary transition-colors">{title}</div>
+              <div className="text-foreground group-hover/item:text-primary text-sm font-medium transition-colors">
+                {title}
+              </div>
               <p className="text-muted-foreground line-clamp-1 text-xs">
                 {description}
               </p>
@@ -255,12 +260,12 @@ export function Header({ header }: { header: HeaderType }) {
           className={cn(
             'absolute inset-x-0 top-0 z-50 h-18 border-transparent ring-1 ring-transparent transition-all duration-300',
             'in-data-scrolled:border-foreground/5 in-data-scrolled:bg-background/75 in-data-scrolled:border-b in-data-scrolled:backdrop-blur',
-            'dark:bg-background/75 dark:backdrop-blur-md dark:border-b dark:border-border/10',
+            'dark:bg-background/75 dark:border-border/10 dark:border-b dark:backdrop-blur-md',
             'has-data-[state=open]:ring-foreground/5 has-data-[state=open]:bg-card/75 has-data-[state=open]:h-[calc(var(--navigation-menu-viewport-height)+3.4rem)] has-data-[state=open]:border-b has-data-[state=open]:shadow-lg has-data-[state=open]:shadow-black/10 has-data-[state=open]:backdrop-blur',
             'max-lg:in-data-[state=active]:bg-background/75 max-lg:h-14 max-lg:overflow-hidden max-lg:border-b max-lg:in-data-[state=active]:h-screen max-lg:in-data-[state=active]:backdrop-blur'
           )}
         >
-          <div className="container">
+          <div className="w-full px-4 md:px-8">
             <div className="relative flex flex-wrap items-center justify-between lg:py-5">
               <div className="flex justify-between gap-8 max-lg:h-14 max-lg:w-full max-lg:border-b">
                 {/* Brand Logo */}
