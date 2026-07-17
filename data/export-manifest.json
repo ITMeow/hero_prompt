@@ -1,0 +1,142 @@
+{
+  "exported_at": "2026-07-17T02:30:46.127Z",
+  "source": {
+    "database": "supabase-postgres",
+    "storage": "cloudflare-r2",
+    "r2_bucket": "cyberchou"
+  },
+  "database": {
+    "output_file": "data/db-demo.sql",
+    "tables": [
+      {
+        "table": "account",
+        "rows": 0,
+        "sanitized": "full-skip"
+      },
+      {
+        "table": "ai_task",
+        "rows": 56,
+        "sanitized": "none"
+      },
+      {
+        "table": "apikey",
+        "rows": 0,
+        "sanitized": "full-skip"
+      },
+      {
+        "table": "chat",
+        "rows": 0,
+        "sanitized": "none"
+      },
+      {
+        "table": "chat_message",
+        "rows": 0,
+        "sanitized": "none"
+      },
+      {
+        "table": "config",
+        "rows": 0,
+        "sanitized": "full-skip"
+      },
+      {
+        "table": "credit",
+        "rows": 119,
+        "sanitized": "emails"
+      },
+      {
+        "table": "landing_post",
+        "rows": 672,
+        "sanitized": "none"
+      },
+      {
+        "table": "landing_post_duplicate_0122",
+        "rows": 527,
+        "sanitized": "none"
+      },
+      {
+        "table": "landing_post_view",
+        "rows": 493,
+        "sanitized": "none"
+      },
+      {
+        "table": "order",
+        "rows": 0,
+        "sanitized": "none"
+      },
+      {
+        "table": "permission",
+        "rows": 29,
+        "sanitized": "none"
+      },
+      {
+        "table": "post",
+        "rows": 1,
+        "sanitized": "none"
+      },
+      {
+        "table": "prompt_variable_categories",
+        "rows": 66,
+        "sanitized": "none"
+      },
+      {
+        "table": "prompt_variable_keywords",
+        "rows": 417,
+        "sanitized": "none"
+      },
+      {
+        "table": "role",
+        "rows": 4,
+        "sanitized": "none"
+      },
+      {
+        "table": "role_permission",
+        "rows": 34,
+        "sanitized": "none"
+      },
+      {
+        "table": "session",
+        "rows": 0,
+        "sanitized": "full-skip"
+      },
+      {
+        "table": "subscription",
+        "rows": 0,
+        "sanitized": "none"
+      },
+      {
+        "table": "taxonomy",
+        "rows": 0,
+        "sanitized": "none"
+      },
+      {
+        "table": "user",
+        "rows": 63,
+        "sanitized": "user"
+      },
+      {
+        "table": "user_role",
+        "rows": 1,
+        "sanitized": "none"
+      },
+      {
+        "table": "verification",
+        "rows": 0,
+        "sanitized": "full-skip"
+      }
+    ],
+    "total_tables_exported": 18,
+    "total_rows": 2482
+  },
+  "storage": {
+    "output_dir": "public/uploads",
+    "total_listed": 103,
+    "downloaded": 102,
+    "failed": [
+      {
+        "key": "heroprompt/",
+        "error": "EISDIR: illegal operation on a directory, open '/Users/mac/Desktop/sortes_ai_projects/hero_prompt/public/uploads'"
+      }
+    ]
+  },
+  "url_rewrites": 309
+}

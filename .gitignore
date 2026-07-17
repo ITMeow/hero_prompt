@@ -47,6 +47,21 @@ next-env.d.ts
 data*
 *debug*
 
+# Allow demo data (exported from Supabase + R2) to be committed
+# - data/db-demo.sql           : sanitized DB dump
+# - data/export-manifest.json   : export metadata (no secrets)
+# - data/REVIEW.md              : human-readable export report
+!data/
+!data/db-demo.sql
+!data/export-manifest.json
+!data/REVIEW.md
+!data/*.md
+
+# Public uploads folder (synced from R2 bucket) MUST be committed
+# (so clone users immediately see all demo images without re-downloading)
+!public/uploads/
+!public/uploads/**/*
+
 *.db
 
 .open-next
