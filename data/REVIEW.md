@@ -1,6 +1,8 @@
 # Demo Data Export Report
 
-Generated at: `2026-07-17T02:30:46.128Z`
+Generated at: `2026-07-17T04:07:18.592Z`
+R2 public domain: `<your-r2-public-domain>`
+R2 bucket: `<your-r2-bucket>`
 
 ## Database
 
@@ -32,25 +34,25 @@ Generated at: `2026-07-17T02:30:46.128Z`
 
 ## Object Storage (R2)
 
-- Listed: **103** objects
-- Downloaded: **102** → `public/uploads/`
+- Downloaded: **178** → `public/uploads/`
 - Failed: **1**
 
 Failed objects:
-- `heroprompt/`: EISDIR: illegal operation on a directory, open '/Users/mac/Desktop/sortes_ai_projects/hero_prompt/public/uploads'
-- URL rewrites applied in SQL: **309**
+- `keymind/1766042127121_9r375p_G8XTcGNaAAAmLN5.jpg`: HTTP 404 Not Found
+- URL rewrites applied in SQL: **507**
+- External URLs preserved: **3889** (Twitter, CDNs, etc.)
 
 ## Safety Guarantees
 
-- The `config` table (containing R2/Stripe/OpenAI/etc. keys) is **never** exported.
-- All `user.email` and `user.name` are replaced with `user_N@example.com` / `User N`.
-- `user.image` is cleared.
+- `config` table (containing R2/Stripe/OpenAI keys) is **never** exported.
+- `user.email/name/image` are replaced with `user_N@example.com` / `User N` / `null`.
 - `order/subscription/credit` email fields are hashed + suffixed with `@example.com`.
 - `apikey`, `account`, `session`, `verification` tables are excluded entirely.
+- No R2 API credentials are required or read by this script.
 
 ## How Clone Users See This Data
 
-1. They run `pnpm install` and copy `.env.example` to `.env` (or set `DATABASE_URL`).
-2. They run `pnpm db:push` to create the schema.
-3. They run `psql "$DATABASE_URL" < data/db-demo.sql` to load demo data.
-4. Images are already in `public/uploads/` and served as `/uploads/...` by Next.js.
+1. `pnpm install` and set `DATABASE_URL` in `.env`.
+2. `pnpm db:push` to create schema.
+3. `psql "$DATABASE_URL" < data/db-demo.sql` to load demo data.
+4. Images already in `public/uploads/` and served as `/uploads/...` by Next.js.

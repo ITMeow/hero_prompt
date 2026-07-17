@@ -1,9 +1,9 @@
 {
-  "exported_at": "2026-07-17T02:30:46.127Z",
+  "exported_at": "2026-07-17T04:07:18.591Z",
   "source": {
     "database": "supabase-postgres",
-    "storage": "cloudflare-r2",
-    "r2_bucket": "cyberchou"
+    "r2_public_domain": "<your-r2-public-domain>",
+    "r2_bucket": "<your-r2-bucket>"
   },
   "database": {
     "output_file": "data/db-demo.sql",
@@ -127,16 +127,20 @@
     "total_tables_exported": 18,
     "total_rows": 2482
   },
+  "urls": {
+    "total": 4247,
+    "r2": 179,
+    "external": 3889
+  },
   "storage": {
     "output_dir": "public/uploads",
-    "total_listed": 103,
-    "downloaded": 102,
+    "downloaded": 178,
     "failed": [
       {
-        "key": "heroprompt/",
-        "error": "EISDIR: illegal operation on a directory, open '/Users/mac/Desktop/sortes_ai_projects/hero_prompt/public/uploads'"
+        "key": "keymind/1766042127121_9r375p_G8XTcGNaAAAmLN5.jpg",
+        "error": "HTTP 404 Not Found"
       }
     ]
   },
-  "url_rewrites": 309
+  "url_rewrites": 507
 }

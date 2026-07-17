@@ -6,12 +6,12 @@
 
 HeroPrompt 基于 [ShipAny Template Two](https://www.shipany.ai/zh/docs) 的二次开发，专注于 **AI 提示词采集 + 图像生成**。本仓库特别针对"开源可复现"做了优化：
 
-- ✅ **Supabase 数据库已脱敏 dump 到 `data/db-demo.sql`**（包含所有业务表：post、taxonomy、landing_post、social_post、prompt_variable_* 等）
-- ✅ **Cloudflare R2 图片已镜像到 `public/uploads/`**（约 130MB，可直接被 Next.js 当静态资源提供）
+- ✅ **Supabase 数据库已脱敏 dump 到 `data/db-demo.sql`**（包含所有业务表：post、taxonomy、landing*post、social_post、prompt_variable*\* 等）
+- ✅ **Cloudflare R2 图片已镜像到 `public/uploads/`**（约 31MB，可直接被 Next.js 当静态资源提供）
 - ✅ **URL 已改写**：dump SQL 里的 R2 域名为 `/uploads/<key>`，外链（Twitter、CDN）保留原样
 - ✅ **零配置启动**：clone 后只需本地一个 Postgres + `pnpm install && pnpm dev`
 
-⚠️ **隐私保证**：`config`（密钥）、`apikey`、`account`、`session`、`verification` 表**不会**导出；`user` 表的 `email/name/image` 全部脱敏；订单/订阅/积分的邮箱字段哈希化。详见 [`data/REVIEW.md`](./data/REVIEW.md)。
+⚠️ **隐私保证**：`config`（密钥）、`apikey`、`account`、`session`、`verification` 表**不会**导出；`user` 表的 `email/name/image` 全部脱敏；订单/订阅/积分的邮箱字段哈希化。REVIEW.md 和 manifest 不含真实 R2 公开域名或 bucket 名。详见 [`data/REVIEW.md`](./data/REVIEW.md)。
 
 ---
 
@@ -109,15 +109,15 @@ docker compose up -d
 
 ### 2. 接入 Cloudflare R2 对象存储
 
-1. Cloudflare Dashboard → **R2** → Create bucket（命名如 `cyberchou`）
+1. Cloudflare Dashboard → **R2** → Create bucket（命名如 `your-bucket-name`，**不要使用生产环境的真实 bucket 名**）
 2. R2 → **Manage R2 API Tokens** → Create API Token，权限：Object Read & Write
 3. 在 `.env` 填入：
 
    ```env
-   R2_ACCOUNT_ID="你的account id"
+   R2_ACCOUNT_ID="你的 account id"
    R2_ACCESS_KEY="token access key"
    R2_SECRET_KEY="token secret access key"
-   R2_BUCKET_NAME="cyberchou"
+   R2_BUCKET_NAME="your-bucket-name"
    R2_UPLOAD_PATH="uploads"
    R2_DOMAIN="https://pub-xxxx.r2.dev"   # 或自定义 CDN 域名
    ```
@@ -186,6 +186,7 @@ git push
 ```
 
 导出过程会：
+
 1. 读 `.env.development` 里的 `DATABASE_URL` 连到 Supabase
 2. 从 `config` 表读 R2 凭据（**凭据不会被 dump**）
 3. 导出所有非敏感表为 `data/db-demo.sql`（user 表 PII 全部脱敏）
@@ -244,15 +245,15 @@ node scripts/init-demo-data.mjs --docker  # 同上 + 自动起 docker pg
 
 启动后访问：
 
-| 路径 | 说明 |
-|---|---|
-| `/` | 落地页（采集的 prompts 展示） |
-| `/admin` | 后台首页（需 admin 角色） |
-| `/admin/posts` | 文章管理 |
-| `/admin/users` | 用户管理 |
-| `/admin/settings/storage` | 改 R2 凭据 |
-| `/admin/settings/ai` | 改 AI Provider 凭据 |
-| `/admin/settings/payment` | 改支付凭据 |
+| 路径                      | 说明                          |
+| ------------------------- | ----------------------------- |
+| `/`                       | 落地页（采集的 prompts 展示） |
+| `/admin`                  | 后台首页（需 admin 角色）     |
+| `/admin/posts`            | 文章管理                      |
+| `/admin/users`            | 用户管理                      |
+| `/admin/settings/storage` | 改 R2 凭据                    |
+| `/admin/settings/ai`      | 改 AI Provider 凭据           |
+| `/admin/settings/payment` | 改支付凭据                    |
 
 默认管理员账号在 dump 中未创建（出于安全），首次启动后请手动到 `/admin` 注册一个账号并执行：
 
@@ -272,6 +273,10 @@ pnpm tsx scripts/init-rbac.ts --admin-email=your@email.com
 - [x] `.env` 已在 `.gitignore` 中，不会被提交
 - [x] R2 凭据只存于 Supabase `config` 表，**不会**出现在 dump 中
 - [x] 外部图片链接（Twitter 等）保留原样，不下载
+
+### 🛡 导出脚本里也做了脱敏
+
+[scripts/export-demo-data.ts](file:///Users/mac/Desktop/sortes_ai_projects/hero_prompt/scripts/export-demo-data.ts) 写入 `data/REVIEW.md` 和 `data/export-manifest.json` 时，**真实 R2 公开域名**和 **真实 bucket 名**会被替换为 `<your-r2-public-domain>` / `<your-r2-bucket>` 占位符；下载失败记录中**不会**输出含域名的 `url` 字段。控制台日志中仍会显示真实值，便于本地运维核对。
 
 ---
 
